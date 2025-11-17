@@ -1,0 +1,67 @@
+##############################
+# Global
+##############################
+.DS_Store
+Thumbs.db
+
+##############################
+# Android / Java / Kotlin
+##############################
+*.iml
+.gradle/
+local.properties
+/.idea
+/.idea/*
+!/.idea/codeStyles
+/.idea/caches
+/.idea/libraries
+/.idea/workspace.xml
+/.idea/assetWizardSettings.xml
+
+# Build outputs
+**/build/
+captures/
+.externalNativeBuild/
+.cxx/
+
+# Keystore (if ever created)
+*.jks
+*.keystore
+
+##############################
+# Go Backend
+##############################
+backend/bin/
+backend/tmp/
+backend/dist/
+backend/.env
+backend/vendor/
+
+##############################
+# Docker
+##############################
+docker/data/
+docker/logs/
+
+##############################
+# Node / Frontend (if ever added)
+##############################
+node_modules/
+dist/
+
+##############################
+# Logs
+##############################
+*.log
+
+##############################
+# Python (if blender / scripts used)
+##############################
+__pycache__/
+*.pyc
+
+##############################
+# Project Misc
+##############################
+*.swp
+*.swo
