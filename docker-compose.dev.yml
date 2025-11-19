@@ -1,0 +1,26 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:16
+    container_name: toutiao-postgres-dev
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_USER: toutiao
+      POSTGRES_PASSWORD: toutiao
+      POSTGRES_DB: toutiao
+
+    ports:
+      - "54320:5432"   # 开发环境 DB 端口
+
+    volumes:
+      - ./docker/db/data:/var/lib/postgresql/data
+      - ./docker/db/init:/docker-entrypoint-initdb.d
+
+    networks:
+      - toutiao_net
+
+networks:
+  toutiao_net:
+    driver: bridge
