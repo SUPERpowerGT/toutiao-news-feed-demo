@@ -738,3 +738,25 @@ git rm -r --cached .
 
 ```
 
+重新追踪
+
+```
+git add .
+
+```
+
+检查状态
+
+```
+git stauts
+
+```
+
+没问题就提交push
+
+```
+git commit -m "feat: add Android client + Go backend + docs + docker compose"
+git push
+
+```
+
