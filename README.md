@@ -193,7 +193,13 @@ Sample response:
 
 ## ✍️ Author
 
-**Xu Ziyi (胥子逸)**
- 2025 Training Camp – News Feed Demo
+**Xu Ziyi (胥子逸)**  
+2025 Training Camp – News Feed Demo
 
-MIT License © 2025 Xu Ziyi
+---
+
+## © Copyright
+
+**All Rights Reserved.**  
+This project is for training and demonstration purposes only.  
+Unauthorized commercial use, redistribution, or modification is strictly prohibited.
