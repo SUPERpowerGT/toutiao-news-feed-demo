@@ -745,7 +745,7 @@ git add .
 
 ```
 
-检查状态
+检查状态https://pzjolf2f07.feishu.cn/wiki/TOQJwyoY5iq51BkMNLOcgiZRnzf?from=from_copylink
 
 ```
 git stauts
@@ -759,4 +759,267 @@ git commit -m "feat: add Android client + Go backend + docs + docker compose"
 git push
 
 ```
+
+3、复习链路框架以及代码部分
+
+客户端
+
+4、开发功能
+
+我们先开发客户端吧！！！！
+
+创建新的分支
+
+```
+git checkout -b feature/android-mvp
+```
+
+我们先重新优化构建客户端的开发架构并规定好脚手架
+
+1. **MainActivity** → setContent → `AppNavigator`
+2. `AppNavigator` → 进入 `FeedScreen`
+3. `FeedScreen` → 使用 `FeedViewModel`
+4. `FeedViewModel` → 调用 `LoadInitialFeedUseCase`
+5. `LoadInitialFeedUseCase` → 调用 `FeedRepositoryContract`
+6. 实现类 `FeedRepository`（data 层）：
+   - 使用 `RemoteDataSource` 调用 `RetrofitClient.feedApi` → 后端
+   - 使用 `LocalDataSource` + `AppDatabase` + `FeedDao` 做缓存
+7. `FeedRepository` 把 `FeedItemDto` → `FeedItem`（domain model）
+8. `FeedViewModel` 收到 `List<FeedItem>` 更新 `StateFlow`
+9. `FeedScreen` 收到新状态 → `FeedList` → `FeedCardFactory` → `TextCard / ImageCard / VideoCard`
+10. 公共组件（`LoadingScreen` / `ErrorScreen`）参与不同状态展示
+11. `DateFormatter` 格式化时间、`ApiResult` 包装网络结果
+
+
+
+今日头条首页卡片数据类型分析
+
+##### 视频卡片
+
+大标题
+
+视频封面图
+
+视频播放按钮
+
+视频时长
+
+作者头像
+
+作者名称
+
+发布时间
+
+点赞数量
+
+更多按钮
+
+
+
+##### 纯文本卡片
+
+大标题
+
+作者名称
+
+评论数量
+
+
+
+##### 单图卡片
+
+大标题
+
+图片
+
+作者头像
+
+作者名称
+
+发布时间
+
+点赞数量
+
+
+
+### 场景 A：推荐列表页（首页 Feed）
+
+这里有 **三种卡片展示形态**（暂时可以不管进详情之后的差异）：
+
+1. **纯文字卡片**
+   - 大标题
+   - 来源（如“新华社”，有红 V）
+   - 评论数（列表可以只显示个数字）
+   - 下方：作者头像、作者名、发布时间、点赞数、更多（更多行为先不做）
+2. **单图卡片**
+   - 左：标题
+   - 右：封面图（media 表里的一条 image）
+   - 下方：作者头像、作者名、发布时间、点赞数、更多
+3. **视频卡片**
+   - 上：标题
+   - 中：大图封面 + 播放按钮 + 时长
+   - 下方：作者头像、作者名、发布时间、点赞数、更多
+
+👉 **这里的共同点就是：**
+
+> 每条 feed item 都要有：标题 + 类型 + 作者信息 + 发布时间 + 互动数量 + 媒体信息（图片/视频）。
+
+
+
+
+
+### 场景 B：图文详情页（文字/单图/多图）
+
+从列表点进去到**文章详情**的情况（你第 1、3 张图）：
+
+- 顶部：大标题
+- 正文：长文本（支持段落、加粗等，最好用 `content_html` 或 `content_json`）
+- 文章下方：
+  - 评论区（评论列表、回复、地区等）——你说可以先 mock / 不做
+  - 分享 / 评论 / 点赞 / 收藏 的按钮和数量（显示数字就好）
+
+📌 文字卡片 与 图文卡片 的区别现在主要是：
+
+- 列表展示形式不同
+- 进入详情后其实结构可以统一：**都是“文章 + 评论 + 操作条”**
+
+你提到的
+
+> “图片类型进入后底下是推荐流”
+>  这个属于 **后续扩展的“相关文章推荐”功能**，可以后面加一个 `/news/{id}/related` 这样的接口，现在先不影响主体设计。
+
+
+
+### 场景 C：视频详情页（全屏滑动）
+
+类似抖音：
+
+- 视频自动播放（全屏播放器）
+- 右侧一列：头像、点赞、评论、收藏、分享
+- 下方：标题 + 简介
+- 往下滑是下一个视频
+
+这个**从数据上看**，其实就是：
+
+- 一条 `news`，`news_type = "video"`
+- 关联一条或多条 `media`，`media_type = "video"`，要拿：视频地址、封面图、时长
+- 一样有 author + stats
+
+现在可以只做“点进去播一个视频，不支持上下滑”，但数据设计最好一次性支持完整信息。
+
+
+
+
+
+### ✅ 首页每一条 FeedItem 需要的字段（列表用）
+
+**基础信息**
+
+- `id`：新闻 ID（跳详情用）
+- `title`：大标题
+- `summary`：摘要（有些纯文字/图文可以用）
+- `news_type`：内容类型
+  - `text` / `image` / `multi_image` / `video`
+
+**作者信息（来自 author）**
+
+- `author_name`（author.name）
+- `author_avatar`（author.avatar_url）
+- `author_certification`（author.certification，用于红 V、黄 V 等）
+
+**媒体信息（来自 media）**
+
+- `media`：一个列表，每个元素包含：
+  - `media_type`：image / video
+  - `url`：图片地址或视频地址
+  - `cover_url`：视频封面图（图文的话可以为空或等于 url）
+  - `duration`：时长（视频用）
+  - `width`、`height`：需要的话可以携带，做布局优化
+
+> 列表卡片中：
+>
+> - 文本卡片：media 为空
+> - 单图卡片：media 中 1 条 image
+> - 三图卡片：media 中 >=3 条 image
+> - 视频卡片：media 中 1 条 video
+
+**时间 & 来源**
+
+- `publish_time`：发布时间（时间戳或已格式化字符串都行，如果你想客户端做“几小时前”就传时间戳）
+- `source`：来源，如“新华社”、“头条号昵称”。如果你觉得重复，可以直接用 author_name。
+
+**互动统计（来自 stats）**
+
+- `like_count`
+- `comment_count`
+- `favorite_count`
+- `share_count`
+- `play_count`（视频用）
+
+
+
+### ✅ 详情页需要的额外字段
+
+在列表字段基础上，再加：
+
+**正文内容（来自 news_content）**
+
+- `content_html`：完整 HTML
+- 或 `content_json`：结构化内容（比如富文本 JSON）
+
+> MVP：可以只用 `content_html` 或只用 `content_json` 中的其中一种。
+
+**推荐 &扩展**
+
+- `related_items`（可选，将来扩展时再加）
+
+
+
+
+
+这里先额外补充思考一下我们客户端数据来源的架构理念
+
+这样的架构设计很好帮助我们区分数据来源以及分层，有点ooo的味道了
+
+| 层级       | 职责                             | 示例             |
+| ---------- | -------------------------------- | ---------------- |
+| remote     | 请求服务器 → 返回 DTO            | Retrofit GET     |
+| local      | SQLite / Room 本地缓存           | Room Dao         |
+| datasource | remote/local 的“包装工”          | RemoteDataSource |
+| repository | 业务逻辑大脑 → 提供 Domain Model | FeedRepository   |
+| domain     | UI 数据结构                      | FeedItem         |
+| ui         | Compose                          | FeedScreen       |
+
+后端 application 层负责组合多个 repository 的 domain 数据，
+ 然后转为一个“前端专用的 DTO”，由 API 返回给前端。
+
+
+
+所以实际上我们第一步骤就是分析usecase
+
+然后设计前端界面
+
+然后根据前端界面设计dto api规范
+
+然后客户端和后端在分开开发自己的部分
+
+
+
+## 11/20
+
+1、完成dto设计
+
+2、开发客户端
+
+创建dto
+
+创建retrofitclient（mock版本）
+
+创建api fake版本
+
+创建datasource
+
+更新lcoal和remote的datasource
+
+创建repository
 

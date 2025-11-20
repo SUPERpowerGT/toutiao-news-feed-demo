@@ -1,29 +1,33 @@
 package com.xuziyi.toutiaoandroid.ui.feed
 
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Button
-import androidx.compose.material3.Text
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import com.xuziyi.toutiaoandroid.ui.components.FeedCard
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 
 @Composable
-fun FeedScreen(viewModel: FeedViewModel = FeedViewModel()) {
-    val feedList by viewModel.feedList.collectAsState()
+fun FeedScreen(
+    viewModel: FeedViewModel,
+    onOpenDetail: (Long) -> Unit = {}
+) {
+    val state = viewModel.state.collectAsState().value
 
-    LazyColumn {
-        items(feedList) { item ->
-            FeedCard(item)
-        }
+    Box(modifier = Modifier.fillMaxSize()) {
 
-        item {
-            Button(onClick = { viewModel.loadMore() }) {
-                Text("加载更多")
+        when {
+            state.isLoading -> {
+                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+            }
+
+            else -> {
+                FeedList(
+                    items = state.items,
+                    onItemClick = onOpenDetail
+                )
             }
         }
     }
 }
-
-
