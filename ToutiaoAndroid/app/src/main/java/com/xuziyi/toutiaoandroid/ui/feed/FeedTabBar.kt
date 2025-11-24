@@ -115,9 +115,9 @@ fun FeedTabBar(
                             // 1. Tab 文字
                             Text(
                                 text = tab.title,
-                                fontSize = if (isSelected) 18.sp else 18.sp,
+                                fontSize = if (isSelected) 20.sp else 20.sp,//避免卡顿不改变字号
                                 color = if (isSelected) activeColor else inactiveColor,
-                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Bold,//避免卡顿还是都用bold先
                                 modifier = Modifier.padding(end = 4.dp)
                             )
 
@@ -129,7 +129,7 @@ fun FeedTabBar(
                                     modifier = Modifier
                                         .align(Alignment.TopEnd)
                                         .offset(x = 2.dp, y = (-2).dp)
-                                        .size(6.dp)
+                                        .size(8.dp)
                                         .background(activeColor, CircleShape)
                                 )
                             }

@@ -11,6 +11,9 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 
+// 确保 AppTypography 可以被访问（如果它在 Type.kt 中，通常是自动的）
+// import com.xuziyi.toutiaoandroid.ui.theme.AppTypography
+
 private val DarkColorScheme = darkColorScheme(
     primary = Purple80,
     secondary = PurpleGrey80,
@@ -52,7 +55,7 @@ fun ToutiaoAndroidTheme(
 
     MaterialTheme(
         colorScheme = colorScheme,
-        typography = Typography,
+        typography = AppTypography, // ❗ 关键：使用自定义的 AppTypography
         content = content
     )
 }

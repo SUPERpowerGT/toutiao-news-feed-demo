@@ -85,13 +85,14 @@ fun FeedTopBar(
             Spacer(Modifier.width(8.dp))
 
             // 🔥 优化 2：文字
-            // 字号加大到 15.sp（今日头条默认字号较大）
+            // 字号加大到 17.sp（今日头条默认字号较大）
             // 颜色改为接近纯黑，去掉灰色滤镜
             // 增加一点点 FontWeight 让它看起来更“实”
             Text(
                 text = hotSearchText, // 使用传入的接口数据
-                fontSize = 15.sp,
+                fontSize = 17.sp,
                 color = Color.Black.copy(alpha = 0.85f), // 高对比度黑色
+                fontWeight = FontWeight.Bold,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.weight(1f) // 让文字填满剩余空间，防止被挤压
