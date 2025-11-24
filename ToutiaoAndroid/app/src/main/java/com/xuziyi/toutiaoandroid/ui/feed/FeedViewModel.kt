@@ -15,6 +15,8 @@ class FeedViewModel(
     private val loadMoreFeedUseCase: LoadMoreFeedUseCase
 ) : ViewModel() {
 
+    //_state是内部可以修改的
+    //state是暴露给UI使用的订阅功能
     private val _state = MutableStateFlow(FeedUiState())
     val state: StateFlow<FeedUiState> = _state
 

@@ -12,11 +12,11 @@ import com.xuziyi.toutiaoandroid.ui.feed.cards.FeedCardFactory   // ← 正确�
 @Composable
 fun FeedList(
     items: List<FeedItem>,
-    onItemClick: (Long) -> Unit
+    onItemClick: (Long) -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    LazyColumn(modifier = Modifier.fillMaxSize()) {
+    LazyColumn(modifier = modifier.fillMaxSize()) {
         items(items) { item ->
-
             FeedCardFactory(
                 item = item,
                 modifier = Modifier.clickable { onItemClick(item.id) }
@@ -24,3 +24,4 @@ fun FeedList(
         }
     }
 }
+
