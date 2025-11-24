@@ -3,6 +3,7 @@ package com.xuziyi.toutiaoandroid.ui.feed
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.animateScrollBy
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -13,6 +14,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -22,6 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.xuziyi.toutiaoandroid.R
+import kotlinx.coroutines.android.awaitFrame
 import kotlinx.coroutines.launch
 
 @Composable
@@ -38,26 +41,33 @@ fun FeedTabBar(
     val inactiveColor = Color.Black
     val coroutineScope = rememberCoroutineScope()
 
-    // 滚动逻辑：居中显示选中 Tab
     LaunchedEffect(selectedIndex) {
         coroutineScope.launch {
+
             val layoutInfo = lazyListState.layoutInfo
-            val visibleItems = layoutInfo.visibleItemsInfo
+            val itemInfo = layoutInfo.visibleItemsInfo.find { it.index == selectedIndex }
 
-            val selected = visibleItems.find { it.index == selectedIndex }
+            // 目标：让这个 item 的中心 == LazyRow 视口中心
+            val viewportCenter = layoutInfo.viewportEndOffset / 2
 
-            if (selected == null) {
-                // 完全不在可视范围 => 直接滚动到它
+            if (itemInfo == null) {
+                // ❗ 完全不可见时：立即大范围滚动，使 item 至少滚进来
                 lazyListState.animateScrollToItem(selectedIndex)
-            } else {
-                // 如果在可视范围但不在中心 => 往中心平移
-                val center = layoutInfo.viewportEndOffset / 2
-                val itemCenter = selected.offset + selected.size / 2
-                val offset = itemCenter - center
-                lazyListState.animateScrollBy(offset.toFloat())
             }
+            awaitFrame()
+
+            // 重新获取位置（确保在可见区域）
+            val newInfo = lazyListState.layoutInfo.visibleItemsInfo.find { it.index == selectedIndex }
+                ?: return@launch
+
+            val itemCenter = newInfo.offset + newInfo.size / 2
+            val diff = itemCenter - viewportCenter     // 距离中心的偏移量（越精确越好）
+
+            // 🎯 使用动画，丝滑居中，无跳动
+            lazyListState.animateScrollBy(diff.toFloat())
         }
     }
+
 
 
     Row(
@@ -81,13 +91,18 @@ fun FeedTabBar(
                 // 缩短 Tab 间距，以便容纳更多 Tab
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                itemsIndexed(tabs) { index, tab ->
+                itemsIndexed(
+                    tabs,
+                ) { index, tab ->
                     val isSelected = (index == selectedIndex)
 
                     Column(
                         modifier = Modifier
                             .fillMaxHeight()
-                            .clickable { onTabSelected(index) }
+                            .clickable(
+                                indication = null,
+                                interactionSource = remember { MutableInteractionSource() }
+                            ) { onTabSelected(index) }//优化点击行为（禁止灰色ripple）
                             // 如果是最后一个 Tab，增加右边距，防止被渐变完全覆盖
                             .padding(end = if (index == tabs.lastIndex) 30.dp else 0.dp),
                         horizontalAlignment = Alignment.CenterHorizontally,
@@ -100,7 +115,7 @@ fun FeedTabBar(
                             // 1. Tab 文字
                             Text(
                                 text = tab.title,
-                                fontSize = if (isSelected) 20.sp else 18.sp,
+                                fontSize = if (isSelected) 18.sp else 18.sp,
                                 color = if (isSelected) activeColor else inactiveColor,
                                 fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
                                 modifier = Modifier.padding(end = 4.dp)

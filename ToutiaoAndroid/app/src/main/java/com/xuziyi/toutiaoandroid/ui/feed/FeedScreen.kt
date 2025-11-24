@@ -45,17 +45,18 @@ fun FeedScreen(
     // 定义 Tab 数据列表
     val tabs = remember {
         listOf(
-            FeedTabItem("关注"),
-            FeedTabItem("推荐"),
-            FeedTabItem("热榜"),
-            FeedTabItem("深圳"),
-            FeedTabItem("视频"),
-            FeedTabItem("精选"),
-            FeedTabItem("图片"),
-            FeedTabItem("抗战"),
-            FeedTabItem("体育"),
-            FeedTabItem("财经"),
-            FeedTabItem("科技")
+            // 为每个 Tab 分配一个唯一的 ID，并使用具名参数
+            FeedTabItem(id = 1L, title = "关注"),
+            FeedTabItem(id = 2L, title = "推荐"),
+            FeedTabItem(id = 3L, title = "热榜"),
+            FeedTabItem(id = 4L, title = "深圳"),
+            FeedTabItem(id = 5L, title = "视频"),
+            FeedTabItem(id = 6L, title = "精选"),
+            FeedTabItem(id = 7L, title = "图片"),
+            FeedTabItem(id = 8L, title = "抗战"),
+            FeedTabItem(id = 9L, title = "体育"),
+            FeedTabItem(id = 10L, title = "财经"),
+            FeedTabItem(id = 11L, title = "科技")
         )
     }
     // 用来设计menu显示逻辑开关
