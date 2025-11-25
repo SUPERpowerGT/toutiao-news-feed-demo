@@ -1,13 +1,10 @@
 package com.xuziyi.toutiaoandroid.ui.feed
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
+
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -19,12 +16,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+
 import androidx.compose.foundation.lazy.rememberLazyListState // 引入 rememberLazyListState
 import androidx.compose.runtime.saveable.rememberSaveable
+
 
 @Composable
 fun FeedScreen(
@@ -93,9 +88,9 @@ fun FeedScreen(
                 )
 
                 // 3. 只有在“推荐”Tab (index == 1) 才显示的更新提示条
-                if (selectedIndex == 1) {
+/*                if (selectedIndex == 1) {
                     UpdateHintBar()
-                }
+                }*/
 
                 // 4. 内容区域
                 Box(modifier = Modifier.weight(1f)) {
@@ -120,46 +115,9 @@ fun FeedScreen(
                         }
                     }
                 }
-
-                // 5. 底部导航
-                BottomNavBar()
             }
         }
     }
 }
 
-// ------------------------------------
-// 辅助 Composable (保持不变)
-// ------------------------------------
-@Composable
-fun UpdateHintBar() {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(Color(0xFFF4F5F6))
-            .padding(vertical = 10.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = "今日头条为你推荐了 12 条更新",
-            color = Color(0xFFF04142),
-            fontSize = 13.sp
-        )
-    }
-}
 
-@Composable
-fun BottomNavBar() {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(Color.White)
-            .padding(12.dp),
-        horizontalArrangement = Arrangement.SpaceAround
-    ) {
-        Text("首页", fontWeight = FontWeight.Bold, color = Color(0xFFFF4D4F))
-        Text("视频")
-        Text("放映厅")
-        Text("我的")
-    }
-}

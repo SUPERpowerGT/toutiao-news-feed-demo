@@ -115,7 +115,7 @@ fun FeedTabBar(
                             // 1. Tab 文字
                             Text(
                                 text = tab.title,
-                                fontSize = if (isSelected) 20.sp else 20.sp,//避免卡顿不改变字号
+                                fontSize = if (isSelected) 19.sp else 19.sp,//避免卡顿不改变字号
                                 color = if (isSelected) activeColor else inactiveColor,
                                 fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Bold,//避免卡顿还是都用bold先
                                 modifier = Modifier.padding(end = 4.dp)
