@@ -51,7 +51,7 @@ class FakeFeedApiService : FeedApiService {
                     category = "finance",
                     city = "shenzhen",
                     isOfficialMedia = true,
-                    isTopOfficial = true,        // ⭐ 也作为官方 TOP
+                    isTopOfficial = false,        // ⭐ 也作为官方 TOP
                     source = "新华社",
                     weight = 800
                 ),

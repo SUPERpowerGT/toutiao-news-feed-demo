@@ -37,13 +37,7 @@ fun FeedItemDto.toDomain(): FeedItem {
         weight = weight,
 
         // ⬇ 前端强类型：contentType（由字符串转换）
-        contentType = when (contentType.lowercase()) {
-            "text" -> ContentType.TEXT
-            "image" -> ContentType.IMAGE
-            "multi_image" -> ContentType.GALLERY
-            "video" -> ContentType.VIDEO
-            else -> ContentType.TEXT
-        },
+        contentType = FeedContentType(contentType.lowercase()),
     )
 }
 fun MediaDto.toDomain(): FeedMediaItem {

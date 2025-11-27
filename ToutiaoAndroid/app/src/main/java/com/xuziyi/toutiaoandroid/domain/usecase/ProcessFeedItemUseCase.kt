@@ -60,7 +60,7 @@ class ProcessFeedItemUseCase {
                 isTopOfficial = true,
                 source = "新华社",
 
-                contentType = ContentType.TEXT,
+                contentType = FeedContentType(FeedContentType.TEXT),
                 weight = 100
             )
         }

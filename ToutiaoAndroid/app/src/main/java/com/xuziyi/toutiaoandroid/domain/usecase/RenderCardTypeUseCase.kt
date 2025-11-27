@@ -1,7 +1,7 @@
 package com.xuziyi.toutiaoandroid.domain.usecase
 
-import com.xuziyi.toutiaoandroid.domain.model.ContentType
 import com.xuziyi.toutiaoandroid.domain.model.FeedCardType
+import com.xuziyi.toutiaoandroid.domain.model.FeedContentType
 import com.xuziyi.toutiaoandroid.domain.model.FeedItem
 
 class RenderCardTypeUseCase {
@@ -16,21 +16,14 @@ class RenderCardTypeUseCase {
 
 
     private fun decideCardType(item: FeedItem): FeedCardType {
-        // ======== UI 渲染策略在这里统一定义 =========
         return when {
             item.isTopOfficial -> FeedCardType.OfficialTop
 
-            item.contentType == ContentType.VIDEO ->
+            item.contentType.value == FeedContentType.VIDEO ->
                 FeedCardType.Video
 
-            item.contentType == ContentType.IMAGE ->
+            item.contentType.value == FeedContentType.IMAGE ->
                 FeedCardType.Image
-
-            //item.media.size >= 3 ->
-                //FeedCardType.ThreeImage
-
-            //item.media.size == 1 ->
-                //FeedCardType.SingleImage
 
             else -> FeedCardType.Text
         }
