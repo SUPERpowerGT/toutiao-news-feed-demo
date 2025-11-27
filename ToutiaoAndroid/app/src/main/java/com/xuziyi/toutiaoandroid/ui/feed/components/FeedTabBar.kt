@@ -1,4 +1,4 @@
-package com.xuziyi.toutiaoandroid.ui.feed
+package com.xuziyi.toutiaoandroid.ui.feed.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -24,6 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.xuziyi.toutiaoandroid.R
+import com.xuziyi.toutiaoandroid.ui.feed.components.FeedTabItem
 import kotlinx.coroutines.android.awaitFrame
 import kotlinx.coroutines.launch
 

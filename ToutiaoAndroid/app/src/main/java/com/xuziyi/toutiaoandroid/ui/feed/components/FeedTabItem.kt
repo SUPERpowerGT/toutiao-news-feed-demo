@@ -1,4 +1,4 @@
-package com.xuziyi.toutiaoandroid.ui.feed
+package com.xuziyi.toutiaoandroid.ui.feed.components
 
 // 🔥 修正：添加一个唯一的 long/int 类型 ID
 data class FeedTabItem(

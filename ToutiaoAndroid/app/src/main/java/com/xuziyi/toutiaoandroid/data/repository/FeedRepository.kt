@@ -1,7 +1,7 @@
 package com.xuziyi.toutiaoandroid.data.repository
 
 import com.xuziyi.toutiaoandroid.data.datasource.RemoteDataSource
-import com.xuziyi.toutiaoandroid.data.remote.dto.toDomain
+import com.xuziyi.toutiaoandroid.data.remote.mapper.toDomain
 import com.xuziyi.toutiaoandroid.domain.model.FeedItem
 import com.xuziyi.toutiaoandroid.domain.repository.FeedRepositoryContract
 

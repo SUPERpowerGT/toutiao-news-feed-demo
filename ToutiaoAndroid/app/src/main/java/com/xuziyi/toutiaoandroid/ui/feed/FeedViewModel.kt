@@ -3,8 +3,9 @@ package com.xuziyi.toutiaoandroid.ui.feed
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.xuziyi.toutiaoandroid.domain.usecase.LoadInitialFeedUseCase
-import com.xuziyi.toutiaoandroid.domain.usecase.RefreshFeedUseCase
 import com.xuziyi.toutiaoandroid.domain.usecase.LoadMoreFeedUseCase
+import com.xuziyi.toutiaoandroid.domain.usecase.RefreshFeedUseCase
+import com.xuziyi.toutiaoandroid.domain.usecase.ProcessFeedItemsUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -12,71 +13,112 @@ import kotlinx.coroutines.launch
 class FeedViewModel(
     private val loadInitialFeedUseCase: LoadInitialFeedUseCase,
     private val refreshFeedUseCase: RefreshFeedUseCase,
-    private val loadMoreFeedUseCase: LoadMoreFeedUseCase
+    private val loadMoreFeedUseCase: LoadMoreFeedUseCase,
+    private val processFeedItemsUseCase: ProcessFeedItemsUseCase = ProcessFeedItemsUseCase()
 ) : ViewModel() {
 
-    //_state是内部可以修改的
-    //state是暴露给UI使用的订阅功能
-    private val _state = MutableStateFlow(FeedUiState())
+    private val _state = MutableStateFlow<FeedUiState>(FeedUiState.Loading)
     val state: StateFlow<FeedUiState> = _state
 
     init {
         loadInitial()
     }
 
-    // ===================
-    // 首次加载
-    // ===================
+    // ======================
+    // 1. 首次加载
+    // ======================
     private fun loadInitial() {
         viewModelScope.launch {
-            _state.value = _state.value.copy(isLoading = true)
+            try {
+                _state.value = FeedUiState.Loading
 
-            // 现在 result 是 List<FeedItem>
-            val result = loadInitialFeedUseCase()
+                val raw = loadInitialFeedUseCase()
+                val processed = processFeedItemsUseCase.execute(raw)
 
-            _state.value = _state.value.copy(
-                isLoading = false,
-                items = result,
-                // 目前先不做 cursor / refreshTime，保持为 null
-                nextCursor = null,
-                latestPublishTime = null
-            )
+                _state.value = FeedUiState.Success(
+                    officialItems = processed.officialList,
+                    mixedItems = processed.mixedList,
+                    hasMore = true,
+                    isRefreshing = false,
+                    isLoadingMore = false
+                )
+
+            } catch (e: Exception) {
+                _state.value = FeedUiState.Error("加载失败：${e.message}")
+            }
         }
     }
 
-    // ===================
-    // 下拉刷新
-    // ===================
+    // ======================
+    // 2. 下拉刷新
+    // ======================
     fun refresh() {
-        // 先简单用当前时间刷新，或者直接 return（后面再接上真正的 latestPublishTime）
-        val latest = System.currentTimeMillis() / 1000
+        val current = state.value
+        if (current !is FeedUiState.Success) return
 
         viewModelScope.launch {
-            val result = refreshFeedUseCase(latest)
+            try {
+                _state.value = current.copy(isRefreshing = true)
 
-            _state.value = _state.value.copy(
-                // 新内容加在前面
-                items = result + _state.value.items,
-                latestPublishTime = latest
-            )
+                val latest = System.currentTimeMillis() / 1000
+                val raw = refreshFeedUseCase(latest)
+
+                val processed = processFeedItemsUseCase.execute(
+                    raw + current.mixedItems
+                )
+
+                _state.value = current.copy(
+                    officialItems = processed.officialList,
+                    mixedItems = processed.mixedList,
+                    isRefreshing = false,
+                    latestPublishTime = latest
+                )
+            } catch (e: Exception) {
+                _state.value = FeedUiState.Error("刷新失败：${e.message}")
+            }
         }
     }
 
-    // ===================
-    // 加载更多
-    // ===================
+    // ======================
+    // 3. 加载更多
+    // ======================
     fun loadMore() {
-        // 现在还没真正 cursor，就先用一个假值或者直接 return
-        val cursor = _state.value.nextCursor ?: "0"
+        val current = state.value
+        if (current !is FeedUiState.Success) return
+
+        // 未来分页会用，现在先假值
+        val cursor = current.latestPublishTime?.toString() ?: "0"
 
         viewModelScope.launch {
-            val result = loadMoreFeedUseCase(cursor)
+            try {
+                _state.value = current.copy(isLoadingMore = true)
 
-            _state.value = _state.value.copy(
-                // 旧内容在前，新内容接在后面
-                items = _state.value.items + result,
-                nextCursor = null   // 先不做真正分页
-            )
+                val raw = loadMoreFeedUseCase(cursor)
+
+                if (raw.isEmpty()) {
+                    _state.value = current.copy(
+                        isLoadingMore = false,
+                        hasMore = false
+                    )
+                    return@launch
+                }
+
+                val processed = processFeedItemsUseCase.execute(
+                    current.officialItems +
+                            current.mixedItems +
+                            raw
+                )
+
+                _state.value = current.copy(
+                    officialItems = processed.officialList,
+                    mixedItems = processed.mixedList,
+                    isLoadingMore = false,
+                    hasMore = true
+                )
+
+            } catch (e: Exception) {
+                _state.value = FeedUiState.Error("加载更多失败：${e.message}")
+            }
         }
     }
 }

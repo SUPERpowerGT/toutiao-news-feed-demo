@@ -13,7 +13,7 @@ data class FeedItemDto(
     val summary: String? = null,
 
     @SerializedName("news_type")
-    val newsType: String, // text / image / multi_image / video
+    val cardType: String, // text / image / multi_image / video
 
     @SerializedName("media")
     val media: List<MediaDto> = emptyList(),

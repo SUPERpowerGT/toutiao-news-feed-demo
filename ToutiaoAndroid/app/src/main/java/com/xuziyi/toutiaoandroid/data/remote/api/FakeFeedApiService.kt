@@ -12,7 +12,7 @@ class FakeFeedApiService : FeedApiService {
                     id = 1,
                     title = "北京以规划引领超大城市治理的启示",
                     summary = "开创新时代。",
-                    newsType = "text",
+                    cardType = "text",
                     media = emptyList(),
                     author = AuthorDto(
                         id = 100,
@@ -30,7 +30,7 @@ class FakeFeedApiService : FeedApiService {
                     id = 2,
                     title = "42.195公里，连接了多少“大湾区奇迹？”",
                     summary = "港珠澳大桥！启动",
-                    newsType = "text",
+                    cardType = "text",
                     media = emptyList(),
                     author = AuthorDto(
                         id = 101,
@@ -48,7 +48,7 @@ class FakeFeedApiService : FeedApiService {
                     id = 3,
                     title = "看这抹绿何以赏“新”又悦目",
                     summary = "春天真美丽",
-                    newsType = "text",
+                    cardType = "text",
                     media = emptyList(),
                     author = AuthorDto(
                         id = 102,
@@ -66,7 +66,7 @@ class FakeFeedApiService : FeedApiService {
                     id = 4,
                     title = "高市早苗被喊“下台”",
                     summary = "日本首相",
-                    newsType = "text",
+                    cardType = "text",
                     media = emptyList(),
                     author = AuthorDto(
                         id = 103,
@@ -84,7 +84,7 @@ class FakeFeedApiService : FeedApiService {
                     id = 5,
                     title = "深圳今日晴天，气温 26℃",
                     summary = "天气晴朗，适合户外运动。",
-                    newsType = "text",
+                    cardType = "text",
                     media = emptyList(),
                     author = AuthorDto(
                         id = 104,
@@ -102,7 +102,7 @@ class FakeFeedApiService : FeedApiService {
                     id = 6,
                     title = "年轻人买房的 10 个思考",
                     summary = "你真的需要一套房吗？",
-                    newsType = "image",
+                    cardType = "image",
                     media = listOf(
                         MediaDto(
                             mediaType = "image",
@@ -126,7 +126,7 @@ class FakeFeedApiService : FeedApiService {
                     id = 7,
                     title = "华为发布 Mate70，性能大提升！",
                     summary = null,
-                    newsType = "video",
+                    cardType = "video",
                     media = listOf(
                         MediaDto(
                             mediaType = "video",
@@ -145,7 +145,7 @@ class FakeFeedApiService : FeedApiService {
                     id = 777,
                     title = "外卖女站长也断掉三哥念想，熟悉的环境回不去，难道只能去送餐吗！！！",
                     summary = null,
-                    newsType = "video",
+                    cardType = "video",
                     media = listOf(
                         MediaDto(
                             mediaType = "video",
@@ -169,7 +169,7 @@ class FakeFeedApiService : FeedApiService {
                     id = 12,
                     title = "樊振东粤圆之夜：一球打掉京队百万赞助",
                     summary = null,
-                    newsType = "video",
+                    cardType = "video",
                     media = listOf(
                         MediaDto(
                             mediaType = "video",
