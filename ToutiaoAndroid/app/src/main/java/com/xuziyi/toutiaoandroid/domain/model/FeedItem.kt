@@ -23,7 +23,6 @@ data class FeedItem(
     val source: String? = null,         // 来源：新华社 / 人民日报 / etc.
 
     val contentType: ContentType,       // text / image / video / gallery
-    val styleType: StyleType = StyleType.Normal,
 
     val weight: Int = 0                 // 用于推荐排序 & 热榜
 )

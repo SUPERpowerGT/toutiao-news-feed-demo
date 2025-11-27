@@ -61,7 +61,6 @@ class ProcessFeedItemUseCase {
                 source = "新华社",
 
                 contentType = ContentType.TEXT,
-                styleType = StyleType.Normal,
                 weight = 100
             )
         }

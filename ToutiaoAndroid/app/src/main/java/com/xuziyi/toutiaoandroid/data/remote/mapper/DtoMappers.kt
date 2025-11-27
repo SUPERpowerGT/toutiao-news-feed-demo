@@ -44,9 +44,6 @@ fun FeedItemDto.toDomain(): FeedItem {
             "video" -> ContentType.VIDEO
             else -> ContentType.TEXT
         },
-
-        // UI 样式类型（前端推导，不是后台字段）
-        styleType = StyleType.Normal
     )
 }
 fun MediaDto.toDomain(): FeedMediaItem {

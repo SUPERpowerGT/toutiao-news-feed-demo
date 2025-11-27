@@ -36,7 +36,7 @@ fun FeedList(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(1.dp)
+                    .height(5.dp)
                     .background(Color(0xFFF5F5F5))
             )
         }
