@@ -8,4 +8,5 @@ sealed class FeedCardType(val type: String) {
     object OfficialTop : FeedCardType("official_top")
     //object Gallery : FeedCardType("gallery")
     //object Ad : FeedCardType("ad")
+
 }

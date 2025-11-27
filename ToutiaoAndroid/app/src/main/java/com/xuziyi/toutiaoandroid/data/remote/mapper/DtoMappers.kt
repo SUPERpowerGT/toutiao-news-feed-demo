@@ -1,26 +1,54 @@
 package com.xuziyi.toutiaoandroid.data.remote.mapper
 
-import com.xuziyi.toutiaoandroid.data.mapper.CardTypeMapper
 import com.xuziyi.toutiaoandroid.data.remote.dto.AuthorDto
 import com.xuziyi.toutiaoandroid.data.remote.dto.FeedItemDto
 import com.xuziyi.toutiaoandroid.data.remote.dto.MediaDto
 import com.xuziyi.toutiaoandroid.data.remote.dto.StatsDto
 import com.xuziyi.toutiaoandroid.domain.model.*
 
-
 fun FeedItemDto.toDomain(): FeedItem {
     return FeedItem(
         id = id,
         title = title,
         summary = summary,
-        cardType = CardTypeMapper.from(cardType),
+
+        // ❗cardType 由前端策略 UseCase 决定
+        cardType = FeedCardType.Text,
+
+        // 媒体内容
         media = media.map { it.toDomain() },
+
+        // 发布账号
         author = author.toDomain(),
+
+        // 点赞评论等数据
         stats = stats.toDomain(),
-        publishTime = publishTime
+
+        publishTime = publishTime,
+
+        // ========= 业务语义字段 =========
+        category = category,
+        subCategory = subCategory,
+        tags = tags,
+        city = city,
+        isOfficialMedia = isOfficialMedia,   // ← Correct
+        isTopOfficial = isTopOfficial,       // ← NEW!
+        source = source,
+        weight = weight,
+
+        // ⬇ 前端强类型：contentType（由字符串转换）
+        contentType = when (contentType.lowercase()) {
+            "text" -> ContentType.TEXT
+            "image" -> ContentType.IMAGE
+            "multi_image" -> ContentType.GALLERY
+            "video" -> ContentType.VIDEO
+            else -> ContentType.TEXT
+        },
+
+        // UI 样式类型（前端推导，不是后台字段）
+        styleType = StyleType.Normal
     )
 }
-
 fun MediaDto.toDomain(): FeedMediaItem {
     return FeedMediaItem(
         mediaType = mediaType,
@@ -40,6 +68,7 @@ fun AuthorDto.toDomain(): FeedAuthorItem {
         certification = certification
     )
 }
+
 
 fun StatsDto.toDomain(): FeedStatsItem {
     return FeedStatsItem(

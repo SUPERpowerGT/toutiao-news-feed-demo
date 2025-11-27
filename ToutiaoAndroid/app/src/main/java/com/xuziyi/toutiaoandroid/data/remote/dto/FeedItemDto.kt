@@ -12,18 +12,52 @@ data class FeedItemDto(
     @SerializedName("summary")
     val summary: String? = null,
 
-    @SerializedName("news_type")
-    val cardType: String, // text / image / multi_image / video
+    // 内容本质类型（后端给）
+    @SerializedName("content_type")
+    val contentType: String,
 
+    // 媒体列表
     @SerializedName("media")
     val media: List<MediaDto> = emptyList(),
 
+    // 作者信息（一个或者多个）
     @SerializedName("author")
     val author: AuthorDto,
 
+    // 点赞、评论、阅读统计
     @SerializedName("stats")
     val stats: StatsDto,
 
     @SerializedName("publish_time")
-    val publishTime: Long
+    val publishTime: Long,
+
+    // ===== 新增：内容语义属性 =====
+
+    @SerializedName("category")
+    val category: String? = null,
+
+    @SerializedName("sub_category")
+    val subCategory: String? = null,
+
+    @SerializedName("tags")
+    val tags: List<String>? = null,
+
+    @SerializedName("city")
+    val city: String? = null,
+
+    // 是否是官方媒体内容（作者级的）
+    @SerializedName("is_official_media")
+    val isOfficialMedia: Boolean = false,
+
+    // “权威发布/官方 Top5” 业务
+    @SerializedName("is_top_official")
+    val isTopOfficial: Boolean = false,
+
+    //发布账号
+    @SerializedName("source")
+    val source: String? = null,
+
+    // 推荐排序权重
+    @SerializedName("weight")
+    val weight: Int = 0
 )

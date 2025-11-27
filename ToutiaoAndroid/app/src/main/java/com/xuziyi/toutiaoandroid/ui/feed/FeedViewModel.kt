@@ -5,7 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.xuziyi.toutiaoandroid.domain.usecase.LoadInitialFeedUseCase
 import com.xuziyi.toutiaoandroid.domain.usecase.LoadMoreFeedUseCase
 import com.xuziyi.toutiaoandroid.domain.usecase.RefreshFeedUseCase
-import com.xuziyi.toutiaoandroid.domain.usecase.ProcessFeedItemsUseCase
+import com.xuziyi.toutiaoandroid.domain.usecase.ProcessFeedItemUseCase
+import com.xuziyi.toutiaoandroid.domain.usecase.RenderCardTypeUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -14,7 +15,8 @@ class FeedViewModel(
     private val loadInitialFeedUseCase: LoadInitialFeedUseCase,
     private val refreshFeedUseCase: RefreshFeedUseCase,
     private val loadMoreFeedUseCase: LoadMoreFeedUseCase,
-    private val processFeedItemsUseCase: ProcessFeedItemsUseCase = ProcessFeedItemsUseCase()
+    private val renderCardTypeUseCase: RenderCardTypeUseCase = RenderCardTypeUseCase(),
+    private val processFeedItemsUseCase: ProcessFeedItemUseCase = ProcessFeedItemUseCase()
 ) : ViewModel() {
 
     private val _state = MutableStateFlow<FeedUiState>(FeedUiState.Loading)
@@ -32,8 +34,14 @@ class FeedViewModel(
             try {
                 _state.value = FeedUiState.Loading
 
+                // raw domain data
                 val raw = loadInitialFeedUseCase()
-                val processed = processFeedItemsUseCase.execute(raw)
+
+                // step1: UI 渲染策略
+                val rendered = renderCardTypeUseCase.execute(raw)
+
+                // step2: 官方区 + 混合流
+                val processed = processFeedItemsUseCase.execute(rendered)
 
                 _state.value = FeedUiState.Success(
                     officialItems = processed.officialList,
@@ -61,10 +69,17 @@ class FeedViewModel(
                 _state.value = current.copy(isRefreshing = true)
 
                 val latest = System.currentTimeMillis() / 1000
+
+                // raw new items
                 val raw = refreshFeedUseCase(latest)
 
+                // step1: 渲染策略
+                val newRendered = renderCardTypeUseCase.execute(raw)
+                val oldRendered = renderCardTypeUseCase.execute(current.mixedItems)
+
+                // step2: 官方区 + 混合流
                 val processed = processFeedItemsUseCase.execute(
-                    raw + current.mixedItems
+                    newRendered + oldRendered
                 )
 
                 _state.value = current.copy(
@@ -73,6 +88,7 @@ class FeedViewModel(
                     isRefreshing = false,
                     latestPublishTime = latest
                 )
+
             } catch (e: Exception) {
                 _state.value = FeedUiState.Error("刷新失败：${e.message}")
             }
@@ -86,7 +102,6 @@ class FeedViewModel(
         val current = state.value
         if (current !is FeedUiState.Success) return
 
-        // 未来分页会用，现在先假值
         val cursor = current.latestPublishTime?.toString() ?: "0"
 
         viewModelScope.launch {
@@ -103,10 +118,15 @@ class FeedViewModel(
                     return@launch
                 }
 
+                // step1: 渲染策略
+                val newRendered = renderCardTypeUseCase.execute(raw)
+                val oldRendered = renderCardTypeUseCase.execute(
+                    current.officialItems + current.mixedItems
+                )
+
+                // step2: 官方区 + 混合流
                 val processed = processFeedItemsUseCase.execute(
-                    current.officialItems +
-                            current.mixedItems +
-                            raw
+                    oldRendered + newRendered
                 )
 
                 _state.value = current.copy(

@@ -1,24 +1,27 @@
 package com.xuziyi.toutiaoandroid.domain.usecase
 
 import com.xuziyi.toutiaoandroid.domain.model.*
+import com.xuziyi.toutiaoandroid.domain.usecase.model.ProcessedFeedResult
 
-class ProcessFeedItemsUseCase {
+class ProcessFeedItemUseCase {
 
-    fun execute(raw: List<FeedItem>): ProcessedFeedResult {
+    fun execute(rendered: List<FeedItem>): ProcessedFeedResult {
 
-        // 1. 挑出官方位（由 cardType 决定）
-        val officials = raw.filter { it.cardType is FeedCardType.OfficialTop }
+        // 1. 挑出官方位（UI 渲染策略中定义为 OfficialTop）
+        val officials = rendered
+            .filter { it.isTopOfficial }
             .take(5)
+
 
         // 2. 不足 5 条则 mock 补齐
         val filledOfficials = if (officials.size < 5) {
             officials + mockOfficialItems().take(5 - officials.size)
         } else officials
 
-        // 3. 剩余的进入普通混合流
-        val mixed = raw.filterNot { it in filledOfficials }
+        // 3. 其余进入普通混合流
+        val mixed = rendered.filterNot { it in filledOfficials }
 
-        // 4. 对官方条目进行标题修饰（视频加 “视频｜”）
+        // 4. 官方视频卡标题增强
         val finalOfficials = filledOfficials.map { item ->
             if (item.cardType is FeedCardType.Video) {
                 item.copy(title = "视频｜${item.title}")
@@ -31,7 +34,6 @@ class ProcessFeedItemsUseCase {
         )
     }
 
-    // 官方 mock
     private fun mockOfficialItems(): List<FeedItem> {
         return List(5) { index ->
             FeedItem(
@@ -46,19 +48,22 @@ class ProcessFeedItemsUseCase {
                     avatarUrl = null,
                     certification = "official"
                 ),
-                stats = FeedStatsItem(
-                    likeCount = 0,
-                    commentCount = 0,
-                    favoriteCount = 0,
-                    shareCount = 0
-                ),
-                publishTime = System.currentTimeMillis()
+                stats = FeedStatsItem(0, 0, 0, 0),
+                publishTime = System.currentTimeMillis(),
+
+                category = "official",
+                subCategory = null,
+                tags = null,
+                city = null,
+
+                isOfficialMedia = true,
+                isTopOfficial = true,
+                source = "新华社",
+
+                contentType = ContentType.TEXT,
+                styleType = StyleType.Normal,
+                weight = 100
             )
         }
     }
 }
-
-data class ProcessedFeedResult(
-    val officialList: List<FeedItem>,
-    val mixedList: List<FeedItem>
-)
