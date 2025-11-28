@@ -8,10 +8,12 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import com.xuziyi.toutiaoandroid.ui.feed.components.FeedList
 import com.xuziyi.toutiaoandroid.ui.feed.components.FeedTabBar
 import com.xuziyi.toutiaoandroid.ui.feed.components.FeedTabItem
 import com.xuziyi.toutiaoandroid.ui.feed.components.FeedTopBar
+import com.xuziyi.toutiaoandroid.ui.feed.refresh.ToutiaoPullRefresh
 
 @Composable
 fun FeedScreen(
@@ -107,12 +109,40 @@ fun FeedScreen(
                         when (selectedIndex) {
 
                             1 -> { // 推荐 tab
-                                FeedList(
-                                    officialItems = state.officialItems,
-                                    mixedItems = state.mixedItems,
-                                    onItemClick = onOpenDetail,
-                                    modifier = Modifier.fillMaxSize()
-                                )
+
+                                if (state is FeedUiState.Success) {
+
+                                    ToutiaoPullRefresh(
+                                        isRefreshing = state.isRefreshing,
+                                        pullProgress = state.pullProgress,          // ⭐ 把进度传给刷新头
+                                        onPull = { progress ->
+                                            viewModel.updatePullProgress(progress)  // 手势 -> VM
+                                        },
+                                        onRefreshTriggered = {
+                                            viewModel.refresh()
+                                        }
+                                    ) { paddingTop ->
+
+                                        FeedList(
+                                            officialItems = state.officialItems,
+                                            mixedItems = state.mixedItems,
+                                            onItemClick = onOpenDetail,
+                                            modifier = Modifier
+                                                .fillMaxSize()
+                                                // 这里你现在先保持 0.dp，因为整体下移已经在 ToutiaoPullRefresh 里做了
+                                                .padding(top = 0.dp)
+                                        )
+                                    }
+
+
+                                } else if (state is FeedUiState.Loading) {
+                                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                                } else if (state is FeedUiState.Error) {
+                                    Text(
+                                        text = "加载失败：${state.message}",
+                                        modifier = Modifier.align(Alignment.Center)
+                                    )
+                                }
                             }
 
                             else -> {
@@ -126,6 +156,9 @@ fun FeedScreen(
                             }
                         }
                     }
+
+
+
                 }
             }
         }

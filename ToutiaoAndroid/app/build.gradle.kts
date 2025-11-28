@@ -64,9 +64,11 @@ dependencies {
     implementation(libs.androidx.compose.ui.text)
     implementation(libs.androidx.compose.ui.unit)
     implementation(libs.androidx.compose.foundation.layout)
+    implementation(libs.androidx.compose.ui.geometry)
     ksp("androidx.room:room-compiler:2.6.1")
     // ===== 添加 Coil（AsyncImage 所需）=====
     implementation("io.coil-kt:coil-compose:2.5.0")
+    implementation("com.airbnb.android:lottie-compose:6.1.0")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
