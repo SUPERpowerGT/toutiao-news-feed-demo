@@ -22,16 +22,13 @@ fun FeedScreen(
 ) {
     val state = viewModel.state.collectAsState().value
 
-    // 1. Tab 选中状态（推荐）
     var selectedIndex by remember { mutableIntStateOf(1) }
-
-    // 2. 关注红点状态
     var hasNewFollowingContent by remember { mutableStateOf(true) }
 
-    // 3. 保留上滑丝滑体验
-    val lazyListState = rememberLazyListState()
+    // ⭐ 文章列表滚动状态
+    val feedListState = rememberLazyListState()
 
-    // Tabs
+
     val tabs = remember {
         listOf(
             FeedTabItem(1L, "关注"),
@@ -48,25 +45,18 @@ fun FeedScreen(
         )
     }
 
-    // 管理频道弹窗开关
     var showChannelManager by rememberSaveable { mutableStateOf(false) }
 
     Box(modifier = Modifier.fillMaxSize()) {
 
         when (state) {
 
-            // ===============================
-            // 1) 首次加载
-            // ===============================
             is FeedUiState.Loading -> {
                 CircularProgressIndicator(
                     modifier = Modifier.align(Alignment.Center)
                 )
             }
 
-            // ===============================
-            // 2) 加载失败
-            // ===============================
             is FeedUiState.Error -> {
                 Box(
                     modifier = Modifier.fillMaxSize(),
@@ -76,21 +66,15 @@ fun FeedScreen(
                 }
             }
 
-            // ===============================
-            // 3) 加载成功（推荐流）
-            // ===============================
             is FeedUiState.Success -> {
 
                 Column(modifier = Modifier.fillMaxSize()) {
 
-                    // 顶栏
                     FeedTopBar()
 
-                    // TabBar
                     FeedTabBar(
                         tabs = tabs,
                         selectedIndex = selectedIndex,
-                        lazyListState = lazyListState,
                         hasNewFollowing = hasNewFollowingContent,
                         showChannelManager = showChannelManager,
                         onTabSelected = { index ->
@@ -103,44 +87,26 @@ fun FeedScreen(
                         }
                     )
 
-                    // 内容区
+
                     Box(modifier = Modifier.weight(1f)) {
 
                         when (selectedIndex) {
 
-                            1 -> { // 推荐 tab
+                            1 -> {
+                                ToutiaoPullRefresh(
+                                    listState = feedListState,       // ⭐ 刷新用文章列表的 state
+                                    isRefreshing = state.isRefreshing,
+                                    pullProgress = state.pullProgress,
+                                    onPull = { viewModel.updatePullProgress(it) },
+                                    onRefreshTriggered = { viewModel.refresh() }
+                                ) { paddingTop ->
 
-                                if (state is FeedUiState.Success) {
-
-                                    ToutiaoPullRefresh(
-                                        isRefreshing = state.isRefreshing,
-                                        pullProgress = state.pullProgress,          // ⭐ 把进度传给刷新头
-                                        onPull = { progress ->
-                                            viewModel.updatePullProgress(progress)  // 手势 -> VM
-                                        },
-                                        onRefreshTriggered = {
-                                            viewModel.refresh()
-                                        }
-                                    ) { paddingTop ->
-
-                                        FeedList(
-                                            officialItems = state.officialItems,
-                                            mixedItems = state.mixedItems,
-                                            onItemClick = onOpenDetail,
-                                            modifier = Modifier
-                                                .fillMaxSize()
-                                                // 这里你现在先保持 0.dp，因为整体下移已经在 ToutiaoPullRefresh 里做了
-                                                .padding(top = 0.dp)
-                                        )
-                                    }
-
-
-                                } else if (state is FeedUiState.Loading) {
-                                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-                                } else if (state is FeedUiState.Error) {
-                                    Text(
-                                        text = "加载失败：${state.message}",
-                                        modifier = Modifier.align(Alignment.Center)
+                                    FeedList(
+                                        officialItems = state.officialItems,
+                                        mixedItems = state.mixedItems,
+                                        onItemClick = onOpenDetail,
+                                        listState = feedListState,   // ⭐ FeedList 也用文章列表的 state
+                                        modifier = Modifier.fillMaxSize()
                                     )
                                 }
                             }
@@ -150,18 +116,13 @@ fun FeedScreen(
                                     modifier = Modifier.fillMaxSize(),
                                     contentAlignment = Alignment.Center
                                 ) {
-                                    val currentTitle = tabs[selectedIndex].title
-                                    Text(text = "$currentTitle 内容建设中…")
+                                    Text(text = "${tabs[selectedIndex].title} 内容建设中…")
                                 }
                             }
                         }
                     }
-
-
-
                 }
             }
         }
     }
 }
-
