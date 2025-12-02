@@ -1,18 +1,18 @@
 package com.xuziyi.toutiaoandroid.ui.feed.cards
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.xuziyi.toutiaoandroid.R
 import com.xuziyi.toutiaoandroid.domain.model.FeedItem
 import com.xuziyi.toutiaoandroid.ui.feed.cards.components.*
@@ -25,6 +25,7 @@ fun VideoCard(
     val media = item.media.firstOrNull()
     val coverUrl = media?.coverUrl ?: media?.url
     val duration = media?.duration ?: 0
+    val context = LocalContext.current
 
     Column(
         modifier = modifier
@@ -49,9 +50,14 @@ fun VideoCard(
                 .clip(RoundedCornerShape(8.dp))
         ) {
 
-            // 封面图
+            // ⭐ 完全优化版封面图 —— 强制 decode 限制
             AsyncImage(
-                model = coverUrl,
+                model = ImageRequest.Builder(context)
+                    .data(coverUrl)
+                    .size(400)               // ⭐ 核心：限制解码尺寸，避免原图解码
+                    .crossfade(true)
+                    .allowHardware(true)
+                    .build(),
                 contentDescription = null,
                 modifier = Modifier.matchParentSize(),
                 contentScale = ContentScale.Crop,
@@ -59,16 +65,13 @@ fun VideoCard(
                 error = painterResource(R.drawable.ic_video_placeholder)
             )
 
-            // ===============================
-            // ⏱ 右下角视频时长（你现在需要的）
-            // ===============================
+            // 右下角视频时长
             VideoDurationLabel(
                 sec = duration,
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
                     .padding(6.dp)
             )
-
 
             // ▶️ 播放按钮（中间）
             Image(
@@ -80,10 +83,9 @@ fun VideoCard(
             )
         }
 
-
         Spacer(modifier = Modifier.height(10.dp))
 
-        // ====== 作者信息 + 点赞 + 更多（统一组件） ======
+        // ====== 作者信息 + 点赞 + 更多 ======
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -91,9 +93,7 @@ fun VideoCard(
             verticalAlignment = Alignment.CenterVertically
         ) {
             CardAuthorInfo(item)
-
             Spacer(modifier = Modifier.weight(1f))
-
             CardActionRow(item)
         }
 

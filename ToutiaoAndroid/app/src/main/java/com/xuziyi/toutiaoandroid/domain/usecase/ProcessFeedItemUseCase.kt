@@ -61,7 +61,7 @@ class ProcessFeedItemUseCase {
                 source = "新华社",
 
                 contentType = FeedContentType(FeedContentType.TEXT),
-                weight = 100
+                weight = 100f
             )
         }
     }

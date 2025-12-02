@@ -37,5 +37,5 @@ data class FeedItem(
     val contentType: FeedContentType,   // 内容本质类型：text / image / video / gallery
 
     // ===== 推荐排序相关 =====
-    val weight: Int = 0                 // 排序权重（后端用于推荐/热榜打分）
+    val weight: Float = 0f                 // 排序权重（后端用于推荐/热榜打分）
 )

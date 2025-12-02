@@ -1,5 +1,6 @@
 package com.xuziyi.toutiaoandroid.data.remote.api
 
+import com.xuziyi.toutiaoandroid.data.remote.dto.ApiResponse
 import com.xuziyi.toutiaoandroid.data.remote.dto.CommentDto
 import com.xuziyi.toutiaoandroid.data.remote.dto.FeedResponseDto
 import com.xuziyi.toutiaoandroid.data.remote.dto.NewsDetailDto
@@ -17,7 +18,7 @@ interface FeedApiService {
     suspend fun getFeed(
         @Query("cursor") cursor: String? = null,
         @Query("refresh_time") refreshTime: Long? = null
-    ): FeedResponseDto
+    ): ApiResponse<FeedResponseDto>
 
     @GET("api/v1/news/{id}")
     suspend fun getNewsDetail(

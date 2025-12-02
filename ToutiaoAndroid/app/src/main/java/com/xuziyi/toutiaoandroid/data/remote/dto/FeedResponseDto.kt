@@ -6,8 +6,9 @@ data class FeedResponseDto(
     @SerializedName("items")
     val items: List<FeedItemDto> = emptyList(),
 
+    // ⚠️ 修正：next_cursor 从 String? 更改为 Long? (因为后端返回的是数字)
     @SerializedName("next_cursor")
-    val nextCursor: String? = null,
+    val nextCursor: Long? = null,
 
     @SerializedName("has_more")
     val hasMore: Boolean = false,

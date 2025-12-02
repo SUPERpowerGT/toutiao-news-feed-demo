@@ -1,3 +1,4 @@
+/*
 package com.xuziyi.toutiaoandroid.data.remote.api
 
 import com.xuziyi.toutiaoandroid.data.remote.dto.*
@@ -30,7 +31,7 @@ class FakeFeedApiService : FeedApiService {
                     isOfficialMedia = true,
                     isTopOfficial = true,       // ⭐ MOCK：让它进 前5 官方专区
                     source = "新华网",
-                    weight = 999
+                    weight = 999f
                 ),
 
                 // ========== 2. 文本 + 官方媒体 TOP5 ==========
@@ -53,7 +54,7 @@ class FakeFeedApiService : FeedApiService {
                     isOfficialMedia = true,
                     isTopOfficial = false,        // ⭐ 也作为官方 TOP
                     source = "新华社",
-                    weight = 800
+                    weight = 800f
                 ),
 
                 // ========== 3. 单图 ==========
@@ -85,7 +86,7 @@ class FakeFeedApiService : FeedApiService {
                     isOfficialMedia = true,
                     isTopOfficial = false,
                     source = "南方都市报",
-                    weight = 300
+                    weight = 300f
                 ),
 
                 // ========== 4. 视频 ==========
@@ -117,7 +118,7 @@ class FakeFeedApiService : FeedApiService {
                     isOfficialMedia = true,
                     isTopOfficial = false,
                     source = "央广网",
-                    weight = 700
+                    weight = 700f
                 )
             ),
             nextCursor = "123",
@@ -161,3 +162,4 @@ class FakeFeedApiService : FeedApiService {
 
     private fun now() = System.currentTimeMillis() / 1000
 }
+*/

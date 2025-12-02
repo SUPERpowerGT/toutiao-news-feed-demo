@@ -33,7 +33,7 @@ func main() {
 	defer db.Close()
 
 	// ---------- 依赖注入 ----------
-	feedRepo := infrastructure.NewPGFeedItemRepository(db)
+	feedRepo := infrastructure.NewFeedItemRepositoryPG(db)
 	feedService := application.NewFeedService(feedRepo)
 	feedHandler := api.NewFeedHandler(feedService)
 
@@ -66,7 +66,7 @@ func main() {
 	log.Println("server listening on :8080")
 
 	// ---------- 启动服务 ----------
-	if err := http.ListenAndServe(":8080", h); err != nil {
+	if err := http.ListenAndServe("0.0.0.0:8080", h); err != nil {
 		log.Fatal(err)
 	}
 }

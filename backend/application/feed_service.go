@@ -2,8 +2,7 @@ package application
 
 import (
 	"context"
-	"encoding/base64"
-	"strconv"
+	"fmt"
 	"toutiao-backend/domain"
 )
 
@@ -11,53 +10,82 @@ type FeedService struct {
 	repo domain.FeedItemRepository
 }
 
-func NewFeedService(repo domain.FeedItemRepository) *FeedService {
-	return &FeedService{repo: repo}
+func NewFeedService(r domain.FeedItemRepository) *FeedService {
+	return &FeedService{repo: r}
 }
 
-func encodeCursor(id *int64) string {
-	if id == nil {
-		return ""
+/*
+三种模式统一入口：
+- cursor == nil && refreshTime == nil → 首次加载
+- cursor != nil → 加载更多
+- cursor == nil && refreshTime != nil → 下拉刷新
+*/
+func (s *FeedService) GetFeed(
+	ctx context.Context,
+	cursor *int64,
+	refreshTime *int64,
+	limit int,
+) (*FeedResponse, error) {
+
+	// ① 首次加载
+	if cursor == nil && refreshTime == nil {
+		// 🎯 修复: 接收最新的发布时间
+		items, next, latestTime, err := s.repo.ListInitial(ctx)
+		if err != nil {
+			return nil, err
+		}
+		return &FeedResponse{
+			Items:             items,
+			NextCursor:        next,
+			HasMore:           next != nil,
+			LatestPublishTime: latestTime, // 🎯 赋值
+		}, nil
 	}
-	return base64.RawURLEncoding.EncodeToString([]byte(strconv.FormatInt(*id, 10)))
+
+	// ② 加载更多
+	if cursor != nil {
+		// 🎯 修复: 接收最新的发布时间
+		items, next, latestTime, err := s.repo.ListFeed(ctx, cursor, limit)
+		if err != nil {
+			return nil, err
+		}
+		return &FeedResponse{
+			Items:             items,
+			NextCursor:        next,
+			HasMore:           next != nil,
+			LatestPublishTime: latestTime, // 🎯 赋值
+		}, nil
+	}
+
+	// ③ 下拉刷新
+	if refreshTime != nil {
+		items, err := s.repo.ListNewer(ctx, *refreshTime)
+		if err != nil {
+			return nil, err
+		}
+
+		// 🎯 逻辑优化: 下拉刷新返回的列表中的第一项就是最新的时间戳。
+		var latestTime int64 = 0
+		if len(items) > 0 {
+			latestTime = items[0].PublishTime
+		}
+
+		return &FeedResponse{
+			Items:             items,
+			NextCursor:        nil,
+			HasMore:           false,
+			LatestPublishTime: latestTime, // 🎯 赋值
+		}, nil
+	}
+
+	return nil, fmt.Errorf("invalid feed parameters")
 }
 
-func decodeCursor(s string) (*int64, error) {
-	if s == "" {
-		return nil, nil
-	}
-	b, err := base64.RawURLEncoding.DecodeString(s)
-	if err != nil {
-		return nil, err
-	}
-	v, err := strconv.ParseInt(string(b), 10, 64)
-	if err != nil {
-		return nil, err
-	}
-	return &v, nil
-}
+// ---------------- DTO ------------------
 
-type FeedResult struct {
-	Items      []domain.FeedItem `json:"items"`
-	NextCursor string            `json:"next_cursor,omitempty"`
-}
-
-func (s *FeedService) GetFeed(ctx context.Context, cursor string, limit int) (*FeedResult, error) {
-	cur, err := decodeCursor(cursor)
-	if err != nil {
-		return nil, err
-	}
-
-	items, nextID, err := s.repo.ListFeed(ctx, cur, limit)
-	if err != nil {
-		return nil, err
-	}
-
-	result := &FeedResult{Items: items}
-
-	if nextID != nil {
-		result.NextCursor = encodeCursor(nextID)
-	}
-
-	return result, nil
+type FeedResponse struct {
+	Items             []domain.FeedItem `json:"items"`
+	NextCursor        *int64            `json:"next_cursor"`
+	HasMore           bool              `json:"has_more"`
+	LatestPublishTime int64             `json:"latest_publish_time"`
 }

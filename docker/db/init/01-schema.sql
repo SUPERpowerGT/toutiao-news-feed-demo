@@ -72,13 +72,26 @@ CREATE TABLE IF NOT EXISTS stats (
 -- 推荐流 feed_item
 -- ================================
 CREATE TABLE IF NOT EXISTS feed_item (
-    id           BIGSERIAL PRIMARY KEY,
-    news_id      BIGINT REFERENCES news(id) ON DELETE CASCADE,
-    display_type VARCHAR(50) NOT NULL,  -- 👍 ENUM → string
-    weight       FLOAT,
-    scene        VARCHAR(30),
-    model_id     VARCHAR(50),
-    publish_time TIMESTAMP,
-    seq_id       BIGSERIAL,
-    created_at   TIMESTAMP DEFAULT NOW()
+    id              BIGSERIAL PRIMARY KEY,
+    news_id         BIGINT REFERENCES news(id) ON DELETE CASCADE,
+
+    -- display 信息
+    display_type    VARCHAR(50) NOT NULL,
+    weight          FLOAT,
+    scene           VARCHAR(30),
+    model_id        VARCHAR(50),
+
+    -- Android FeedItemDto 对应字段
+    content_type       VARCHAR(50),      -- 对应 contentType
+    category           VARCHAR(50),
+    sub_category       VARCHAR(50),
+    tags               TEXT[],           -- 多字符串数组
+    city               VARCHAR(50),
+    is_official_media  BOOLEAN DEFAULT false,
+    is_top_official    BOOLEAN DEFAULT false,
+    source             VARCHAR(100),
+
+    publish_time    TIMESTAMP,
+    seq_id          BIGSERIAL,
+    created_at      TIMESTAMP DEFAULT NOW()
 );

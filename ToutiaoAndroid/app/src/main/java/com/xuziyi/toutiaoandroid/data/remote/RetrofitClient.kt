@@ -1,22 +1,29 @@
 package com.xuziyi.toutiaoandroid.data.remote
 
-import com.xuziyi.toutiaoandroid.data.remote.api.FakeFeedApiService
 import com.xuziyi.toutiaoandroid.data.remote.api.FeedApiService
 import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor // 🎯 1. 导入日志拦截器
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 /**
- * Retrofit 客户端（现在先不用真实调用）
+ * Retrofit 客户端
  */
 object RetrofitClient {
 
+    // 使用 adb reverse 调试时，可以改为 http://localhost:8080/
     private const val BASE_URL = "http://10.0.2.2:8080/"
 
-    // mock 阶段暂时不用网络
-    /*
     private val okHttpClient: OkHttpClient by lazy {
-        OkHttpClient.Builder().build()
+        // 🎯 2. 创建日志拦截器
+        val logging = HttpLoggingInterceptor().apply {
+            // 设置日志级别，BODY 会打印请求头、请求体、响应头和响应体
+            setLevel(HttpLoggingInterceptor.Level.BODY)
+        }
+
+        OkHttpClient.Builder()
+            .addInterceptor(logging) // 🎯 3. 将日志拦截器添加到 OkHttpClient
+            .build()
     }
 
     private val retrofit: Retrofit by lazy {
@@ -26,11 +33,8 @@ object RetrofitClient {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }
-    */
-
-    // ===== Mock 版本：不通过 retrofit，直接使用 fake =====
 
     val feedApi: FeedApiService by lazy {
-        FakeFeedApiService()   //使用我们稍后写的 Fake API
+        retrofit.create(FeedApiService::class.java)
     }
 }

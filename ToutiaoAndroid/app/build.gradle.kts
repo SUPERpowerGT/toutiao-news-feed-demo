@@ -65,9 +65,14 @@ dependencies {
     implementation(libs.androidx.compose.ui.unit)
     implementation(libs.androidx.compose.foundation.layout)
     implementation(libs.androidx.compose.ui.geometry)
+    implementation(libs.volley)
     ksp("androidx.room:room-compiler:2.6.1")
     // ===== 添加 Coil（AsyncImage 所需）=====
-    implementation("io.coil-kt:coil-compose:2.5.0")
+// ===== Coil 2.x 版本（今日头条也都是 2.x 功能）=====
+    implementation("io.coil-kt:coil-compose:2.6.0")
+    implementation("io.coil-kt:coil-gif:2.6.0")
+    implementation("io.coil-kt:coil-video:2.6.0")
+  // ⭐ 必须加这个才能用 VideoFrameDecoder
     implementation("com.airbnb.android:lottie-compose:6.1.0")
 
     testImplementation(libs.junit)

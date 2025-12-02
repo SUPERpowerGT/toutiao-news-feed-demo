@@ -9,7 +9,8 @@ import com.xuziyi.toutiaoandroid.ui.feed.FeedViewModel
 import com.xuziyi.toutiaoandroid.ui.feed.FeedViewModelFactory
 import com.xuziyi.toutiaoandroid.ui.detail.NewsDetailViewModel
 import com.xuziyi.toutiaoandroid.data.datasource.RemoteDataSource
-import com.xuziyi.toutiaoandroid.data.remote.api.FakeFeedApiService
+import com.xuziyi.toutiaoandroid.data.remote.RetrofitClient
+
 import com.xuziyi.toutiaoandroid.data.repository.FeedRepository
 import com.xuziyi.toutiaoandroid.domain.usecase.LoadInitialFeedUseCase
 import com.xuziyi.toutiaoandroid.domain.usecase.RefreshFeedUseCase
@@ -34,7 +35,7 @@ fun AppNavigator() {
     val navController = rememberNavController()
 
     // ---- ViewModel 初始化保持不变 ----
-    val api = FakeFeedApiService()
+    val api = RetrofitClient.feedApi
     val remoteDataSource = RemoteDataSource(api)
     val repository = FeedRepository(remoteDataSource)
 

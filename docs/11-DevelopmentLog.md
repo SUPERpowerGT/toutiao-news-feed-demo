@@ -1028,3 +1028,900 @@ git checkout -b feature/android-mvp
 11/21
 
 sealed class
+
+
+
+
+
+12/1
+
+优化后端
+
+修改数据库表
+
+```
+docker compose -f docker-compose.dev.yml down
+docker compose -f docker-compose.dev.yml up -d
+```
+
+插入作者数据
+
+```
+INSERT INTO author (name, avatar_url, description, certification)
+VALUES
+('新华社快讯', 'https://randomuser.me/api/portraits/men/11.jpg', '国家权威新闻源', '官方认证'),
+('环球热点榜', 'https://randomuser.me/api/portraits/women/12.jpg', '国际资讯第一线', NULL),
+('科技每日说', 'https://randomuser.me/api/portraits/men/13.jpg', '专注科技深度报道', NULL),
+('城市生活圈', 'https://randomuser.me/api/portraits/women/14.jpg', '本地热点新闻', NULL),
+('体育风云', 'https://randomuser.me/api/portraits/men/15.jpg', '最全体育资讯', NULL),
+
+('金融新观察', 'https://randomuser.me/api/portraits/men/21.jpg', '金融行业深度解读', NULL),
+('动漫次元社', 'https://randomuser.me/api/portraits/women/22.jpg', 'ACG 情报站', NULL),
+('历史故事局', 'https://randomuser.me/api/portraits/men/23.jpg', '讲述历史背后的故事', NULL),
+('健康新生活', 'https://randomuser.me/api/portraits/women/24.jpg', '健康饮食与保健资讯', NULL),
+('美食大玩家', 'https://randomuser.me/api/portraits/men/25.jpg', '全国美食探店', NULL),
+
+('潮流时尚志', 'https://randomuser.me/api/portraits/women/31.jpg', '流行趋势与时尚信息', NULL),
+('影视热搜榜', 'https://randomuser.me/api/portraits/men/32.jpg', '影视动态与新片速递', NULL),
+('大数据研习社', 'https://randomuser.me/api/portraits/men/33.jpg', '大数据领域深度分享', NULL),
+('汽车观察室', 'https://randomuser.me/api/portraits/men/34.jpg', '国内外汽车行业资讯', NULL),
+('国际军事眼', 'https://randomuser.me/api/portraits/men/35.jpg', '军事热点解读', NULL),
+
+('旅行环球派', 'https://randomuser.me/api/portraits/women/41.jpg', '旅行目的地探秘', NULL),
+('家居搭配师', 'https://randomuser.me/api/portraits/women/42.jpg', '家居美学与生活方式', NULL),
+('摄影新视界', 'https://randomuser.me/api/portraits/men/43.jpg', '摄影技巧与作品欣赏', NULL),
+('职场生存指南', 'https://randomuser.me/api/portraits/women/44.jpg', '职场成长秘籍', NULL),
+('创业者说', 'https://randomuser.me/api/portraits/men/45.jpg', '创业故事与行业分析', NULL),
+
+('母婴成长日记', 'https://randomuser.me/api/portraits/women/51.jpg', '母婴知识与育儿科普', NULL),
+('宠物乐园', 'https://randomuser.me/api/portraits/men/52.jpg', '萌宠日常与养宠知识', NULL),
+('科学知识局', 'https://randomuser.me/api/portraits/men/53.jpg', '科普类知识分享', NULL),
+('建筑观察台', 'https://randomuser.me/api/portraits/men/54.jpg', '建筑行业洞察', NULL),
+('艺术拾遗录', 'https://randomuser.me/api/portraits/women/55.jpg', '艺术与文化鉴赏', NULL),
+
+('游戏情报站', 'https://randomuser.me/api/portraits/men/61.jpg', '游戏动态与攻略分享', NULL),
+('数码新玩意', 'https://randomuser.me/api/portraits/men/62.jpg', '数码产品评测', NULL),
+('财经热搜榜', 'https://randomuser.me/api/portraits/men/63.jpg', '最新财经动态', NULL),
+('地理观测者', 'https://randomuser.me/api/portraits/men/64.jpg', '地理科普与世界观察', NULL),
+('宇宙探索号', 'https://randomuser.me/api/portraits/men/65.jpg', '宇宙科学与天文资讯', NULL),
+
+('手工爱好者', 'https://randomuser.me/api/portraits/women/71.jpg', '手工制作兴趣分享', NULL),
+('金融日报', 'https://randomuser.me/api/portraits/men/72.jpg', '每日金融快讯', NULL),
+('户外大玩家', 'https://randomuser.me/api/portraits/men/73.jpg', '户外探险与装备分享', NULL),
+('心理小课堂', 'https://randomuser.me/api/portraits/women/74.jpg', '心理学知识与案例分析', NULL),
+('全球热点速递', 'https://randomuser.me/api/portraits/men/75.jpg', '全球新闻一网打尽', NULL),
+
+('区块链研习者', 'https://randomuser.me/api/portraits/men/81.jpg', '区块链技术资讯', NULL),
+('文化随笔集', 'https://randomuser.me/api/portraits/women/82.jpg', '文化观点与随笔', NULL),
+('新能源观察员', 'https://randomuser.me/api/portraits/men/83.jpg', '新能源发展趋势', NULL),
+('业界风向标', 'https://randomuser.me/api/portraits/men/84.jpg', '行业趋势解读', NULL),
+('本地事件通', 'https://randomuser.me/api/portraits/women/85.jpg', '本地资讯热点', NULL),
+
+('社会纪实派', 'https://randomuser.me/api/portraits/men/91.jpg', '社会热点深度报道', NULL),
+('乡村生活志', 'https://randomuser.me/api/portraits/women/92.jpg', '乡村人文与故事', NULL),
+('AI 科技站', 'https://randomuser.me/api/portraits/men/93.jpg', '人工智能资讯', NULL),
+('医疗健康圈', 'https://randomuser.me/api/portraits/men/94.jpg', '医疗科普与资讯', NULL),
+('国际时事评论', 'https://randomuser.me/api/portraits/men/95.jpg', '国际局势分析评论', NULL);
+
+```
+
+
+
+news
+
+```
+INSERT INTO news (title, summary, news_type, author_id, source, category, publish_time)
+VALUES
+-- 作者 1（新华社快讯）
+('AI 峰会今日召开，全球科技巨头齐聚上海',
+ '本次大会聚焦大模型竞争与通用智能趋势，引发全球技术圈关注。',
+ 'image', 1, '新华社快讯', '科技', NOW() - INTERVAL '1 hour'),
+
+('长三角铁路客流创新高 春节返程高峰提前到来',
+ '铁路部门预计本周客流量将持续攀升，部分线路加开临时列车。',
+ 'image', 1, '新华社快讯', '社会', NOW() - INTERVAL '3 hours'),
+
+-- 作者 2（环球热点榜）
+('欧洲多国遭遇强风暴侵袭 交通大面积瘫痪',
+ '罕见风暴影响多国，机场高速相继关闭，民众被要求减少出行。',
+ 'image', 2, '环球热点榜', '国际', NOW() - INTERVAL '2 hours'),
+
+('中东局势再度紧张，多方呼吁尽快恢复谈判',
+ '多国外交官正在推动新的会谈进程，试图降低地区紧张局势。',
+ 'image', 2, '环球热点榜', '国际', NOW() - INTERVAL '6 hours'),
+
+-- 作者 3（科技每日说）
+('国产旗舰手机发布 搭载自研芯片性能大增',
+ '新款旗舰发布后，相关话题迅速登上热搜榜前列。',
+ 'image', 3, '科技每日说', '科技', NOW() - INTERVAL '1 hour'),
+
+('AI 绘图工具升级，多模态生成能力显著增强',
+ '最新升级的模型可以同时生成图片和短视频，引发讨论。',
+ 'video', 3, '科技每日说', '科技', NOW() - INTERVAL '4 hours'),
+
+-- 作者 4（城市生活圈）
+('杭州发布新的公共交通优惠政策',
+ '符合条件的市民将享受公交地铁 8 折票价优惠，政策将于下月实施。',
+ 'image', 4, '城市生活圈', '民生', NOW() - INTERVAL '5 hours'),
+
+('本地夜市火爆，年轻人成为主力消费群体',
+ '多地夜市开设直播区，吸引大量游客参与互动。',
+ 'image', 4, '城市生活圈', '生活方式', NOW() - INTERVAL '8 hours'),
+
+-- 作者 5（体育风云）
+('中国短道速滑队打破赛季最佳成绩',
+ '在世界赛场上再获佳绩，队员状态正佳。',
+ 'video', 5, '体育风云', '体育', NOW() - INTERVAL '40 minutes'),
+
+('CBA 强强对话上演，广东队惊险取胜',
+ '最后两分钟双方交替领先，现场氛围火爆。',
+ 'image', 5, '体育风云', '体育', NOW() - INTERVAL '5 hours'),
+
+-- 作者 6（金融新观察）
+('人民币汇率短期波动，专家：属正常市场表现',
+ '分析人士表示短期波动不必过度解读，长期走势仍保持稳定。',
+ 'image', 6, '金融新观察', '财经', NOW() - INTERVAL '30 minutes'),
+
+('A 股三连涨，科技和新能源板块领涨',
+ '市场信心回暖，多家机构上调下半年预期。',
+ 'image', 6, '金融新观察', '财经', NOW() - INTERVAL '6 hours'),
+
+-- 作者 7（动漫次元社）
+('超人气动画新 PV 发布，粉丝热情高涨',
+ '制作组公布新一季更新计划，画面质量大幅提升。',
+ 'image', 7, '动漫次元社', '娱乐', NOW() - INTERVAL '1 hour'),
+
+('经典动画改编真人剧，定档暑期上映',
+ '官方今日公开主演名单，引发大量讨论。',
+ 'image', 7, '动漫次元社', '娱乐', NOW() - INTERVAL '9 hours'),
+
+-- 作者 8（历史故事局）
+('考古新发现：千年古墓中的珍贵文物曝光',
+ '专家表示部分文物具有极高历史研究价值。',
+ 'image', 8, '历史故事局', '历史', NOW() - INTERVAL '3 hours'),
+
+('史学家解读：三国时期真正的经济实力构成',
+ '通过最新论文数据复盘当时区域的经济格局。',
+ 'image', 8, '历史故事局', '历史', NOW() - INTERVAL '10 hours'),
+
+-- 作者 9（健康新生活）
+('专家提醒：冬季感冒高发，做好防护很关键',
+ '建议补充维生素、多喝水、多通风。',
+ 'image', 9, '健康新生活', '健康', NOW() - INTERVAL '2 hours'),
+
+('坚持运动的好处：研究表明心血管健康显著提升',
+ '每天坚持 30 分钟运动即可降低多项健康风险。',
+ 'image', 9, '健康新生活', '健康', NOW() - INTERVAL '7 hours'),
+
+-- 作者 10（美食大玩家）
+('长沙夜市美食盘点：这 10 家店值得一试',
+ '从烧烤到甜品，应有尽有，网友纷纷打卡。',
+ 'image', 10, '美食大玩家', '美食', NOW() - INTERVAL '1 hour'),
+
+('五分钟学会做正宗台湾卤肉饭',
+ '简单食材即可做出地道风味，附详细步骤。',
+ 'image', 10, '美食大玩家', '美食', NOW() - INTERVAL '5 hours');
+
+
+```
+
+```
+INSERT INTO news (title, summary, news_type, author_id, source, category, publish_time)
+VALUES
+-- 作者 11（潮流时尚志）
+('2025 春季时装周开幕，设计师新秀大放异彩',
+ '本届时装周聚焦环保材料和未来主义风格，引发关注。',
+ 'image', 11, '潮流时尚志', '时尚', NOW() - INTERVAL '1 hour'),
+
+('今年最火的穿搭趋势：极简风卷土重来',
+ '时尚达人分享 2025 极简穿搭技巧，易学又高级。',
+ 'text', 11, '潮流时尚志', '时尚', NOW() - INTERVAL '4 hours'),
+
+-- 作者 12（影视热搜榜）
+('票房爆冷！话题大作上映首日表现不佳',
+ '业内人士分析剧情质量或成主要原因。',
+ 'image', 12, '影视热搜榜', '娱乐', NOW() - INTERVAL '2 hours'),
+
+('明星新剧即将开机，剧组公布完整演员阵容',
+ '官方发布花絮视频，粉丝期待值拉满。',
+ 'video', 12, '影视热搜榜', '娱乐', NOW() - INTERVAL '8 hours'),
+
+-- 作者 13（大数据研习社）
+('AI 监管框架发布，算法透明度成核心要求',
+ '新的政策将影响多个行业的数据处理方式。',
+ 'text', 13, '大数据研习社', '科技', NOW() - INTERVAL '30 minutes'),
+
+('大型数据公司市值飙升，背后原因是什么？',
+ '分析师认为多行业数字化需求推动了增长。',
+ 'image', 13, '大数据研习社', '财经', NOW() - INTERVAL '6 hours'),
+
+-- 作者 14（汽车观察室）
+('全新电动 SUV 发布，续航突破 900 公里',
+ '业内认为这款车将重新定义电车市场天花板。',
+ 'image', 14, '汽车观察室', '汽车', NOW() - INTERVAL '1 hour'),
+
+('车企财报出炉，销量回暖但利润承压',
+ '多家车企强调将持续投入智能驾驶研发。',
+ 'text', 14, '汽车观察室', '汽车', NOW() - INTERVAL '7 hours'),
+
+-- 作者 15（国际军事眼）
+('多国举行联合军演，战机编队画面曝光',
+ '本次军演规模空前，涉及多种作战力量。',
+ 'video', 15, '国际军事眼', '军事', NOW() - INTERVAL '50 minutes'),
+
+('国际防务展今日开幕，新型装备亮相',
+ '多款无人机和防空系统成为展会焦点。',
+ 'image', 15, '国际军事眼', '军事', NOW() - INTERVAL '9 hours'),
+
+-- 作者 16（旅行环球派）
+('盘点 2025 年最值得去的五大旅行目的地',
+ '从极光之城到海岛秘境，总有一处让你心动。',
+ 'text', 16, '旅行环球派', '旅游', NOW() - INTERVAL '3 hours'),
+
+('徒步爱好者的天堂！新线路正式对外开放',
+ '路线难度适中，沿途风景壮丽。',
+ 'image', 16, '旅行环球派', '旅游', NOW() - INTERVAL '10 hours'),
+
+-- 作者 17（家居搭配师）
+('北欧风装修指南：简单 3 步营造高级感',
+ '软装搭配技巧让小户型也能轻松变美。',
+ 'text', 17, '家居搭配师', '家居', NOW() - INTERVAL '1 hour'),
+
+('2025 家居流行色公布，温柔色系大热',
+ '设计师推荐将流行色与木质家具搭配使用。',
+ 'image', 17, '家居搭配师', '家居', NOW() - INTERVAL '6 hours'),
+
+-- 作者 18（摄影新视界）
+('如何用手机拍出大片感？专业摄影师分享技巧',
+ '掌握构图与光线，随手也能出氛围感大片。',
+ 'image', 18, '摄影新视界', '摄影', NOW() - INTERVAL '40 minutes'),
+
+('百年历史的老相机拍卖，最终价格令人惊讶',
+ '收藏者称其具备极高纪念价值。',
+ 'text', 18, '摄影新视界', '摄影', NOW() - INTERVAL '12 hours'),
+
+-- 作者 19（职场生存指南）
+('职场沟通中最容易踩坑的三件事，你中招了吗？',
+ '专家指出沟通技巧是职场晋升的关键能力之一。',
+ 'text', 19, '职场生存指南', '职场', NOW() - INTERVAL '2 hours'),
+
+('如何提升效率？这 5 个时间管理方法值得一试',
+ '简单有效的技巧帮助你更轻松完成工作任务。',
+ 'image', 19, '职场生存指南', '职场', NOW() - INTERVAL '8 hours'),
+
+-- 作者 20（创业者说）
+('创业如何从 0 到 1？资深创业者分享心得',
+ '从市场选择到团队搭建，这些经验你一定用得上。',
+ 'text', 20, '创业者说', '商业', NOW() - INTERVAL '1 hour'),
+
+('融资环境变化，初创企业如何应对？',
+ '业内人士建议企业保持现金流和核心竞争力。',
+ 'image', 20, '创业者说', '商业', NOW() - INTERVAL '7 hours');
+
+
+```
+
+```
+INSERT INTO news (title, summary, news_type, author_id, source, category, publish_time)
+VALUES
+-- 作者 21（母婴成长日记）
+('宝宝辅食怎么添加？营养师给出专业建议',
+ '不同月龄段的宝宝辅食需求不同，家长需根据情况调整。',
+ 'text', 21, '母婴成长日记', '母婴', NOW() - INTERVAL '1 hour'),
+
+('孩子发烧不要慌！儿科医生教你三步应对',
+ '家长最关心的退烧问题，医生给出科学方法。',
+ 'image', 21, '母婴成长日记', '健康', NOW() - INTERVAL '5 hours'),
+
+-- 作者 22（宠物乐园）
+('狗狗一直掉毛怎么办？兽医：这 3 点最关键',
+ '换季掉毛是正常现象，但也可能是营养问题导致。',
+ 'text', 22, '宠物乐园', '宠物', NOW() - INTERVAL '2 hours'),
+
+('萌猫日常合集爆火，网友：治愈系天花板',
+ '短视频平台宠物内容持续走红，带动相关话题讨论度提升。',
+ 'video', 22, '宠物乐乐园', '宠物', NOW() - INTERVAL '9 hours'),
+
+-- 作者 23（科学知识局）
+('科学家揭示：为何我们会做梦？',
+ '最新研究表明，梦境与大脑记忆修复密切相关。',
+ 'text', 23, '科学知识局', '科学', NOW() - INTERVAL '30 minutes'),
+
+('空间望远镜捕捉到罕见星云照片，震撼发布',
+ '高清照片展示星云壮丽细节，吸引大量天文爱好者关注。',
+ 'image', 23, '科学知识局', '科学', NOW() - INTERVAL '7 hours'),
+
+-- 作者 24（建筑观察台）
+('全球最高木结构建筑完工，引发建筑界热议',
+ '这种新型结构实现环保与稳定性的平衡。',
+ 'image', 24, '建筑观察台', '建筑', NOW() - INTERVAL '1 hour'),
+
+('老城区改造工程启动，专家：“保留历史肌理很重要”',
+ '改造方案将兼顾居住改善与文化保护。',
+ 'text', 24, '建筑观察台', '建筑', NOW() - INTERVAL '10 hours'),
+
+-- 作者 25（艺术拾遗录）
+('被遗忘的画家：女性艺术家的复兴之路',
+ '越来越多博物馆开始重新展出昔日被忽略的女性艺术家作品。',
+ 'text', 25, '艺术拾遗录', '艺术', NOW() - INTERVAL '2 hours'),
+
+('现代艺术展今日开幕，沉浸式体验成最大亮点',
+ '大量新媒体艺术作品吸引年轻观众前来打卡。',
+ 'image', 25, '艺术拾遗录', '艺术', NOW() - INTERVAL '8 hours'),
+
+-- 作者 26（游戏情报站）
+('年度最期待游戏定档，玩家：终于来了！',
+ '制作组公布全新战斗系统细节，引发热烈讨论。',
+ 'video', 26, '游戏情报站', '游戏', NOW() - INTERVAL '1 hour'),
+
+('独立游戏爆火，三人团队打造千万级口碑',
+ '独立游戏产业再次证明创意才是核心驱动力。',
+ 'text', 26, '游戏情报站', '游戏', NOW() - INTERVAL '5 hours'),
+
+-- 作者 27（数码新玩意）
+('折叠屏手机销量激增，厂商集体加码新品布局',
+ '折叠屏行业竞争进入新阶段，产品创新成为关键。',
+ 'image', 27, '数码新玩意', '科技', NOW() - INTERVAL '40 minutes'),
+
+('智能穿戴设备再升级，“健康监测”成最大亮点',
+ '新发布的手表支持更多监测项目，引发关注。',
+ 'text', 27, '数码新玩意', '科技', NOW() - INTERVAL '7 hours'),
+
+-- 作者 28（财经热搜榜）
+('全球股市普涨，科技板块领跑市场',
+ '多国股指创今年新高，投资者信心增强。',
+ 'image', 28, '财经热搜榜', '财经', NOW() - INTERVAL '1 hour'),
+
+('通胀压力仍存，专家建议保持审慎投资策略',
+ '多家机构预计下季度通胀将逐步回落。',
+ 'text', 28, '财经热搜榜', '财经', NOW() - INTERVAL '6 hours'),
+
+-- 作者 29（地理观测者）
+('南极冰川发生断裂，科学家紧急评估影响',
+ '该断裂或将影响未来海平面变化趋势。',
+ 'image', 29, '地理观测者', '科学', NOW() - INTERVAL '2 hours'),
+
+('世界上最神秘的三处地理奇观，你去过几个？',
+ '这些自然奇观长期吸引探索者深入研究。',
+ 'text', 29, '地理观测者', '探索', NOW() - INTERVAL '8 hours'),
+
+-- 作者 30（宇宙探索号）
+('火星车传回最新高清地表照片，细节令人震惊',
+ '科学团队称照片中疑似存在沉积结构。',
+ 'image', 30, '宇宙探索号', '宇宙', NOW() - INTERVAL '1 hour'),
+
+('天文学家发现类地行星大气组成重要线索',
+ '这项发现可能会改变我们对生命存在形式的理解。',
+ 'text', 30, '宇宙探索号', '宇宙', NOW() - INTERVAL '9 hours');
+
+```
+
+```
+INSERT INTO news (title, summary, news_type, author_id, source, category, publish_time)
+VALUES
+-- 作者 31（手工爱好者）
+('简单 5 步做出精美香薰蜡烛，零基础也能完成',
+ '所需材料都很容易买到，是入门最友好的手工项目之一。',
+ 'text', 31, '手工爱好者', '手工', NOW() - INTERVAL '1 hour'),
+
+('手工达人分享绝美编织包教程，春季新宠',
+ '编织包因其清新风格深受年轻人喜爱。',
+ 'image', 31, '手工爱好者', '手工', NOW() - INTERVAL '6 hours'),
+
+-- 作者 32（金融日报）
+('美联储政策会议召开，未来利率走向成焦点',
+ '市场预计短期内不会大幅调整利率，但仍存不确定性。',
+ 'text', 32, '金融日报', '财经', NOW() - INTERVAL '2 hours'),
+
+('人民币兑美元小幅回升，投资者信心增强',
+ '多项经济数据表现稳定，汇率走势趋于平稳。',
+ 'image', 32, '金融日报', '财经', NOW() - INTERVAL '8 hours'),
+
+-- 作者 33（户外大玩家）
+('新晋徒步路线曝光：绝美雪山路线适合轻装备',
+ '路线风光壮丽，非常适合周末短途徒步。',
+ 'image', 33, '户外大玩家', '户外', NOW() - INTERVAL '1 hour'),
+
+('野营安全指南：新手最容易忽略的五件事',
+ '专业玩家提醒，安全意识始终是第一位的。',
+ 'text', 33, '户外大玩家', '户外', NOW() - INTERVAL '10 hours'),
+
+-- 作者 34（心理小课堂）
+('如何缓解焦虑？心理学家推荐三种有效方法',
+ '通过调整呼吸节奏与专注注意力可以显著降低焦虑感。',
+ 'text', 34, '心理小课堂', '心理', NOW() - INTERVAL '40 minutes'),
+
+('长期熬夜对心理健康影响被证实，年轻人需警惕',
+ '研究显示睡眠不足会增加情绪波动风险。',
+ 'image', 34, '心理小课堂', '心理', NOW() - INTERVAL '7 hours'),
+
+-- 作者 35（全球热点速递）
+('南亚多地暴雨引发洪灾，救援正在进行',
+ '大量房屋受损，当地政府已启动紧急应对机制。',
+ 'image', 35, '全球热点速递', '国际', NOW() - INTERVAL '1 hour'),
+
+('全球粮食供应链面临挑战，专家呼吁加强合作',
+ '国际组织表示，跨国协同是缓解危机的重要手段。',
+ 'text', 35, '全球热点速递', '国际', NOW() - INTERVAL '9 hours'),
+
+-- 作者 36（区块链研习者）
+('加密货币市场再度波动，投资者态度趋于谨慎',
+ '多国监管政策调整引发市场短期震荡。',
+ 'text', 36, '区块链研习者', '科技', NOW() - INTERVAL '2 hours'),
+
+('Web3 游戏生态增长迅速，用户规模翻倍',
+ '去中心化游戏为玩家带来全新体验，市场关注度提升。',
+ 'image', 36, '区块链研习者', '科技', NOW() - INTERVAL '8 hours'),
+
+-- 作者 37（文化随笔集）
+('关于“慢生活”的文化解读：为何越来越多人选择放慢脚步',
+ '快节奏带来的压力促使人们重新审视日常生活方式。',
+ 'text', 37, '文化随笔集', '文化', NOW() - INTERVAL '1 hour'),
+
+('古典文学阅读热潮来袭，线下书店销量上涨',
+ '读者对经典作品的兴趣明显提升，相关活动热度不减。',
+ 'image', 37, '文化随笔集', '文化', NOW() - INTERVAL '11 hours'),
+
+-- 作者 38（新能源观察员）
+('太阳能储能系统迎重大突破，成本有望再降低',
+ '新技术的应用将推动新能源产业进一步发展。',
+ 'image', 38, '新能源观察员', '科技', NOW() - INTERVAL '50 minutes'),
+
+('新能源汽车销量连涨六个月，行业保持高景气度',
+ '专家称政策与市场需求共同推动行业增长。',
+ 'text', 38, '新能源观察员', '汽车', NOW() - INTERVAL '6 hours'),
+
+-- 作者 39（业界风向标）
+('国内互联网巨头公布新战略，AI 仍是核心方向',
+ '新战略强调智能化转型，加大云计算投入力度。',
+ 'text', 39, '业界风向标', '科技', NOW() - INTERVAL '2 hours'),
+
+('多家初创公司融资成功，行业信心回暖',
+ '本季度融资规模呈现明显上升趋势。',
+ 'image', 39, '业界风向标', '商业', NOW() - INTERVAL '9 hours'),
+
+-- 作者 40（本地事件通）
+('地铁新线路开通，市民出行更加便捷',
+ '新开通线路将极大缓解城市交通压力。',
+ 'image', 40, '本地事件通', '民生', NOW() - INTERVAL '1 hour'),
+
+('旧小区电梯更新工程启动，居民拍手称赞',
+ '多栋楼将陆续完成电梯升级施工。',
+ 'text', 40, '本地事件通', '民生', NOW() - INTERVAL '7 hours');
+
+```
+
+
+
+meida
+
+```
+INSERT INTO media (news_id, media_type, url, cover_url, width, height, order_index)
+VALUES
+-- 新闻 1
+(1, 'image', 'https://picsum.photos/seed/1001/800/600', NULL, 800, 600, 1),
+(1, 'image', 'https://picsum.photos/seed/1002/800/600', NULL, 800, 600, 2),
+
+-- 新闻 2
+(2, 'image', 'https://picsum.photos/seed/1003/800/600', NULL, 800, 600, 1),
+(2, 'image', 'https://picsum.photos/seed/1004/800/600', NULL, 800, 600, 2),
+
+-- 新闻 3
+(3, 'image', 'https://picsum.photos/seed/1005/800/600', NULL, 800, 600, 1),
+(3, 'image', 'https://picsum.photos/seed/1006/800/600', NULL, 800, 600, 2),
+
+-- 新闻 4
+(4, 'image', 'https://picsum.photos/seed/1007/800/600', NULL, 800, 600, 1),
+(4, 'image', 'https://picsum.photos/seed/1008/800/600', NULL, 800, 600, 2),
+
+-- 新闻 5
+(5, 'image', 'https://picsum.photos/seed/1009/800/600', NULL, 800, 600, 1),
+(5, 'image', 'https://picsum.photos/seed/1010/800/600', NULL, 800, 600, 2),
+
+-- 新闻 6（video + 图片）
+(6, 'video',
+     'https://sample-videos.com/video321/mp4/720/big_buck_bunny_720p_1mb.mp4',
+     'https://picsum.photos/seed/1011/800/600',
+     NULL, NULL, 1),
+(6, 'image', 'https://picsum.photos/seed/1012/800/600', NULL, 800, 600, 2),
+
+-- 新闻 7
+(7, 'image', 'https://picsum.photos/seed/1013/800/600', NULL, 800, 600, 1),
+(7, 'image', 'https://picsum.photos/seed/1014/800/600', NULL, 800, 600, 2),
+
+-- 新闻 8
+(8, 'image', 'https://picsum.photos/seed/1015/800/600', NULL, 800, 600, 1),
+(8, 'image', 'https://picsum.photos/seed/1016/800/600', NULL, 800, 600, 2),
+
+-- 新闻 9（video + 图片）
+(9, 'video',
+     'https://sample-videos.com/video321/mp4/720/big_buck_bunny_720p_1mb.mp4',
+     'https://picsum.photos/seed/1017/800/600',
+     NULL, NULL, 1),
+(9, 'image', 'https://picsum.photos/seed/1018/800/600', NULL, 800, 600, 2),
+
+-- 新闻 10
+(10, 'image', 'https://picsum.photos/seed/1019/800/600', NULL, 800, 600, 1),
+(10, 'image', 'https://picsum.photos/seed/1020/800/600', NULL, 800, 600, 2),
+
+-- 新闻 11
+(11, 'image', 'https://picsum.photos/seed/1021/800/600', NULL, 800, 600, 1),
+(11, 'image', 'https://picsum.photos/seed/1022/800/600', NULL, 800, 600, 2),
+
+-- 新闻 12
+(12, 'image', 'https://picsum.photos/seed/1023/800/600', NULL, 800, 600, 1),
+(12, 'image', 'https://picsum.photos/seed/1024/800/600', NULL, 800, 600, 2),
+
+-- 新闻 13
+(13, 'image', 'https://picsum.photos/seed/1025/800/600', NULL, 800, 600, 1),
+(13, 'image', 'https://picsum.photos/seed/1026/800/600', NULL, 800, 600, 2),
+
+-- 新闻 14（video + 图片）
+(14, 'video',
+     'https://sample-videos.com/video321/mp4/720/big_buck_bunny_720p_1mb.mp4',
+     'https://picsum.photos/seed/1027/800/600',
+     NULL, NULL, 1),
+(14, 'image', 'https://picsum.photos/seed/1028/800/600', NULL, 800, 600, 2),
+
+-- 新闻 15（video + 图片）
+(15, 'video',
+     'https://sample-videos.com/video321/mp4/720/big_buck_bunny_720p_1mb.mp4',
+     'https://picsum.photos/seed/1029/800/600',
+     NULL, NULL, 1),
+(15, 'image', 'https://picsum.photos/seed/1030/800/600', NULL, 800, 600, 2),
+
+-- 新闻 16
+(16, 'image', 'https://picsum.photos/seed/1031/800/600', NULL, 800, 600, 1),
+(16, 'image', 'https://picsum.photos/seed/1032/800/600', NULL, 800, 600, 2),
+
+-- 新闻 17
+(17, 'image', 'https://picsum.photos/seed/1033/800/600', NULL, 800, 600, 1),
+(17, 'image', 'https://picsum.photos/seed/1034/800/600', NULL, 800, 600, 2),
+
+-- 新闻 18（text → 默认 1 张图片）
+(18, 'image', 'https://picsum.photos/seed/1035/800/600', NULL, 800, 600, 1),
+
+-- 新闻 19
+(19, 'image', 'https://picsum.photos/seed/1036/800/600', NULL, 800, 600, 1),
+(19, 'image', 'https://picsum.photos/seed/1037/800/600', NULL, 800, 600, 2),
+
+-- 新闻 20
+(20, 'image', 'https://picsum.photos/seed/1038/800/600', NULL, 800, 600, 1),
+(20, 'image', 'https://picsum.photos/seed/1039/800/600', NULL, 800, 600, 2);
+
+```
+
+```
+INSERT INTO media (news_id, media_type, url, cover_url, width, height, order_index)
+VALUES
+-- 新闻 21
+(21, 'image', 'https://picsum.photos/seed/2001/800/600', NULL, 800, 600, 1),
+(21, 'image', 'https://picsum.photos/seed/2002/800/600', NULL, 800, 600, 2),
+
+-- 新闻 22（text）
+(22, 'image', 'https://picsum.photos/seed/2003/800/600', NULL, 800, 600, 1),
+
+-- 新闻 23
+(23, 'image', 'https://picsum.photos/seed/2004/800/600', NULL, 800, 600, 1),
+(23, 'image', 'https://picsum.photos/seed/2005/800/600', NULL, 800, 600, 2),
+
+-- 新闻 24（video）
+(24, 'video',
+ 'https://sample-videos.com/video321/mp4/720/big_buck_bunny_720p_1mb.mp4',
+ 'https://picsum.photos/seed/2006/800/600',
+ NULL, NULL, 1),
+(24, 'image', 'https://picsum.photos/seed/2007/800/600', NULL, 800, 600, 2),
+
+-- 新闻 25（text）
+(25, 'image', 'https://picsum.photos/seed/2008/800/600', NULL, 800, 600, 1),
+
+-- 新闻 26
+(26, 'image', 'https://picsum.photos/seed/2009/800/600', NULL, 800, 600, 1),
+(26, 'image', 'https://picsum.photos/seed/2010/800/600', NULL, 800, 600, 2),
+
+-- 新闻 27
+(27, 'image', 'https://picsum.photos/seed/2011/800/600', NULL, 800, 600, 1),
+(27, 'image', 'https://picsum.photos/seed/2012/800/600', NULL, 800, 600, 2),
+
+-- 新闻 28（text）
+(28, 'image', 'https://picsum.photos/seed/2013/800/600', NULL, 800, 600, 1),
+
+-- 新闻 29（video）
+(29, 'video',
+ 'https://sample-videos.com/video321/mp4/720/big_buck_bunny_720p_1mb.mp4',
+ 'https://picsum.photos/seed/2014/800/600',
+ NULL, NULL, 1),
+(29, 'image', 'https://picsum.photos/seed/2015/800/600', NULL, 800, 600, 2),
+
+-- 新闻 30
+(30, 'image', 'https://picsum.photos/seed/2016/800/600', NULL, 800, 600, 1),
+(30, 'image', 'https://picsum.photos/seed/2017/800/600', NULL, 800, 600, 2),
+
+-- 新闻 31
+(31, 'image', 'https://picsum.photos/seed/2018/800/600', NULL, 800, 600, 1),
+(31, 'image', 'https://picsum.photos/seed/2019/800/600', NULL, 800, 600, 2),
+
+-- 新闻 32（text）
+(32, 'image', 'https://picsum.photos/seed/2020/800/600', NULL, 800, 600, 1),
+
+-- 新闻 33
+(33, 'image', 'https://picsum.photos/seed/2021/800/600', NULL, 800, 600, 1),
+(33, 'image', 'https://picsum.photos/seed/2022/800/600', NULL, 800, 600, 2),
+
+-- 新闻 34（text）
+(34, 'image', 'https://picsum.photos/seed/2023/800/600', NULL, 800, 600, 1),
+
+-- 新闻 35
+(35, 'image', 'https://picsum.photos/seed/2024/800/600', NULL, 800, 600, 1),
+(35, 'image', 'https://picsum.photos/seed/2025/800/600', NULL, 800, 600, 2),
+
+-- 新闻 36（text）
+(36, 'image', 'https://picsum.photos/seed/2026/800/600', NULL, 800, 600, 1),
+
+-- 新闻 37（text）
+(37, 'image', 'https://picsum.photos/seed/2027/800/600', NULL, 800, 600, 1),
+
+-- 新闻 38
+(38, 'image', 'https://picsum.photos/seed/2028/800/600', NULL, 800, 600, 1),
+(38, 'image', 'https://picsum.photos/seed/2029/800/600', NULL, 800, 600, 2),
+
+-- 新闻 39（text）
+(39, 'image', 'https://picsum.photos/seed/2030/800/600', NULL, 800, 600, 1),
+
+-- 新闻 40
+(40, 'image', 'https://picsum.photos/seed/2031/800/600', NULL, 800, 600, 1),
+(40, 'image', 'https://picsum.photos/seed/2032/800/600', NULL, 800, 600, 2);
+
+```
+
+```
+INSERT INTO media (news_id, media_type, url, cover_url, width, height, order_index)
+VALUES
+-- 新闻 41（text）
+(41, 'image', 'https://picsum.photos/seed/3001/800/600', NULL, 800, 600, 1),
+
+-- 新闻 42
+(42, 'image', 'https://picsum.photos/seed/3002/800/600', NULL, 800, 600, 1),
+(42, 'image', 'https://picsum.photos/seed/3003/800/600', NULL, 800, 600, 2),
+
+-- 新闻 43（text）
+(43, 'image', 'https://picsum.photos/seed/3004/800/600', NULL, 800, 600, 1),
+
+-- 新闻 44（video）
+(44, 'video',
+ 'https://sample-videos.com/video321/mp4/720/big_buck_bunny_720p_1mb.mp4',
+ 'https://picsum.photos/seed/3005/800/600',
+ NULL, NULL, 1),
+(44, 'image', 'https://picsum.photos/seed/3006/800/600', NULL, 800, 600, 2),
+
+-- 新闻 45（text）
+(45, 'image', 'https://picsum.photos/seed/3007/800/600', NULL, 800, 600, 1),
+
+-- 新闻 46
+(46, 'image', 'https://picsum.photos/seed/3008/800/600', NULL, 800, 600, 1),
+(46, 'image', 'https://picsum.photos/seed/3009/800/600', NULL, 800, 600, 2),
+
+-- 新闻 47
+(47, 'image', 'https://picsum.photos/seed/3010/800/600', NULL, 800, 600, 1),
+(47, 'image', 'https://picsum.photos/seed/3011/800/600', NULL, 800, 600, 2),
+
+-- 新闻 48（text）
+(48, 'image', 'https://picsum.photos/seed/3012/800/600', NULL, 800, 600, 1),
+
+-- 新闻 49（text）
+(49, 'image', 'https://picsum.photos/seed/3013/800/600', NULL, 800, 600, 1),
+
+-- 新闻 50
+(50, 'image', 'https://picsum.photos/seed/3014/800/600', NULL, 800, 600, 1),
+(50, 'image', 'https://picsum.photos/seed/3015/800/600', NULL, 800, 600, 2),
+
+-- 新闻 51
+(51, 'image', 'https://picsum.photos/seed/3016/800/600', NULL, 800, 600, 1),
+(51, 'image', 'https://picsum.photos/seed/3017/800/600', NULL, 800, 600, 2),
+
+-- 新闻 52（text）
+(52, 'image', 'https://picsum.photos/seed/3018/800/600', NULL, 800, 600, 1),
+
+-- 新闻 53
+(53, 'image', 'https://picsum.photos/seed/3019/800/600', NULL, 800, 600, 1),
+(53, 'image', 'https://picsum.photos/seed/3020/800/600', NULL, 800, 600, 2),
+
+-- 新闻 54（text）
+(54, 'image', 'https://picsum.photos/seed/3021/800/600', NULL, 800, 600, 1),
+
+-- 新闻 55
+(55, 'image', 'https://picsum.photos/seed/3022/800/600', NULL, 800, 600, 1),
+(55, 'image', 'https://picsum.photos/seed/3023/800/600', NULL, 800, 600, 2),
+
+-- 新闻 56（text）
+(56, 'image', 'https://picsum.photos/seed/3024/800/600', NULL, 800, 600, 1),
+
+-- 新闻 57（video）
+(57, 'video',
+ 'https://sample-videos.com/video321/mp4/720/big_buck_bunny_720p_1mb.mp4',
+ 'https://picsum.photos/seed/3025/800/600',
+ NULL, NULL, 1),
+(57, 'image', 'https://picsum.photos/seed/3026/800/600', NULL, 800, 600, 2),
+
+-- 新闻 58（text）
+(58, 'image', 'https://picsum.photos/seed/3027/800/600', NULL, 800, 600, 1),
+
+-- 新闻 59
+(59, 'image', 'https://picsum.photos/seed/3028/800/600', NULL, 800, 600, 1),
+(59, 'image', 'https://picsum.photos/seed/3029/800/600', NULL, 800, 600, 2),
+
+-- 新闻 60（text）
+(60, 'image', 'https://picsum.photos/seed/3030/800/600', NULL, 800, 600, 1);
+
+```
+
+```
+INSERT INTO media (news_id, media_type, url, cover_url, width, height, order_index)
+VALUES
+-- 新闻 61（text）
+(61, 'image', 'https://picsum.photos/seed/4001/800/600', NULL, 800, 600, 1),
+
+-- 新闻 62
+(62, 'image', 'https://picsum.photos/seed/4002/800/600', NULL, 800, 600, 1),
+(62, 'image', 'https://picsum.photos/seed/4003/800/600', NULL, 800, 600, 2),
+
+-- 新闻 63（text）
+(63, 'image', 'https://picsum.photos/seed/4004/800/600', NULL, 800, 600, 1),
+
+-- 新闻 64
+(64, 'image', 'https://picsum.photos/seed/4005/800/600', NULL, 800, 600, 1),
+(64, 'image', 'https://picsum.photos/seed/4006/800/600', NULL, 800, 600, 2),
+
+-- 新闻 65
+(65, 'image', 'https://picsum.photos/seed/4007/800/600', NULL, 800, 600, 1),
+(65, 'image', 'https://picsum.photos/seed/4008/800/600', NULL, 800, 600, 2),
+
+-- 新闻 66（text）
+(66, 'image', 'https://picsum.photos/seed/4009/800/600', NULL, 800, 600, 1),
+
+-- 新闻 67（text）
+(67, 'image', 'https://picsum.photos/seed/4010/800/600', NULL, 800, 600, 1),
+
+-- 新闻 68
+(68, 'image', 'https://picsum.photos/seed/4011/800/600', NULL, 800, 600, 1),
+(68, 'image', 'https://picsum.photos/seed/4012/800/600', NULL, 800, 600, 2),
+
+-- 新闻 69
+(69, 'image', 'https://picsum.photos/seed/4013/800/600', NULL, 800, 600, 1),
+(69, 'image', 'https://picsum.photos/seed/4014/800/600', NULL, 800, 600, 2),
+
+-- 新闻 70（text）
+(70, 'image', 'https://picsum.photos/seed/4015/800/600', NULL, 800, 600, 1),
+
+-- 新闻 71
+(71, 'image', 'https://picsum.photos/seed/4016/800/600', NULL, 800, 600, 1),
+(71, 'image', 'https://picsum.photos/seed/4017/800/600', NULL, 800, 600, 2),
+
+-- 新闻 72（text）
+(72, 'image', 'https://picsum.photos/seed/4018/800/600', NULL, 800, 600, 1),
+
+-- 新闻 73
+(73, 'image', 'https://picsum.photos/seed/4019/800/600', NULL, 800, 600, 1),
+(73, 'image', 'https://picsum.photos/seed/4020/800/600', NULL, 800, 600, 2),
+
+-- 新闻 74（text）
+(74, 'image', 'https://picsum.photos/seed/4021/800/600', NULL, 800, 600, 1),
+
+-- 新闻 75
+(75, 'image', 'https://picsum.photos/seed/4022/800/600', NULL, 800, 600, 1),
+(75, 'image', 'https://picsum.photos/seed/4023/800/600', NULL, 800, 600, 2),
+
+-- 新闻 76（text）
+(76, 'image', 'https://picsum.photos/seed/4024/800/600', NULL, 800, 600, 1),
+
+-- 新闻 77（text）
+(77, 'image', 'https://picsum.photos/seed/4025/800/600', NULL, 800, 600, 1),
+
+-- 新闻 78
+(78, 'image', 'https://picsum.photos/seed/4026/800/600', NULL, 800, 600, 1),
+(78, 'image', 'https://picsum.photos/seed/4027/800/600', NULL, 800, 600, 2),
+
+-- 新闻 79（text）
+(79, 'image', 'https://picsum.photos/seed/4028/800/600', NULL, 800, 600, 1),
+
+-- 新闻 80
+(80, 'image', 'https://picsum.photos/seed/4029/800/600', NULL, 800, 600, 1),
+(80, 'image', 'https://picsum.photos/seed/4030/800/600', NULL, 800, 600, 2);
+
+```
+
+status
+
+```
+INSERT INTO stats (news_id, like_count, comment_count, favorite_count, share_count, play_count, version)
+VALUES
+(1, 1520, 120, 80, 45, 12800, 1),
+(2, 980, 66, 42, 30, 10200, 1),
+(3, 2230, 150, 120, 70, 15800, 1),
+(4, 1750, 90, 60, 48, 14200, 1),
+(5, 2600, 210, 150, 110, 18500, 1),
+(6, 3100, 260, 180, 140, 98200, 1),
+(7, 1450, 80, 55, 35, 11800, 1),
+(8, 920, 40, 30, 22, 8400, 1),
+(9, 2000, 110, 90, 60, 17000, 1),
+(10, 1880, 95, 75, 50, 15000, 1),
+
+(11, 1320, 60, 43, 28, 11200, 1),
+(12, 980, 55, 38, 26, 8800, 1),
+(13, 2450, 140, 100, 70, 16000, 1),
+(14, 1880, 90, 62, 50, 13800, 1),
+(15, 2750, 180, 130, 98, 120500, 1),
+(16, 1500, 70, 48, 33, 10200, 1),
+(17, 1650, 85, 60, 40, 12500, 1),
+(18, 900, 44, 30, 20, 7600, 1),
+(19, 2100, 120, 90, 60, 14000, 1),
+(20, 1750, 88, 72, 45, 12100, 1),
+
+(21, 1200, 70, 50, 30, 11000, 1),
+(22, 1880, 92, 65, 44, 14500, 1),
+(23, 1600, 85, 58, 39, 11800, 1),
+(24, 2100, 130, 95, 70, 17500, 1),
+(25, 980, 42, 33, 20, 7800, 1),
+(26, 3200, 250, 180, 120, 105000, 1),
+(27, 1250, 65, 48, 33, 9800, 1),
+(28, 1750, 90, 72, 45, 13800, 1),
+(29, 2100, 118, 88, 68, 16000, 1),
+(30, 1500, 70, 55, 36, 11200, 1),
+
+(31, 1100, 54, 40, 28, 9200, 1),
+(32, 1880, 96, 70, 50, 14500, 1),
+(33, 2300, 130, 95, 68, 17500, 1),
+(34, 950, 48, 35, 22, 8100, 1),
+(35, 2000, 115, 88, 66, 15800, 1),
+(36, 2700, 160, 120, 90, 13000, 1),
+(37, 1500, 82, 56, 38, 10800, 1),
+(38, 980, 44, 32, 20, 7600, 1),
+(39, 2200, 125, 92, 70, 16500, 1),
+(40, 1750, 90, 68, 48, 13800, 1),
+
+(41, 1420, 70, 52, 33, 11200, 1),
+(42, 1980, 88, 65, 45, 13600, 1),
+(43, 2250, 140, 98, 75, 16800, 1),
+(44, 1550, 78, 60, 40, 12000, 1),
+(45, 2850, 200, 150, 110, 122000, 1),
+(46, 1350, 68, 50, 32, 10200, 1),
+(47, 1650, 82, 58, 38, 11800, 1),
+(48, 900, 42, 30, 20, 7000, 1),
+(49, 2300, 135, 105, 72, 17500, 1),
+(50, 1880, 95, 72, 48, 13800, 1),
+
+(51, 1200, 66, 48, 30, 11000, 1),
+(52, 950, 44, 35, 22, 8200, 1),
+(53, 2600, 160, 120, 85, 15600, 1),
+(54, 1750, 90, 65, 45, 12200, 1),
+(55, 3100, 240, 180, 120, 130500, 1),
+(56, 1320, 60, 45, 28, 10800, 1),
+(57, 1680, 85, 62, 40, 12500, 1),
+(58, 980, 48, 32, 20, 7600, 1),
+(59, 2150, 118, 88, 58, 16000, 1),
+(60, 1500, 70, 55, 36, 11000, 1),
+
+(61, 1100, 54, 40, 28, 9000, 1),
+(62, 1750, 90, 65, 45, 13800, 1),
+(63, 2300, 135, 98, 72, 16800, 1),
+(64, 1500, 75, 56, 40, 11800, 1),
+(65, 2000, 120, 88, 60, 17000, 1),
+(66, 1250, 65, 48, 32, 9800, 1),
+(67, 1600, 78, 60, 38, 12500, 1),
+(68, 880, 40, 30, 18, 7200, 1),
+(69, 2100, 115, 85, 66, 15800, 1),
+(70, 1800, 90, 70, 50, 14000, 1),
+
+(71, 2600, 170, 130, 90, 110500, 1),
+(72, 2400, 150, 120, 85, 98000, 1),
+(73, 1500, 82, 60, 38, 11800, 1),
+(74, 1880, 96, 75, 52, 13800, 1),
+(75, 2300, 135, 100, 70, 17500, 1),
+(76, 2100, 118, 88, 60, 16000, 1),
+(77, 2450, 140, 105, 78, 18000, 1),
+(78, 1980, 90, 70, 48, 14200, 1),
+(79, 1750, 88, 68, 45, 12000, 1),
+(80, 1650, 82, 58, 40, 11000, 1);
+
+```
+

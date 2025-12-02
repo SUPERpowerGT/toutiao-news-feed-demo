@@ -59,5 +59,5 @@ data class FeedItemDto(
 
     // 推荐排序权重
     @SerializedName("weight")
-    val weight: Int = 0
+    val weight: Float = 0f
 )
