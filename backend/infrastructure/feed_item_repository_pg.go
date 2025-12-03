@@ -246,57 +246,174 @@ LIMIT $2;
 // 下拉刷新
 //////////////////////////////////////////
 
+// func (r *FeedItemRepositoryPG) ListNewer(ctx context.Context, refreshTime int64) ([]domain.FeedItem, error) {
+
+// 	sqlStr := `
+// SELECT
+// 	n.id AS news_id,
+// 	n.title,
+// 	n.summary,
+// 	f.content_type,
+// 	f.category,
+// 	f.sub_category,
+// 	f.tags,
+// 	f.city,
+// 	f.is_official_media,
+// 	f.is_top_official,
+// 	f.source,
+// 	EXTRACT(EPOCH FROM f.publish_time)::bigint AS publish_time,
+// 	f.weight,
+
+// 	a.id AS author_id,
+// 	a.name AS author_name,
+// 	a.avatar_url AS author_avatar,
+// 	a.certification AS author_cert,
+
+// 	s.like_count,
+// 	s.comment_count,
+// 	s.favorite_count,
+// 	s.share_count
+// FROM feed_item f
+// JOIN news n ON n.id = f.news_id
+// LEFT JOIN author a ON a.id = n.author_id
+// LEFT JOIN stats s ON s.news_id = n.id
+// WHERE f.publish_time > to_timestamp($1)
+// ORDER BY f.publish_time DESC;
+// `
+
+// 	rows, err := r.db.QueryContext(ctx, sqlStr, refreshTime)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	defer rows.Close()
+
+// 	items := []domain.FeedItem{}
+// 	for rows.Next() {
+// 		item, err := scanFeedItem(rows)
+// 		if err != nil {
+// 			return nil, err
+// 		}
+// 		// 🎯 修复: 从 item.NewsID 改为 item.ID
+// 		item.Media, _ = r.loadMedia(ctx, item.ID)
+// 		items = append(items, item)
+// 	}
+
+// 	return items, nil
+// }
+
+// infrastructure/feed_item_repository_pg.go
+
+//////////////////////////////////////////
+// 下拉刷新 (Top5 + Normal15 模式，带时间过滤)
+//////////////////////////////////////////
+
 func (r *FeedItemRepositoryPG) ListNewer(ctx context.Context, refreshTime int64) ([]domain.FeedItem, error) {
 
-	sqlStr := `
+	// 1. 获取 Top 官方内容（最新的 5 条，且发布时间要比 refreshTime 新）
+	sqlTop := `
 SELECT
-	n.id AS news_id,
-	n.title,
-	n.summary,
-	f.content_type,
-	f.category,
-	f.sub_category,
-	f.tags,
-	f.city,
-	f.is_official_media,
-	f.is_top_official,
-	f.source,
-	EXTRACT(EPOCH FROM f.publish_time)::bigint AS publish_time,
-	f.weight,
+    n.id AS news_id,
+    n.title,
+    n.summary,
+    f.content_type,
+    f.category,
+    f.sub_category,
+    f.tags,
+    f.city,
+    f.is_official_media,
+    f.is_top_official,
+    f.source,
+    EXTRACT(EPOCH FROM f.publish_time)::bigint AS publish_time,
+    f.weight,
 
-	a.id AS author_id,
-	a.name AS author_name,
-	a.avatar_url AS author_avatar,
-	a.certification AS author_cert,
+    a.id AS author_id,
+    a.name AS author_name,
+    a.avatar_url AS author_avatar,
+    a.certification AS author_cert,
 
-	s.like_count,
-	s.comment_count,
-	s.favorite_count,
-	s.share_count
+    s.like_count,
+    s.comment_count,
+    s.favorite_count,
+    s.share_count
 FROM feed_item f
 JOIN news n ON n.id = f.news_id
 LEFT JOIN author a ON a.id = n.author_id
 LEFT JOIN stats s ON s.news_id = n.id
-WHERE f.publish_time > to_timestamp($1)
-ORDER BY f.publish_time DESC;
+WHERE f.is_top_official = TRUE
+  AND f.publish_time > to_timestamp($1)
+ORDER BY f.publish_time DESC
+LIMIT 5;
 `
-
-	rows, err := r.db.QueryContext(ctx, sqlStr, refreshTime)
+	rowsTop, err := r.db.QueryContext(ctx, sqlTop, refreshTime) // 传入 refreshTime
 	if err != nil {
-		return nil, err
+		// 确保返回的错误清晰地包含是哪个 SQL 失败了
+		return nil, fmt.Errorf("query sqlTop failed: %w", err)
 	}
-	defer rows.Close()
+	defer rowsTop.Close()
 
-	items := []domain.FeedItem{}
-	for rows.Next() {
-		item, err := scanFeedItem(rows)
+	topItems := []domain.FeedItem{}
+	for rowsTop.Next() {
+		item, err := scanFeedItem(rowsTop)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("scan top feed item failed: %w", err)
 		}
-		// 🎯 修复: 从 item.NewsID 改为 item.ID
 		item.Media, _ = r.loadMedia(ctx, item.ID)
-		items = append(items, item)
+		topItems = append(topItems, item)
 	}
+
+	// 2. 获取 普通内容（最新的 15 条，且发布时间要比 refreshTime 新）
+	sqlNormal := `
+SELECT
+    n.id AS news_id,
+    n.title,
+    n.summary,
+    f.content_type,
+    f.category,
+    f.sub_category,
+    f.tags,
+    f.city,
+    f.is_official_media,
+    f.is_top_official,
+    f.source,
+    EXTRACT(EPOCH FROM f.publish_time)::bigint AS publish_time,
+    f.weight,
+
+    a.id AS author_id,
+    a.name AS author_name,
+    a.avatar_url AS author_avatar,
+    a.certification AS author_cert,
+
+    s.like_count,
+    s.comment_count,
+    s.favorite_count,
+    s.share_count
+FROM feed_item f
+JOIN news n ON n.id = f.news_id
+LEFT JOIN author a ON a.id = n.author_id
+LEFT JOIN stats s ON s.news_id = n.id
+WHERE f.is_top_official = FALSE
+  AND f.publish_time > to_timestamp($1)
+ORDER BY f.publish_time DESC, f.weight DESC
+LIMIT 15;
+`
+	rowsNormal, err := r.db.QueryContext(ctx, sqlNormal, refreshTime) // 传入 refreshTime
+	if err != nil {
+		return nil, fmt.Errorf("query sqlNormal failed: %w", err)
+	}
+	defer rowsNormal.Close()
+
+	normalItems := []domain.FeedItem{}
+	for rowsNormal.Next() {
+		item, err := scanFeedItem(rowsNormal)
+		if err != nil {
+			return nil, fmt.Errorf("scan normal feed item failed: %w", err)
+		}
+		item.Media, _ = r.loadMedia(ctx, item.ID)
+		normalItems = append(normalItems, item)
+	}
+
+	// 3. 合并并返回
+	items := append(topItems, normalItems...)
 
 	return items, nil
 }

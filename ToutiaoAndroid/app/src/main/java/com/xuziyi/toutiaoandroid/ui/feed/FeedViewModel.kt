@@ -67,39 +67,37 @@ class FeedViewModel(
 
         viewModelScope.launch {
             try {
-                // 1) 松手 → 启动刷新中动画（不重置 pullProgress）
+                // 1) 进入刷新状态
                 _state.value = current.copy(
                     isRefreshing = true
                 )
 
                 val latest = System.currentTimeMillis() / 1000
 
-                // 2) 请求新数据
+                // 2) 请求新数据（根据 latest 刷新）
                 val raw = refreshFeedUseCase(latest)
 
+                // 3) 渲染新数据（不再拼接 oldRendered）
                 val newRendered = renderCardTypeUseCase.execute(raw)
-                val oldRendered = renderCardTypeUseCase.execute(current.mixedItems)
 
-                val processed = processFeedItemsUseCase.execute(
-                    newRendered + oldRendered
-                )
+                // 4) 业务加工（Top5 + Normal15 混排）
+                val processed = processFeedItemsUseCase.execute(newRendered)
 
                 val newCount = raw.size
 
-                // 3) 刷新完成 → 停止循环（isRefreshing=false）
-                //    但不要立刻把 pullProgress 清零！
+                // 5) 刷新完成 → 只更新“新数据”
                 _state.value = current.copy(
                     officialItems = processed.officialList,
-                    mixedItems = processed.mixedList,
+                    mixedItems = processed.mixedList,   // ⭐ 只保留新的列表
                     isRefreshing = false,
                     latestPublishTime = latest,
                     newCount = newCount
                 )
 
-                // 4) 给刷新头一个回弹时间（与头条一致）
+                // 6) 回弹动画
                 delay(300)
 
-                // 5) 再归零进度
+                // 7) 清掉下拉进度
                 val after = _state.value
                 if (after is FeedUiState.Success) {
                     _state.value = after.copy(
@@ -107,7 +105,7 @@ class FeedViewModel(
                     )
                 }
 
-                // 6) 顶部 "xx 条更新" 显示 1 秒
+                // 8) “xx 条更新”提示停留 1 秒
                 delay(1000)
                 hideUpdateHint()
 

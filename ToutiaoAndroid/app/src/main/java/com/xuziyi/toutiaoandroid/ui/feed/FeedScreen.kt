@@ -25,9 +25,7 @@ fun FeedScreen(
     var selectedIndex by remember { mutableIntStateOf(1) }
     var hasNewFollowingContent by remember { mutableStateOf(true) }
 
-    // ⭐ 文章列表滚动状态
     val feedListState = rememberLazyListState()
-
 
     val tabs = remember {
         listOf(
@@ -47,78 +45,74 @@ fun FeedScreen(
 
     var showChannelManager by rememberSaveable { mutableStateOf(false) }
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    Column(modifier = Modifier.fillMaxSize()) {
 
-        when (state) {
+        FeedTopBar()
 
-            is FeedUiState.Loading -> {
-                CircularProgressIndicator(
-                    modifier = Modifier.align(Alignment.Center)
-                )
-            }
+        FeedTabBar(
+            tabs = tabs,
+            selectedIndex = selectedIndex,
+            hasNewFollowing = hasNewFollowingContent,
+            showChannelManager = showChannelManager,
+            onTabSelected = { index ->
+                selectedIndex = index
+                showChannelManager = true
+                if (index == 0) hasNewFollowingContent = false
+            },
+            onListenClick = { println("点击听新闻按钮") }
+        )
 
-            is FeedUiState.Error -> {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(text = "加载失败：${state.message}")
-                }
-            }
+        // ========================
+        // ⭐ 内容区域（仅此区域参与下拉刷新）
+        // ========================
+        Box(modifier = Modifier.weight(1f)) {
 
-            is FeedUiState.Success -> {
+            when (state) {
 
-                Column(modifier = Modifier.fillMaxSize()) {
-
-                    FeedTopBar()
-
-                    FeedTabBar(
-                        tabs = tabs,
-                        selectedIndex = selectedIndex,
-                        hasNewFollowing = hasNewFollowingContent,
-                        showChannelManager = showChannelManager,
-                        onTabSelected = { index ->
-                            selectedIndex = index
-                            showChannelManager = true
-                            if (index == 0) hasNewFollowingContent = false
-                        },
-                        onListenClick = {
-                            println("点击听新闻按钮")
-                        }
+                is FeedUiState.Loading -> {
+                    CircularProgressIndicator(
+                        modifier = Modifier.align(Alignment.Center)
                     )
+                }
 
+                is FeedUiState.Error -> {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(text = "加载失败：${state.message}")
+                    }
+                }
 
-                    Box(modifier = Modifier.weight(1f)) {
+                is FeedUiState.Success -> {
 
-                        when (selectedIndex) {
+                    // ⭐ 推荐页才启用下拉刷新
+                    if (selectedIndex == 1) {
 
-                            1 -> {
-                                ToutiaoPullRefresh(
-                                    listState = feedListState,       // ⭐ 刷新用文章列表的 state
-                                    isRefreshing = state.isRefreshing,
-                                    pullProgress = state.pullProgress,
-                                    onPull = { viewModel.updatePullProgress(it) },
-                                    onRefreshTriggered = { viewModel.refresh() }
-                                ) { paddingTop ->
+                        ToutiaoPullRefresh(
+                            listState = feedListState,
+                            isRefreshing = state.isRefreshing,
+                            pullProgress = state.pullProgress,
+                            onPull = { viewModel.updatePullProgress(it) },
+                            onRefreshTriggered = { viewModel.refresh() }
+                        ) { paddingTop ->
 
-                                    FeedList(
-                                        officialItems = state.officialItems,
-                                        mixedItems = state.mixedItems,
-                                        onItemClick = onOpenDetail,
-                                        listState = feedListState,   // ⭐ FeedList 也用文章列表的 state
-                                        modifier = Modifier.fillMaxSize()
-                                    )
-                                }
-                            }
+                            FeedList(
+                                officialItems = state.officialItems,
+                                mixedItems = state.mixedItems,
+                                onItemClick = onOpenDetail,
+                                listState = feedListState,
+                                modifier = Modifier
+                                    .fillMaxSize()
+                            )
+                        }
 
-                            else -> {
-                                Box(
-                                    modifier = Modifier.fillMaxSize(),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Text(text = "${tabs[selectedIndex].title} 内容建设中…")
-                                }
-                            }
+                    } else {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(text = "${tabs[selectedIndex].title} 内容建设中…")
                         }
                     }
                 }

@@ -20,8 +20,10 @@ class FeedRepository(
     }
 
     override suspend fun refreshFeed(latestPublishTime: Long): List<FeedItem> {
-        val response = remoteDataSource.refreshFeed(latestPublishTime)
-
+        //val response = remoteDataSource.refreshFeed(latestPublishTime)
+        //fake一个时间来模拟有新的新闻插入（给一个旧的时间）
+        val fakeRefreshTime = 1730419200L
+        val response = remoteDataSource.refreshFeed(fakeRefreshTime)
         return withContext(Dispatchers.Default) {
             response.items.map { it.toDomain() }
         }
