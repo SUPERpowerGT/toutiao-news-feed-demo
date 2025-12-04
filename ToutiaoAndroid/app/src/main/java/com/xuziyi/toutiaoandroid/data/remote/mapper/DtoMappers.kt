@@ -2,6 +2,7 @@ package com.xuziyi.toutiaoandroid.data.remote.mapper
 
 import com.xuziyi.toutiaoandroid.data.remote.dto.AuthorDto
 import com.xuziyi.toutiaoandroid.data.remote.dto.FeedItemDto
+import com.xuziyi.toutiaoandroid.data.remote.dto.FeedResponseDto
 import com.xuziyi.toutiaoandroid.data.remote.dto.MediaDto
 import com.xuziyi.toutiaoandroid.data.remote.dto.StatsDto
 import com.xuziyi.toutiaoandroid.domain.model.*
@@ -67,5 +68,14 @@ fun StatsDto.toDomain(): FeedStatsItem {
         commentCount = commentCount,
         favoriteCount = favoriteCount,
         shareCount = shareCount
+    )
+}
+
+fun FeedResponseDto.toDomain(): FeedData {
+    return FeedData(
+        items = items.map { it.toDomain() }, // ⭐ 复用你已有的 FeedItemDto.toDomain()
+        nextCursor = nextCursor,
+        hasMore = hasMore,
+        latestPublishTime = latestPublishTime
     )
 }

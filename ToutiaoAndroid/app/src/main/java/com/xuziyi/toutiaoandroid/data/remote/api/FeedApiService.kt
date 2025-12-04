@@ -16,7 +16,7 @@ interface FeedApiService {
 
     @GET("api/v1/feed")
     suspend fun getFeed(
-        @Query("cursor") cursor: String? = null,
+        @Query("cursor") cursor: Long? = null,
         @Query("refresh_time") refreshTime: Long? = null
     ): ApiResponse<FeedResponseDto>
 

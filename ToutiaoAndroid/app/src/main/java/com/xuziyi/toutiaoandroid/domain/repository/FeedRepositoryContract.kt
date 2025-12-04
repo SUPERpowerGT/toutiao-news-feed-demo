@@ -1,5 +1,6 @@
 package com.xuziyi.toutiaoandroid.domain.repository
 
+import com.xuziyi.toutiaoandroid.domain.model.FeedData
 import com.xuziyi.toutiaoandroid.domain.model.FeedItem
 
 /**
@@ -17,5 +18,5 @@ interface FeedRepositoryContract {
 
     suspend fun refreshFeed(latestPublishTime: Long): List<FeedItem>
 
-    suspend fun loadMore(cursor: String): List<FeedItem>
+    suspend fun loadMore(cursor: Long): FeedData
 }

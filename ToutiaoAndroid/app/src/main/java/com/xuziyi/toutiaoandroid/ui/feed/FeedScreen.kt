@@ -14,6 +14,8 @@ import com.xuziyi.toutiaoandroid.ui.feed.components.FeedTabBar
 import com.xuziyi.toutiaoandroid.ui.feed.components.FeedTabItem
 import com.xuziyi.toutiaoandroid.ui.feed.components.FeedTopBar
 import com.xuziyi.toutiaoandroid.ui.feed.refresh.ToutiaoPullRefresh
+import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.platform.LocalDensity
 
 @Composable
 fun FeedScreen(
@@ -63,7 +65,7 @@ fun FeedScreen(
         )
 
         // ========================
-        // ⭐ 内容区域（仅此区域参与下拉刷新）
+        // ⭐ 内容区域
         // ========================
         Box(modifier = Modifier.weight(1f)) {
 
@@ -86,7 +88,29 @@ fun FeedScreen(
 
                 is FeedUiState.Success -> {
 
-                    // ⭐ 推荐页才启用下拉刷新
+                    // ⭐ 加载更多监听逻辑（官方推荐写法）
+                    LaunchedEffect(feedListState, state) {
+                        snapshotFlow {
+                            val info = feedListState.layoutInfo
+                            val last = info.visibleItemsInfo.lastOrNull()?.index ?: 0
+                            val total = info.totalItemsCount
+                            last to total
+                        }.collect { (last, total) ->
+
+                            val s = state as? FeedUiState.Success ?: return@collect
+
+                            val shouldLoadMore =
+                                s.hasMore &&
+                                        !s.isLoadingMore &&
+                                        last >= total - 5
+
+                            if (shouldLoadMore) {
+                                viewModel.loadMore()
+                            }
+                        }
+                    }
+
+                    // ⭐ 仅推荐页启用下拉刷新
                     if (selectedIndex == 1) {
 
                         ToutiaoPullRefresh(
@@ -102,8 +126,14 @@ fun FeedScreen(
                                 mixedItems = state.mixedItems,
                                 onItemClick = onOpenDetail,
                                 listState = feedListState,
+
+                                // ⭐ 加载更多状态传入
+                                isLoadingMore = state.isLoadingMore,
+                                hasMore = state.hasMore,
+
                                 modifier = Modifier
                                     .fillMaxSize()
+                                    .padding(top = with(LocalDensity.current) { paddingTop.toDp() })
                             )
                         }
 

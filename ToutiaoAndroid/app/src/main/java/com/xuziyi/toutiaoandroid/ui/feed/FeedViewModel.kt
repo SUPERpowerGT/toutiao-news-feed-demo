@@ -130,24 +130,32 @@ class FeedViewModel(
     fun loadMore() {
         val current = state.value
         if (current !is FeedUiState.Success) return
+        if (current.isLoadingMore || !current.hasMore) return
 
-        val cursor = current.latestPublishTime?.toString() ?: "0"
+        // ⭐ 优先用后端返回的 nextCursor；如果还没初始化，就退回到最老的 publishTime
+        val cursor: Long = current.nextCursor
+            ?: current.mixedItems.minOfOrNull { it.publishTime }
+            ?: return
 
         viewModelScope.launch {
             try {
                 _state.value = current.copy(isLoadingMore = true)
 
-                val raw = loadMoreFeedUseCase(cursor)
+                // ⭐ loadMoreFeedUseCase 现在返回的是 FeedData
+                val feedData = loadMoreFeedUseCase(cursor)
 
-                if (raw.isEmpty()) {
+                // 后端确认：如果没有更多数据
+                if (feedData.items.isEmpty()) {
                     _state.value = current.copy(
                         isLoadingMore = false,
-                        hasMore = false
+                        hasMore = false,
+                        nextCursor = null
                     )
                     return@launch
                 }
 
-                val newRendered = renderCardTypeUseCase.execute(raw)
+                // ⭐ 新旧数据合并 + 卡片类型渲染
+                val newRendered = renderCardTypeUseCase.execute(feedData.items)
                 val oldRendered = renderCardTypeUseCase.execute(
                     current.officialItems + current.mixedItems
                 )
@@ -156,16 +164,23 @@ class FeedViewModel(
                     oldRendered + newRendered
                 )
 
+                // ⭐ 更新 UI 状态（包括 nextCursor / hasMore / latestPublishTime）
                 _state.value = current.copy(
                     officialItems = processed.officialList,
                     mixedItems = processed.mixedList,
                     isLoadingMore = false,
-                    hasMore = true
+
+                    hasMore = feedData.hasMore,
+                    nextCursor = feedData.nextCursor,
+                    latestPublishTime = processed.mixedList.minOfOrNull { it.publishTime }
                 )
 
             } catch (e: Exception) {
-                _state.value = FeedUiState.Error("加载更多失败：${e.message}")
+                // 不清空列表，只停止 loading
+                _state.value = current.copy(isLoadingMore = false)
             }
         }
     }
+
+
 }

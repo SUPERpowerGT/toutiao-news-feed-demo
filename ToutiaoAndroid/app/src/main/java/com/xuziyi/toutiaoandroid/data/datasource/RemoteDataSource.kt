@@ -12,7 +12,7 @@ import com.xuziyi.toutiaoandroid.data.remote.dto.FeedResponseDto
 class RemoteDataSource(private val api: FeedApiService) {
 
     // 核心逻辑：封装一个私有函数来处理解包和异常
-    private suspend fun getAndUnwrapFeed(cursor: String?, refreshTime: Long?): FeedResponseDto {
+    private suspend fun getAndUnwrapFeed(cursor: Long?, refreshTime: Long?): FeedResponseDto {
         // api.getFeed(...) 现在返回 ApiResponse<FeedResponseDto>
         val apiResponse = api.getFeed(cursor = cursor, refreshTime = refreshTime)
 
@@ -43,7 +43,7 @@ class RemoteDataSource(private val api: FeedApiService) {
     }
 
     // 调用封装的私有函数
-    suspend fun loadMore(cursor: String): FeedResponseDto {
+    suspend fun loadMore(cursor: Long): FeedResponseDto {
         return getAndUnwrapFeed(cursor = cursor, refreshTime = null)
     }
 }

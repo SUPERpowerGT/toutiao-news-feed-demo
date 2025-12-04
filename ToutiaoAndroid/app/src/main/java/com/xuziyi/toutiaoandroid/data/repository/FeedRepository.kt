@@ -2,6 +2,7 @@ package com.xuziyi.toutiaoandroid.data.repository
 
 import com.xuziyi.toutiaoandroid.data.datasource.RemoteDataSource
 import com.xuziyi.toutiaoandroid.data.remote.mapper.toDomain
+import com.xuziyi.toutiaoandroid.domain.model.FeedData
 import com.xuziyi.toutiaoandroid.domain.model.FeedItem
 import com.xuziyi.toutiaoandroid.domain.repository.FeedRepositoryContract
 import kotlinx.coroutines.Dispatchers
@@ -29,11 +30,10 @@ class FeedRepository(
         }
     }
 
-    override suspend fun loadMore(cursor: String): List<FeedItem> {
+    override suspend fun loadMore(cursor: Long): FeedData {
         val response = remoteDataSource.loadMore(cursor)
-
         return withContext(Dispatchers.Default) {
-            response.items.map { it.toDomain() }
+            response.toDomain()   // ⭐ 同样使用 mapper
         }
     }
 }

@@ -16,13 +16,17 @@ sealed interface FeedUiState {
         val mixedItems: List<FeedItem>,
 
         // ===== 下拉刷新控制 =====
-        val isRefreshing: Boolean = false,     // 正在下拉刷新
-        val pullProgress: Float = 0f,          // 下拉进度 0f~1f
-        val newCount: Int = 0,                 // 刷新后 xx 条更新
+        val isRefreshing: Boolean = false,
+        val pullProgress: Float = 0f,
+        val newCount: Int = 0,
 
         // ===== 加载更多控制 =====
-        val isLoadingMore: Boolean = false,    // 正在加载更多
+        val isLoadingMore: Boolean = false,
         val hasMore: Boolean = true,
-        val latestPublishTime: Long? = null
+
+        // ===== 游标管理（新增）=====
+        val latestPublishTime: Long? = null,   // 刷新用
+        val nextCursor: Long? = null           // 加载更多用 ← 必须新增！
     ) : FeedUiState
+
 }
