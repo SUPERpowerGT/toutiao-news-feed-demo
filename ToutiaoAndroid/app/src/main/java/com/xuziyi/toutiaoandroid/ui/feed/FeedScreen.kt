@@ -94,8 +94,10 @@ fun FeedScreen(
                             val info = feedListState.layoutInfo
                             val last = info.visibleItemsInfo.lastOrNull()?.index ?: 0
                             val total = info.totalItemsCount
+                            android.util.Log.d("FeedScroll", "🔥 snapshotFlow: last=$last total=$total")
                             last to total
                         }.collect { (last, total) ->
+                            android.util.Log.d("FeedScroll", "⚡ collect: last=$last total=$total")
 
                             val s = state as? FeedUiState.Success ?: return@collect
 
@@ -103,8 +105,9 @@ fun FeedScreen(
                                 s.hasMore &&
                                         !s.isLoadingMore &&
                                         last >= total - 5
-
+                            android.util.Log.d("FeedScroll", "📌 shouldLoadMore=$shouldLoadMore")
                             if (shouldLoadMore) {
+                                android.util.Log.d("FeedScroll", "🚀 loadMore() 即将触发")
                                 viewModel.loadMore()
                             }
                         }

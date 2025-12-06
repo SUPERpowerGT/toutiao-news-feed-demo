@@ -132,53 +132,38 @@ class FeedViewModel(
         if (current !is FeedUiState.Success) return
         if (current.isLoadingMore || !current.hasMore) return
 
-        // ⭐ 优先用后端返回的 nextCursor；如果还没初始化，就退回到最老的 publishTime
-        val cursor: Long = current.nextCursor
-            ?: current.mixedItems.minOfOrNull { it.publishTime }
-            ?: return
+        val cursor = current.nextCursor ?: current.mixedItems.minOf { it.publishTime }
 
         viewModelScope.launch {
-            try {
-                _state.value = current.copy(isLoadingMore = true)
 
-                // ⭐ loadMoreFeedUseCase 现在返回的是 FeedData
-                val feedData = loadMoreFeedUseCase(cursor)
+            // ① 必须立即更新 UI
+            _state.value = current.copy(isLoadingMore = true)
 
-                // 后端确认：如果没有更多数据
-                if (feedData.items.isEmpty()) {
-                    _state.value = current.copy(
-                        isLoadingMore = false,
-                        hasMore = false,
-                        nextCursor = null
-                    )
-                    return@launch
-                }
+            val feedData = loadMoreFeedUseCase(cursor)
 
-                // ⭐ 新旧数据合并 + 卡片类型渲染
-                val newRendered = renderCardTypeUseCase.execute(feedData.items)
-                val oldRendered = renderCardTypeUseCase.execute(
-                    current.officialItems + current.mixedItems
-                )
+            val afterLoading = _state.value as FeedUiState.Success
 
-                val processed = processFeedItemsUseCase.execute(
-                    oldRendered + newRendered
-                )
-
-                // ⭐ 更新 UI 状态（包括 nextCursor / hasMore / latestPublishTime）
-                _state.value = current.copy(
-                    officialItems = processed.officialList,
-                    mixedItems = processed.mixedList,
+            if (feedData.items.isEmpty()) {
+                _state.value = afterLoading.copy(
                     isLoadingMore = false,
-
-                    hasMore = feedData.hasMore,
-                    nextCursor = feedData.nextCursor,
-                    latestPublishTime = processed.mixedList.minOfOrNull { it.publishTime }
+                    hasMore = false
                 )
-
-            } catch (e: Exception) {
-                // 不清空列表，只停止 loading
-                _state.value = current.copy(isLoadingMore = false)
+                return@launch
             }
+
+            val newRendered = renderCardTypeUseCase.execute(feedData.items)
+            val existingRendered = renderCardTypeUseCase.execute(afterLoading.officialItems + afterLoading.mixedItems)
+
+            val processed = processFeedItemsUseCase.execute(existingRendered + newRendered)
+
+            // ② 注意这里用 afterLoading，而不是 old current，否则会覆盖 isLoadingMore
+            _state.value = afterLoading.copy(
+                isLoadingMore = false,
+                officialItems = processed.officialList,
+                mixedItems = processed.mixedList,
+                hasMore = feedData.hasMore,
+                nextCursor = feedData.nextCursor
+            )
         }
     }
 

@@ -59,14 +59,14 @@ fun FeedList(
                 index < 6 ||
                         listState.firstVisibleItemIndex >= index - 1
 
-            if (!shouldRender) {
-                Spacer(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(140.dp)
-                )
-                return@itemsIndexed
-            }
+//            if (!shouldRender) {
+//                Spacer(
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//                        .height(140.dp)
+//                )
+//                return@itemsIndexed
+//            }
 
             FeedCardFactory(
                 item = item,
@@ -75,8 +75,14 @@ fun FeedList(
         }
 
         // ===== 4. 优化后的 Footer =====
-        item("footer") {
-
+//        item("footer") {
+//
+//            FooterLoadingState(
+//                isLoadingMore = isLoadingMore,
+//                hasMore = hasMore
+//            )
+//        }
+        item {
             FooterLoadingState(
                 isLoadingMore = isLoadingMore,
                 hasMore = hasMore
