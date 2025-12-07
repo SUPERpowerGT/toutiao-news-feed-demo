@@ -30,13 +30,13 @@ fun CardCoverImage(
             .data(url)
             .crossfade(true)
 
-            // ⭐ 限制最大 decode 尺寸，避免解码原图
+            //限制最大 decode 尺寸，避免解码原图
             .size(
                 width = width.value.toInt().coerceAtLeast(200),
                 height = height.value.toInt().coerceAtLeast(150)
             )
 
-            // ⭐ 强制硬件加速，提升滚动性能
+            //强制硬件加速，提升滚动性能
             .allowHardware(true)
 
             .build(),

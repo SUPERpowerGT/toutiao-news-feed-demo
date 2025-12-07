@@ -3,41 +3,27 @@ package com.xuziyi.toutiaoandroid
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.ui.platform.LocalContext
 import androidx.core.view.WindowCompat
-import coil.ImageLoader
-import coil.compose.LocalImageLoader
-import coil.decode.VideoFrameDecoder
 import com.xuziyi.toutiaoandroid.ui.navigation.AppNavigator
 import com.xuziyi.toutiaoandroid.ui.theme.ToutiaoAndroidTheme
 
+// MainActivity 作为整个 App 的 UI 入口（Compose 的启动点）
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // 关闭系统默认的状态栏/导航栏内边距适配，启用沉浸式布局
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
+        // setContent = Compose UI 的入口
         setContent {
 
-            val context = LocalContext.current
+            // 应用 App 的全局主题（颜色、字体、形状等）
+            ToutiaoAndroidTheme {
 
-            val imageLoader = ImageLoader.Builder(context)
-                .crossfade(true)
-                .apply {
-                    // Coil 2.x 用 this.components
-                    components {
-                        add(VideoFrameDecoder.Factory())
-                    }
-                }
-                .build()
-
-            CompositionLocalProvider(
-                LocalImageLoader provides imageLoader
-            ) {
-                ToutiaoAndroidTheme {
-                    AppNavigator()
-                }
+                // App 的导航容器，负责页面切换（首页、详情页等）
+                AppNavigator()
             }
         }
     }

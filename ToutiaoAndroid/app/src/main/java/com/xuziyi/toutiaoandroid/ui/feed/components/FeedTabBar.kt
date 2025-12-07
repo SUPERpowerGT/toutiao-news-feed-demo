@@ -7,7 +7,6 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
@@ -27,6 +26,12 @@ import androidx.compose.ui.unit.sp
 import com.xuziyi.toutiaoandroid.R
 import kotlinx.coroutines.android.awaitFrame
 import kotlinx.coroutines.launch
+
+/**
+ * —— 独立的 LazyRow 滚动，不与内容列表共享状态
+ * —— 点击自动滚动并居中选中项（头条同款体验）
+ * —— 支持红点提示、频道管理按钮与听新闻入口
+ */
 
 @Composable
 fun FeedTabBar(
@@ -79,10 +84,7 @@ fun FeedTabBar(
             .background(Color.White),
         verticalAlignment = Alignment.CenterVertically
     ) {
-
-        // =======================
-        // 1. 左侧 Tab 滚动区
-        // =======================
+        //左侧 Tab 滚动区
         Box(modifier = Modifier.weight(1f)) {
 
             LazyRow(
@@ -163,9 +165,7 @@ fun FeedTabBar(
             }
         }
 
-        // =======================
-        // 2. 频道管理按钮
-        // =======================
+        //频道管理按钮
         if (showChannelManager) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_menu),
@@ -177,10 +177,7 @@ fun FeedTabBar(
                     .clickable {}
             )
         }
-
-        // =======================
         // 3. 听新闻按钮
-        // =======================
         Icon(
             painter = painterResource(id = R.drawable.ic_listen),
             contentDescription = null,

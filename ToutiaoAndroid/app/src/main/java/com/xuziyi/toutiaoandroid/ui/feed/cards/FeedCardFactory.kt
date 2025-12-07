@@ -14,7 +14,6 @@ fun FeedCardFactory(
         is FeedCardType.Text -> TextCard(item, modifier)
         is FeedCardType.Image -> ImageCard(item, modifier)
         is FeedCardType.Video -> VideoCard(item, modifier)
-        //is FeedCardType.Official -> OfficialCard(item, modifier)
         is FeedCardType.OfficialTop -> OfficialTopCard(item, modifier)
         //is FeedCardType.Gallery -> GalleryCard(item, modifier)
         //is FeedCardType.Ad -> AdCard(item, modifier)

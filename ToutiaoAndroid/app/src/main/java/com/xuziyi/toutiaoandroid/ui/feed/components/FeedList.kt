@@ -16,6 +16,17 @@ import androidx.compose.ui.unit.dp
 import com.xuziyi.toutiaoandroid.domain.model.FeedItem
 import com.xuziyi.toutiaoandroid.ui.feed.cards.FeedCardFactory
 import com.xuziyi.toutiaoandroid.ui.feed.cards.OfficialTopCard
+/**
+ * 今日头条风格推荐流列表：
+ * —— 顶部固定官方 Top5
+ * —— 中间为混合推荐内容（图文 / 多图 / 视频）
+ * —— 底部展示加载更多或“没有更多”状态
+ * 使用 item.id 作为唯一 key 避免 LazyColumn 重组冲突。
+ * 启用轻量级渲染优化：仅渲染可视范围附近的内容，其余以占位符代替，
+ * 以提升长列表滑动性能（字节系常见做法）。
+ * 本组件仅负责 UI 渲染，不包含业务逻辑（刷新/分页由 ViewModel 控制）。
+ */
+
 @Composable
 fun FeedList(
     officialItems: List<FeedItem>,
@@ -23,6 +34,7 @@ fun FeedList(
     onItemClick: (Long) -> Unit,
     listState: LazyListState,
 
+    // 分页状态
     isLoadingMore: Boolean,
     hasMore: Boolean,
 
@@ -33,16 +45,18 @@ fun FeedList(
         state = listState,
         modifier = modifier.fillMaxSize()
     ) {
-
-        // ===== 1. 官方 Top5 =====
-        itemsIndexed(officialItems, key = { _, item -> item.id }) { _, item ->
+        // 官方 Top5
+        itemsIndexed(
+            items = officialItems,
+            key = { _, item -> item.id }
+        ) { _, item ->
             OfficialTopCard(
                 item = item,
                 modifier = Modifier.clickable { onItemClick(item.id) }
             )
         }
 
-        // ===== 2. 分割线 =====
+        // 分割条
         item("divider") {
             Box(
                 modifier = Modifier
@@ -52,36 +66,35 @@ fun FeedList(
             )
         }
 
-        // ===== 3. 主内容流 =====
-        itemsIndexed(mixedItems, key = { index, item -> item.id }) { index, item ->
+        // 主推荐流（带懒加载渲染优化）
+        itemsIndexed(
+            items = mixedItems,
+            key = { _, item -> item.id }
+        ) { index, item ->
 
-            val shouldRender =
-                index < 6 ||
-                        listState.firstVisibleItemIndex >= index - 1
+            // 🌟 今日头条式可视窗口渲染优化
+            val firstVisible = listState.firstVisibleItemIndex
+            val shouldRender = index <= firstVisible + 10
 
-//            if (!shouldRender) {
-//                Spacer(
-//                    modifier = Modifier
-//                        .fillMaxWidth()
-//                        .height(140.dp)
-//                )
-//                return@itemsIndexed
-//            }
-
-            FeedCardFactory(
-                item = item,
-                modifier = Modifier.clickable { onItemClick(item.id) }
-            )
+            if (shouldRender) {
+                // → 正常渲染卡片
+                FeedCardFactory(
+                    item = item,
+                    modifier = Modifier.clickable { onItemClick(item.id) }
+                )
+            } else {
+                // → 不渲染内容，只占位防止跳动
+                Spacer(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(120.dp)  // 你可以按卡片平均高度调整
+                )
+            }
         }
 
-        // ===== 4. 优化后的 Footer =====
-//        item("footer") {
-//
-//            FooterLoadingState(
-//                isLoadingMore = isLoadingMore,
-//                hasMore = hasMore
-//            )
-//        }
+        // ============================
+        // Footer 加载更多区块
+        // ============================
         item {
             FooterLoadingState(
                 isLoadingMore = isLoadingMore,
@@ -89,16 +102,13 @@ fun FeedList(
             )
         }
 
-        // ===== 5. 加一点额外底部安全间距（防跳动）======
+        // 额外 padding（防止滑动到尾部抖动）
         item("footer-padding") {
             Spacer(Modifier.height(32.dp))
         }
     }
 }
 
-/**
- * 分离 Footer 逻辑，结构更清晰
- */
 @Composable
 fun FooterLoadingState(
     isLoadingMore: Boolean,
@@ -113,6 +123,8 @@ fun FooterLoadingState(
     ) {
 
         when {
+
+            // 加载更多中
             isLoadingMore -> {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -127,12 +139,15 @@ fun FooterLoadingState(
                 }
             }
 
+            // 没有更多内容了
             !hasMore -> {
                 Text(
                     text = "— 没有更多内容了 —",
                     color = Color.Gray
                 )
             }
+
+            // 默认状态，不显示任何 UI
         }
     }
 }

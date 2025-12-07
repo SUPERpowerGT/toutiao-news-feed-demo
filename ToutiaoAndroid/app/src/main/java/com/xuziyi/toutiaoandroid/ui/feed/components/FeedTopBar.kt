@@ -36,19 +36,35 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.xuziyi.toutiaoandroid.R
 
-// ========================
+/**
+ * FeedTopBar：今日头条首页顶部栏（搜索框 + 发布按钮 + 豆包AI头像）
+ *
+ * 设计目的：
+ *  - 提供头条首页的核心全局操作入口（搜索、发布、个人/AI入口）
+ *  - 搜索框使用动态热词（hotSearchText），与后端可对接
+ *  - 视觉样式完整复刻今日头条顶部栏，强调强对比度 & 大字号
+ *
+ * 交互亮点：
+ *  - 整个搜索框可点击，触发搜索页跳转
+ *  - “发布”按钮与“豆包AI”按钮均为独立可点击区域
+ *  - 所有按钮都采用 Touch 友好的尺寸，并支持圆形图标背景
+ *
+ * 架构设计：
+ *  - TopBarButton 抽象为通用组件，图标 + 文本的结构可复用
+ *  - 接口函数（onSearchClick / onPublishClick / onAvatarClick）便于与 ViewModel 或 NavController 解耦
+ *  - 热词文本（hotSearchText）支持从 ViewModel 注入 → 后期可直接接真实接口
+ */
+
 // 顶部栏
-// ========================
 @Composable
 fun FeedTopBar(
-    // 🔥 接口预留：这里是从 ViewModel 或后端传来的热搜词
-    // 默认值给了你截图里的文本，方便预览
+    // 接口预留：这里是从 ViewModel 或后端传来的热搜词
     hotSearchText: String = "折叠屏手机排行榜前十名 | 东部战区",
     onSearchClick: () -> Unit = {},
     onPublishClick: () -> Unit = {},
     onAvatarClick: () -> Unit = {}
 ) {
-    // 1. 布局核心参数
+    //布局核心参数
     val barHeight = 40.dp
     val iconContainerSize = 26.dp
     val themeRed = Color(0xFFFF4D4F)
@@ -62,7 +78,7 @@ fun FeedTopBar(
         verticalAlignment = Alignment.CenterVertically
     ) {
 
-        // --- 搜索框 ---
+        //搜索框
         Row(
             modifier = Modifier
                 .weight(1f)
@@ -73,7 +89,6 @@ fun FeedTopBar(
                 .padding(start = 12.dp, end = 12.dp), // 调整左右内边距
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // 🔥 优化 1：图标
             // 颜色改为纯黑（微透），大小稍微调大到 20dp，视觉更清晰
             Icon(
                 imageVector = Icons.Default.Search,
@@ -84,7 +99,6 @@ fun FeedTopBar(
 
             Spacer(Modifier.width(8.dp))
 
-            // 🔥 优化 2：文字
             // 字号加大到 17.sp（今日头条默认字号较大）
             // 颜色改为接近纯黑，去掉灰色滤镜
             // 增加一点点 FontWeight 让它看起来更“实”
@@ -101,7 +115,6 @@ fun FeedTopBar(
 
         Spacer(Modifier.width(12.dp))
 
-        // --- 右侧按钮区域 ---
 
         // 发布按钮
         TopBarButton(
