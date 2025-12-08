@@ -15,6 +15,7 @@ import com.xuziyi.toutiaoandroid.ui.feed.components.FeedTopBar
 import com.xuziyi.toutiaoandroid.ui.feed.refresh.ToutiaoPullRefresh
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.platform.LocalDensity
+import com.xuziyi.toutiaoandroid.ui.feed.skeleton.SkeletonFirstScreen
 
 /**
  * FeedScreen：今日头条首页推荐流的主界面
@@ -101,10 +102,9 @@ fun FeedScreen(
                  * 正在加载初始数据
                  */
                 is FeedUiState.Loading -> {
-                    CircularProgressIndicator(
-                        modifier = Modifier.align(Alignment.Center)
-                    )
+                    SkeletonFirstScreen()
                 }
+
 
                 /**
                  * 加载失败
