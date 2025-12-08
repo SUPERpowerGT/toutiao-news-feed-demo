@@ -66,6 +66,7 @@ dependencies {
     implementation(libs.androidx.compose.foundation.layout)
     implementation(libs.androidx.compose.ui.geometry)
     implementation(libs.volley)
+    implementation(libs.androidx.foundation)
     ksp("androidx.room:room-compiler:2.6.1")
     // ===== 添加 Coil（AsyncImage 所需）=====
 // ===== Coil 2.x 版本（今日头条也都是 2.x 功能）=====
