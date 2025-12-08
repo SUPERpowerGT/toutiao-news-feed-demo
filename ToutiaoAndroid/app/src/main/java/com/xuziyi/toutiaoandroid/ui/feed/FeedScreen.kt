@@ -4,10 +4,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.xuziyi.toutiaoandroid.ui.feed.components.FeedList
@@ -107,9 +105,7 @@ fun FeedScreen(
 
             when (page) {
 
-                // ----------------------------------------
-                // page == 1 → 推荐流（你原来的逻辑原封不动）
-                // ----------------------------------------
+                // page == 1 → 推荐流
                 1 -> when (state) {
 
                     is FeedUiState.Loading -> SkeletonFirstScreen()
@@ -140,7 +136,13 @@ fun FeedScreen(
                         ToutiaoPullRefresh(
                             listState = feedListState,
                             isRefreshing = state.isRefreshing,
-                            isHoldingRefreshHeader = state.isHoldingRefreshHeader,   // ⭐ 新增
+                            isHoldingRefreshHeader = state.isHoldingRefreshHeader,
+
+                            //新增两个核心状态（ViewModel 帮你管理）
+                            showRefreshAnimation = state.showRefreshAnimation,
+                            showUpdateBanner = state.showUpdateBanner,
+
+                            newCount = state.newCount,
                             pullProgress = state.pullProgress,
                             onPull = { viewModel.updatePullProgress(it) },
                             onRefreshTriggered = { viewModel.refresh() }
@@ -159,12 +161,11 @@ fun FeedScreen(
                             )
                         }
 
+
                     }
                 }
 
-                // ----------------------------------------
-                // 其他 tab：后续你可以替换成真正内容
-                // ----------------------------------------
+                // 其他 tab
                 else -> Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center

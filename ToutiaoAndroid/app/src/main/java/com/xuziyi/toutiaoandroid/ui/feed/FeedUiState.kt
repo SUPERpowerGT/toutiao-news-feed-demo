@@ -22,23 +22,29 @@ sealed interface FeedUiState {
      * 包含列表数据 + 刷新状态 + 加载更多状态
      */
     data class Success(
-        val officialItems: List<FeedItem>,   // 头条官方 Top5
-        val mixedItems: List<FeedItem>,      // 推荐流混排列表
+        val officialItems: List<FeedItem>,
+        val mixedItems: List<FeedItem>,
 
-        // ------ 下拉刷新 ------
-        val isRefreshing: Boolean = false,   // 是否正在刷新
-        val pullProgress: Float = 0f,        // 手势下拉进度（0–1）
-        val newCount: Int = 0,               // “xx 条新内容”提示
+        val isRefreshing: Boolean = false,
+        val pullProgress: Float = 0f,
+        val newCount: Int = 0,
 
-        // ------ 加载更多 ------
-        val isLoadingMore: Boolean = false,  // 是否正在加载更多
-        val hasMore: Boolean = true,         // 是否还有更多内容
+        val isLoadingMore: Boolean = false,
+        val hasMore: Boolean = true,
 
-        // ------ 分页与刷新游标 ------
-        val latestPublishTime: Long? = null, // 刷新基准（timestamp）
-        val nextCursor: Long? = null,        // 加载更多游标
+        val latestPublishTime: Long? = null,
+        val nextCursor: Long? = null,
 
-        // ------ 新增：刷新头保持状态 ------
-        val isHoldingRefreshHeader: Boolean = false  // ⭐ 新增字段
+        //刷新头是否吸顶固定
+        val isHoldingRefreshHeader: Boolean = false,
+
+        //是否显示刷新动画
+        val showRefreshAnimation: Boolean = false,
+
+        // 是否显示“X 条已更新”提示条
+        val showUpdateBanner: Boolean = false
     ) : FeedUiState
+
+
+
 }

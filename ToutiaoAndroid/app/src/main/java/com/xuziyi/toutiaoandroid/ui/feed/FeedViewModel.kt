@@ -39,7 +39,7 @@ class FeedViewModel(
     }
 
 
-    // 1. 首次加载（进入首页时调用）
+    //首次加载（进入首页时调用）
     private fun loadInitial() {
         viewModelScope.launch {
             try {
@@ -62,7 +62,7 @@ class FeedViewModel(
         }
     }
 
-    // 2. 下拉手势中：实时更新下拉进度（用于动画）
+    //下拉手势中：实时更新下拉进度（用于动画）
     fun updatePullProgress(progress: Float) {
         val current = state.value as? FeedUiState.Success ?: return
 
@@ -77,65 +77,78 @@ class FeedViewModel(
 
         viewModelScope.launch {
             try {
-                // ⭐ 切换为刷新状态（显示吸顶动画）
+                //松手：开始刷新 → 播放动画 + 吸顶
                 _state.value = current.copy(
                     isRefreshing = true,
-                    isHoldingRefreshHeader = true
+                    isHoldingRefreshHeader = true,
+                    showRefreshAnimation = true,
+                    showUpdateBanner = false,
+                    newCount = 0
                 )
 
                 val latest = System.currentTimeMillis() / 1000
 
-                // ⭐ 记录开始时间，用于最小展示时长判断
+                // 最小动画播放时长
                 val startTime = System.currentTimeMillis()
-                val minDisplay = 700L     // 今日头条体验：600–800ms
-                val maxTimeout = 5000L    // 最大等待时间，防止卡死
+                val minDisplay = 1200L
+                val maxTimeout = 5000L
 
-                // ⭐ 刷新 API（带最大超时保护）
-                val raw = withTimeout(maxTimeout) {
-                    refreshFeedUseCase(latest)
-                }
+                //拉取新数据
+                val raw = withTimeout(maxTimeout) { refreshFeedUseCase(latest) }
 
-                // 渲染业务数据
-                val newRendered = renderCardTypeUseCase.execute(raw)
-                val processed = processFeedItemsUseCase.execute(newRendered)
+                val rendered = renderCardTypeUseCase.execute(raw)
+                val processed = processFeedItemsUseCase.execute(rendered)
 
-                // ⭐ 保证刷新动画至少展示 minDisplay
+                // 保证动画最少播放 1200ms
                 val elapsed = System.currentTimeMillis() - startTime
-                if (elapsed < minDisplay) {
-                    delay(minDisplay - elapsed)
-                }
+                if (elapsed < minDisplay) delay(minDisplay - elapsed)
 
-                // ⭐ 刷新成功：关闭 holding，准备回弹
-                _state.value = current.copy(
+                //数据准备好 → 停止动画但继续吸顶（非常关键）
+                _state.value = (_state.value as FeedUiState.Success).copy(
                     officialItems = processed.officialList,
                     mixedItems = processed.mixedList,
-                    isRefreshing = false,
-                    isHoldingRefreshHeader = false,
-                    latestPublishTime = latest,
-                    newCount = raw.size
+                    isRefreshing = false,          // 停止动画
+                    showRefreshAnimation = false,  // 动画不再绘制
+                    isHoldingRefreshHeader = true, // 继续吸顶锁住高度
+                    newCount = raw.size,
+                    showUpdateBanner = true        // 显示“X 条更新”
                 )
 
-                // 下拉进度归 0 → PullRefresh 会自动回弹
-                delay(300)
-                _state.value = (_state.value as FeedUiState.Success).copy(
-                    pullProgress = 0f
-                )
-
-                // “xx 条更新”停留 1 秒
+                //Banner 停留 1 秒
                 delay(1000)
-                hideUpdateHint()
+
+                //隐藏 Banner（此时仍保持吸顶，避免闪动）
+                _state.value = (_state.value as FeedUiState.Success).copy(
+                    showUpdateBanner = false
+                )
+
+                //等一帧再解除吸顶（解决 UI 抖动、空白条问题）
+                delay(16)
+                _state.value = (_state.value as FeedUiState.Success).copy(
+                    isHoldingRefreshHeader = false
+                )
+
+                //回弹动画：拉回到顶部
+                delay(160)
+                _state.value = (_state.value as FeedUiState.Success).copy(
+                    pullProgress = 0f,
+                    newCount = 0,
+                    showRefreshAnimation = false
+                )
 
             } catch (e: Exception) {
-                // 异常也必须释放刷新状态，否则会卡吸顶
                 val fallback = state.value as? FeedUiState.Success ?: current
                 _state.value = fallback.copy(
                     isRefreshing = false,
-                    isHoldingRefreshHeader = false
+                    showRefreshAnimation = false,
+                    isHoldingRefreshHeader = false,
+                    showUpdateBanner = false
                 )
-                _state.value = FeedUiState.Error("刷新失败：${e.message}")
             }
         }
     }
+
+
 
 
 
@@ -145,7 +158,7 @@ class FeedViewModel(
         _state.value = current.copy(newCount = 0)
     }
 
-    // 4. 触底加载更多
+    //触底加载更多
     fun loadMore() {
         val current = state.value as? FeedUiState.Success ?: return
 
