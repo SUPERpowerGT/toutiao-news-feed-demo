@@ -30,7 +30,7 @@ fun SplashScreen(onFinish: () -> Unit){
         Text(
             text = "看见更大的世界",
             modifier = Modifier.align(Alignment.Center),
-            fontSize = 20.sp,
+            fontSize = 28.sp,
             color = Color.Black
         )
 

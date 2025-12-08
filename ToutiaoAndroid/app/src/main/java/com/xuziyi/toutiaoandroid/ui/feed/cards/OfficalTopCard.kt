@@ -19,14 +19,14 @@ fun OfficialTopCard(
             .padding(horizontal = 16.dp, vertical = 2.dp)
     ) {
 
-        // ======= 统一标题组件 =======
+        //统一标题组件
         CardTitle(
             title = item.title
         )
 
         Spacer(modifier = Modifier.height(0.dp))
 
-        // ======= 官方来源 & 评论数 =======
+        //官方来源 & 评论数
         CardMetaRow(
             source = item.author.name,
             commentCount = item.stats.commentCount

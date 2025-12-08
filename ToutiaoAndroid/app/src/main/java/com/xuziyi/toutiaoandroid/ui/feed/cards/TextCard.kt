@@ -18,12 +18,12 @@ fun TextCard(
             .padding(horizontal = 16.dp, vertical = 12.dp)
     ) {
 
-        // ===== 标题（统一组件） =====
+        //标题（统一组件）
         CardTitle(item.title)
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // ===== 作者 + 时间 + 点赞 + 更多（统一组件） =====
+        //作者 + 时间 + 点赞 + 更多（统一组件
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
@@ -38,7 +38,7 @@ fun TextCard(
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        // ===== 底部分割线 =====
+        //底部分割线
         CardDivider()
     }
 }
