@@ -7,6 +7,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeout
 
 /**
  * 首页推荐流 ViewModel
@@ -76,37 +77,67 @@ class FeedViewModel(
 
         viewModelScope.launch {
             try {
-                // 设置刷新中状态
-                _state.value = current.copy(isRefreshing = true)
+                // ⭐ 切换为刷新状态（显示吸顶动画）
+                _state.value = current.copy(
+                    isRefreshing = true,
+                    isHoldingRefreshHeader = true
+                )
 
-                // 使用最新时间戳进行增量刷新
                 val latest = System.currentTimeMillis() / 1000
 
-                // 拉取最新数据
-                val raw = refreshFeedUseCase(latest)
+                // ⭐ 记录开始时间，用于最小展示时长判断
+                val startTime = System.currentTimeMillis()
+                val minDisplay = 700L     // 今日头条体验：600–800ms
+                val maxTimeout = 5000L    // 最大等待时间，防止卡死
+
+                // ⭐ 刷新 API（带最大超时保护）
+                val raw = withTimeout(maxTimeout) {
+                    refreshFeedUseCase(latest)
+                }
+
+                // 渲染业务数据
                 val newRendered = renderCardTypeUseCase.execute(raw)
                 val processed = processFeedItemsUseCase.execute(newRendered)
 
-                // 更新 UI：只保留最新列表，不叠加旧数据
+                // ⭐ 保证刷新动画至少展示 minDisplay
+                val elapsed = System.currentTimeMillis() - startTime
+                if (elapsed < minDisplay) {
+                    delay(minDisplay - elapsed)
+                }
+
+                // ⭐ 刷新成功：关闭 holding，准备回弹
                 _state.value = current.copy(
                     officialItems = processed.officialList,
                     mixedItems = processed.mixedList,
                     isRefreshing = false,
+                    isHoldingRefreshHeader = false,
                     latestPublishTime = latest,
                     newCount = raw.size
                 )
 
-                delay(300)  // 下拉回弹动画
-                _state.value = (_state.value as FeedUiState.Success).copy(pullProgress = 0f)
+                // 下拉进度归 0 → PullRefresh 会自动回弹
+                delay(300)
+                _state.value = (_state.value as FeedUiState.Success).copy(
+                    pullProgress = 0f
+                )
 
-                delay(1000) // "xx 条更新" 提示显示 1 秒
+                // “xx 条更新”停留 1 秒
+                delay(1000)
                 hideUpdateHint()
 
             } catch (e: Exception) {
+                // 异常也必须释放刷新状态，否则会卡吸顶
+                val fallback = state.value as? FeedUiState.Success ?: current
+                _state.value = fallback.copy(
+                    isRefreshing = false,
+                    isHoldingRefreshHeader = false
+                )
                 _state.value = FeedUiState.Error("刷新失败：${e.message}")
             }
         }
     }
+
+
 
     // 隐藏“xx 条更新”提示条
     private fun hideUpdateHint() {

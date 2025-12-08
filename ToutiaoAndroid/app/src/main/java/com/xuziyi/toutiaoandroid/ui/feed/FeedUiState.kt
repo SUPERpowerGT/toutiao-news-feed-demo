@@ -36,6 +36,9 @@ sealed interface FeedUiState {
 
         // ------ 分页与刷新游标 ------
         val latestPublishTime: Long? = null, // 刷新基准（timestamp）
-        val nextCursor: Long? = null         // 加载更多游标
+        val nextCursor: Long? = null,        // 加载更多游标
+
+        // ------ 新增：刷新头保持状态 ------
+        val isHoldingRefreshHeader: Boolean = false  // ⭐ 新增字段
     ) : FeedUiState
 }

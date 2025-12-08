@@ -140,6 +140,7 @@ fun FeedScreen(
                         ToutiaoPullRefresh(
                             listState = feedListState,
                             isRefreshing = state.isRefreshing,
+                            isHoldingRefreshHeader = state.isHoldingRefreshHeader,   // ⭐ 新增
                             pullProgress = state.pullProgress,
                             onPull = { viewModel.updatePullProgress(it) },
                             onRefreshTriggered = { viewModel.refresh() }
@@ -157,6 +158,7 @@ fun FeedScreen(
                                     .padding(top = with(LocalDensity.current) { paddingTop.toDp() })
                             )
                         }
+
                     }
                 }
 
