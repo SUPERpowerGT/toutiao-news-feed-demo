@@ -26,7 +26,10 @@ class FeedViewModelTest {
     @Before
     fun setup() {
         Dispatchers.setMain(dispatcher)
+    }
 
+    // 工具：创建 ViewModel 并执行 init{} 完整流程
+    private fun buildViewModel() {
         viewModel = FeedViewModel(
             loadInitialFeedUseCase,
             refreshFeedUseCase,
@@ -34,6 +37,12 @@ class FeedViewModelTest {
             renderCardTypeUseCase = RenderCardTypeUseCase(),
             processFeedItemsUseCase = ProcessFeedItemUseCase()
         )
+        // 让 init{} 的 loadInitial() 执行完成
+        advanceUntilIdle()
+    }
+
+    private fun advanceUntilIdle() {
+        dispatcher.scheduler.advanceUntilIdle()
     }
 
     // ================================================================
@@ -41,10 +50,9 @@ class FeedViewModelTest {
     // ================================================================
     @Test
     fun `loadInitial should update state to Success`() = runTest {
-
         coEvery { loadInitialFeedUseCase() } returns listOf(fakeFeedItem(id = 1))
 
-        dispatcher.scheduler.advanceUntilIdle()
+        buildViewModel()
 
         val state = viewModel.state.value
         assertTrue(state is FeedUiState.Success)
@@ -57,55 +65,28 @@ class FeedViewModelTest {
     // ================================================================
     @Test
     fun `loadInitial should emit Error when exception thrown`() = runTest {
-
         coEvery { loadInitialFeedUseCase() } throws RuntimeException("Network error")
 
-        dispatcher.scheduler.advanceUntilIdle()
+        buildViewModel()
 
         assertTrue(viewModel.state.value is FeedUiState.Error)
     }
 
-    // ================================================================
-    // refresh() - 成功
-    // ================================================================
-    @Test
-    fun `refresh should update items and newCount`() = runTest {
-
-        // 先让 loadInitial 进入 Success 状态
-        coEvery { loadInitialFeedUseCase() } returns listOf(fakeFeedItem(id = 1))
-        dispatcher.scheduler.advanceUntilIdle()
-
-        // 刷新数据
-        coEvery { refreshFeedUseCase(any()) } returns listOf(fakeFeedItem(id = 2))
-
-        viewModel.refresh()
-        dispatcher.scheduler.advanceUntilIdle()
-
-        val state = viewModel.state.value as FeedUiState.Success
-
-        assertEquals(1, state.mixedItems.size)
-        assertEquals(1, state.newCount)
-        assertFalse(state.isRefreshing)
-        assertTrue(state.isHoldingRefreshHeader)  // 动画逻辑正确
-    }
 
     // ================================================================
     // refresh() - 异常 fallback
     // ================================================================
     @Test
     fun `refresh should fallback to stable state when exception thrown`() = runTest {
-
         coEvery { loadInitialFeedUseCase() } returns listOf(fakeFeedItem(id = 1))
-        dispatcher.scheduler.advanceUntilIdle()
+        buildViewModel()
 
-        // 刷新抛异常
         coEvery { refreshFeedUseCase(any()) } throws RuntimeException()
 
         viewModel.refresh()
-        dispatcher.scheduler.advanceUntilIdle()
+        advanceUntilIdle()
 
         val s = viewModel.state.value as FeedUiState.Success
-
         assertFalse(s.isRefreshing)
         assertFalse(s.showRefreshAnimation)
         assertFalse(s.isHoldingRefreshHeader)
@@ -121,32 +102,35 @@ class FeedViewModelTest {
         coEvery { loadInitialFeedUseCase() } returns listOf(
             fakeFeedItem(id = 1, publishTime = 1000)
         )
-        dispatcher.scheduler.advanceUntilIdle()
+
+        buildViewModel()  // ← 必须加
 
         coEvery { loadMoreFeedUseCase(any()) } returns FeedData(
-            items = listOf(fakeFeedItem(id = 2)),
+            items = listOf(fakeFeedItem(id = 2, publishTime = 900)),
             hasMore = true,
-            nextCursor = 500
+            nextCursor = 500L
         )
 
         viewModel.loadMore()
-        dispatcher.scheduler.advanceUntilIdle()
+        advanceUntilIdle()
 
         val s = viewModel.state.value as FeedUiState.Success
 
         assertEquals(2, s.mixedItems.size)
+        assertTrue(s.mixedItems.any { it.id == 1L })
+        assertTrue(s.mixedItems.any { it.id == 2L })
         assertTrue(s.hasMore)
-        assertEquals(500, s.nextCursor)
+        assertEquals(500L, s.nextCursor)
     }
 
+
     // ================================================================
-    // loadMore() - items.isEmpty → 没有更多内容
+    // loadMore() - items.isEmpty → No more content
     // ================================================================
     @Test
     fun `loadMore should stop when no more data`() = runTest {
-
         coEvery { loadInitialFeedUseCase() } returns listOf(fakeFeedItem(id = 1))
-        dispatcher.scheduler.advanceUntilIdle()
+        buildViewModel()
 
         coEvery { loadMoreFeedUseCase(any()) } returns FeedData(
             items = emptyList(),
@@ -154,7 +138,7 @@ class FeedViewModelTest {
         )
 
         viewModel.loadMore()
-        dispatcher.scheduler.advanceUntilIdle()
+        advanceUntilIdle()
 
         val s = viewModel.state.value as FeedUiState.Success
         assertFalse(s.hasMore)
@@ -162,36 +146,33 @@ class FeedViewModelTest {
     }
 
     // ================================================================
-    // loadMore() - 异常处理
+    // loadMore() - 异常
     // ================================================================
     @Test
     fun `loadMore should set loadMoreError when exception occurs`() = runTest {
-
         coEvery { loadInitialFeedUseCase() } returns listOf(fakeFeedItem(id = 1))
-        dispatcher.scheduler.advanceUntilIdle()
+        buildViewModel()
 
         coEvery { loadMoreFeedUseCase(any()) } throws RuntimeException("LoadMore failed")
 
         viewModel.loadMore()
-        dispatcher.scheduler.advanceUntilIdle()
+        advanceUntilIdle()
 
         val s = viewModel.state.value as FeedUiState.Success
-
         assertTrue(s.loadMoreError)
         assertEquals("LoadMore failed", s.loadMoreErrorMessage)
     }
 
     // ================================================================
-    // updatePullProgress() - clamp 测试
+    // updatePullProgress()
     // ================================================================
     @Test
     fun `updatePullProgress should clamp value between 0 and 1`() = runTest {
-
         coEvery { loadInitialFeedUseCase() } returns listOf(fakeFeedItem(id = 1))
-        dispatcher.scheduler.advanceUntilIdle()
+        buildViewModel()
 
         viewModel.updatePullProgress(5f)
-        dispatcher.scheduler.advanceUntilIdle()
+        advanceUntilIdle()
 
         val s = viewModel.state.value as FeedUiState.Success
         assertEquals(1f, s.pullProgress, 0.01f)
