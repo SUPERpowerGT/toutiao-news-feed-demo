@@ -27,9 +27,8 @@ func (s *FeedService) GetFeed(
 	limit int,
 ) (*FeedResponse, error) {
 
-	// ① 首次加载
+	//首次加载
 	if cursor == nil && refreshTime == nil {
-		// 🎯 修复: 接收最新的发布时间
 		items, next, latestTime, err := s.repo.ListInitial(ctx)
 		if err != nil {
 			return nil, err
@@ -38,13 +37,13 @@ func (s *FeedService) GetFeed(
 			Items:             items,
 			NextCursor:        next,
 			HasMore:           next != nil,
-			LatestPublishTime: latestTime, // 🎯 赋值
+			LatestPublishTime: latestTime, //赋值
 		}, nil
 	}
 
-	// ② 加载更多
+	//加载更多
 	if cursor != nil {
-		// 🎯 修复: 接收最新的发布时间
+		//修复: 接收最新的发布时间
 		items, next, latestTime, err := s.repo.ListFeed(ctx, cursor, limit)
 		if err != nil {
 			return nil, err
@@ -53,18 +52,18 @@ func (s *FeedService) GetFeed(
 			Items:             items,
 			NextCursor:        next,
 			HasMore:           next != nil,
-			LatestPublishTime: latestTime, // 🎯 赋值
+			LatestPublishTime: latestTime,
 		}, nil
 	}
 
-	// ③ 下拉刷新
+	//下拉刷新
 	if refreshTime != nil {
 		items, err := s.repo.ListNewer(ctx, *refreshTime)
 		if err != nil {
 			return nil, err
 		}
 
-		// 🎯 逻辑优化: 下拉刷新返回的列表中的第一项就是最新的时间戳。
+		//逻辑优化: 下拉刷新返回的列表中的第一项就是最新的时间戳。
 		var latestTime int64 = 0
 		if len(items) > 0 {
 			latestTime = items[0].PublishTime
@@ -74,7 +73,7 @@ func (s *FeedService) GetFeed(
 			Items:             items,
 			NextCursor:        nil,
 			HasMore:           false,
-			LatestPublishTime: latestTime, // 🎯 赋值
+			LatestPublishTime: latestTime,
 		}, nil
 	}
 

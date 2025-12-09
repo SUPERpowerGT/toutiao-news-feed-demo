@@ -75,6 +75,7 @@ dependencies {
     implementation("io.coil-kt:coil-video:2.6.0")
   // ⭐ 必须加这个才能用 VideoFrameDecoder
     implementation("com.airbnb.android:lottie-compose:6.1.0")
+    implementation("androidx.compose.material:material-icons-extended:1.6.1")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

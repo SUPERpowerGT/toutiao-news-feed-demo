@@ -56,7 +56,7 @@ func (h *FeedHandler) handleFeed(w http.ResponseWriter, r *http.Request) {
 	// 调用服务层
 	resp, err := h.service.GetFeed(r.Context(), cursor, refreshTime, limit)
 
-	// 🎯 统一包装响应函数 —— 永远不再 chunked
+	//统一包装响应函数 —— 永远不再 chunked
 	writeJSON := func(status int, body map[string]any) {
 		b, _ := json.Marshal(body)
 
@@ -66,7 +66,7 @@ func (h *FeedHandler) handleFeed(w http.ResponseWriter, r *http.Request) {
 		w.Write(b)
 	}
 
-	// ❌ 不要再使用 json.NewEncoder(w).Encode() —— 它会触发 chunked!!!
+	//不要再使用 json.NewEncoder(w).Encode() —— 它会触发 chunked!!!
 	if err != nil {
 		log.Printf("ERROR: GetFeed failed for %s. Reason: %v", r.URL.String(), err)
 		writeJSON(http.StatusInternalServerError, map[string]any{

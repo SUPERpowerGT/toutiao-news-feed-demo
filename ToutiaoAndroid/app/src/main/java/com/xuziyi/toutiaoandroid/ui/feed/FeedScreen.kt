@@ -15,6 +15,7 @@ import com.xuziyi.toutiaoandroid.ui.feed.components.FeedTopBar
 import com.xuziyi.toutiaoandroid.ui.feed.refresh.ToutiaoPullRefresh
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.platform.LocalDensity
+import com.xuziyi.toutiaoandroid.ui.components.ErrorScreen
 import com.xuziyi.toutiaoandroid.ui.feed.skeleton.SkeletonFirstScreen
 import kotlinx.coroutines.launch
 
@@ -110,10 +111,10 @@ fun FeedScreen(
 
                     is FeedUiState.Loading -> SkeletonFirstScreen()
 
-                    is FeedUiState.Error -> Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) { Text("加载失败：${state.message}") }
+                    is FeedUiState.Error -> ErrorScreen(
+                        message = state.message ?: "网络异常，请稍后重试",
+                        onRetry = { viewModel.refresh() }
+                    )
 
                     is FeedUiState.Success -> {
 
@@ -153,12 +154,20 @@ fun FeedScreen(
                                 mixedItems = state.mixedItems,
                                 onItemClick = onOpenDetail,
                                 listState = feedListState,
+
                                 isLoadingMore = state.isLoadingMore,
                                 hasMore = state.hasMore,
+
+                                // ⭐⭐ 新增三行（让分页错误 UI 生效）
+                                loadMoreError = state.loadMoreError,
+                                loadMoreErrorMessage = state.loadMoreErrorMessage,
+                                onLoadMoreRetry = { viewModel.loadMore() },
+
                                 modifier = Modifier
                                     .fillMaxSize()
                                     .padding(top = with(LocalDensity.current) { paddingTop.toDp() })
                             )
+
                         }
 
 
