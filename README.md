@@ -37,7 +37,7 @@ This project was developed as part of the **ByteDance Engineering Training Camp*
 
 
 # 🎬 Demo Preview
-https://github.com/user-attachments/assets/06553943-40b6-423a-9cb0-884197786d79
+https://github.com/user-attachments/assets/1aba5b82-5c24-4be5-b3b2-098721a7a249
 
 
 # ✨ Features
