@@ -7,6 +7,6 @@ class LoadMoreFeedUseCase(
     private val repo: FeedRepositoryContract
 ) {
     suspend operator fun invoke(cursor: Long): FeedData {
-        return repo.loadMore(cursor)   // ⭐ 返回 FeedData（items + nextCursor + hasMore）
+        return repo.loadMore(cursor)   //返回 FeedData（items + nextCursor + hasMore）
     }
 }

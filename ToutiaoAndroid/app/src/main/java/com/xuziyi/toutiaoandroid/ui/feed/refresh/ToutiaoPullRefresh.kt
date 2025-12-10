@@ -1,79 +1,128 @@
 package com.xuziyi.toutiaoandroid.ui.feed.refresh
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.*
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
-import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.airbnb.lottie.compose.*
-
+import com.xuziyi.toutiaoandroid.ui.feed.refresh.state.*
+import com.xuziyi.toutiaoandroid.ui.feed.refresh.scroll.RawPullRefreshNestedScroll
 /**
- * 今日头条风格下拉刷新：
- * —— 列表不会被遮挡，而是整体被 Header "推" 下去
- * —— 下拉阻尼、回弹动画、吸顶刷新效果
+ * 本组件本身只负责：
+ *  - 渲染刷新头 UI（Lottie 动画 & Banner）
+ *  - 根据下拉距离为内容添加 paddingTop
+ *  - 调用拆分后的逻辑模块决定 *何时显示动画、何时显示 Banner*
+ *  - 将 NestedScroll 事件委托给 RawPullRefreshNestedScroll
+ *
+ * 本组件不负责：
+ *  - 手势阻尼 / 距离计算（PullGestureState 负责）
+ *  - 是否进入刷新状态的条件判断（RefreshStateLogic）
+ *  - “有 X 条内容更新” 横幅逻辑（UpdateBannerLogic）
+ *  - NestedScroll 手势事件捕获（RawPullRefreshNestedScroll）
+ *
+ * 架构拆分的设计目标：
+ *  ------------------------------------------------------
+ *  1) UI、手势、状态判断彻底解耦，提高可维护性。
+ *  2) 任何一层逻辑都可被独立测试（特别是 PullGestureState）。
+ *  3) 保持顶层 Composable 清晰，读起来像“声明式 UI”而不是混乱的逻辑堆。
+ *  4) 结构接近头条、抖音 App 内部刷新头组件的真实工程写法。
+ *
+ * 使用方式（外部调用者 ViewModel 只需要做三件事）：
+ *  ------------------------------------------------------
+ *  1) updatePullProgress(progress) → 在下拉过程中更新 UI 状态
+ *  2) refresh() → 触发实际的网络刷新
+ *  3) 监听 newCount / showUpdateBanner 控制“有 X 条更新”提示
+ *
+ * 刷新头生命周期：
+ *  ------------------------------------------------------
+ *   下拉中 → progress 从 0 → 1
+ *   达到阈值 → 触发刷新（haptic + 回调）
+ *   刷新中 → Lottie 动画进入循环播放
+ *   刷新结束 → 展示“X 条内容已更新”Banner（可淡入淡出）
+ *   回弹阶段 → 刷新头收起，恢复正常列表
+ *
+ * 如需扩展：
+ *  ------------------------------------------------------
+ *  想增加“刷新成功后自动滚回顶部” → 在 onRefreshTriggered 后加入 scrollToTop
+ *  想增加“下拉触发音效/震动更多效果” → 修改 RawPullRefreshNestedScroll 即可
+ *  想更换动画类型 → 替换 refreshAnimation.json 即可
+ *  想加入 StickyHeader 固定吸顶 → 修改 headerHeightPx 的计算方式即可
+ *
+ * 该组件的职责非常单一：
+ *  → **渲染刷新头 UI + 组合拆分后的逻辑模块**
  */
+
 @Composable
 fun ToutiaoPullRefresh(
     listState: LazyListState,
     isRefreshing: Boolean,
+    isHoldingRefreshHeader: Boolean,
+    showRefreshAnimation: Boolean,
+    showUpdateBanner: Boolean,
+    newCount: Int,
     pullProgress: Float = 0f,
-    onPull: (Float) -> Unit,           // 下拉进度回调（驱动动画）
-    onRefreshTriggered: () -> Unit,    // 松手 → 执行刷新
+    onPull: (Float) -> Unit,
+    onRefreshTriggered: () -> Unit,
     content: @Composable (paddingTop: Float) -> Unit
 ) {
-    // 单位转换工具
+
     val density = LocalDensity.current
-
-    // 最大可拉高度（下拉距离上限）
     val maxPullPx = with(density) { 140.dp.toPx() }
+    val fixedHeaderPx = with(density) { 42.dp.toPx() }
 
-    // 刷新中吸顶时的固定高度
-    val refreshHeaderPx = with(density) { 35.dp.toPx() }
+    //3 个逻辑模块（全新拆分）
+    val gesture = remember { PullGestureState() }
+    val refreshLogic = remember { RefreshStateLogic() }
+    val bannerLogic = remember { UpdateBannerLogic() }
 
-    // dragOffset = 当前真实下拉距离
+    // Header 高度 = 吸顶 or 跟手
     var dragOffset by remember { mutableFloatStateOf(0f) }
 
-    // 刷新中：头部高度固定在 refreshHeaderPx
-    // 正常下拉：头部高度跟手指走（= dragOffset）
-    val headerTargetPx by remember(isRefreshing, dragOffset) {
+    val headerTargetPx by remember(isHoldingRefreshHeader, dragOffset) {
         mutableFloatStateOf(
-            if (isRefreshing) refreshHeaderPx else dragOffset
+            if (isHoldingRefreshHeader) fixedHeaderPx else dragOffset
         )
     }
 
-    // 用动画让 Header 高度变更变得更丝滑（头条手感关键）
     val headerHeightPx by animateFloatAsState(
         targetValue = headerTargetPx.coerceIn(0f, maxPullPx),
-        animationSpec = tween(200),
-        label = "header-height"
+        animationSpec = tween(220),
+        label = "header"
     )
 
-    // 震动反馈
-    val haptic = LocalHapticFeedback.current
-
-    // Lottie 动画加载
+    // Lottie 刷新动画
     val composition by rememberLottieComposition(
         LottieCompositionSpec.Asset("refreshAnimation.json")
     )
 
-    // 刷新中循环播放下半段，非刷新时按进度播放
-    val refreshingLoopProgress by animateLottieCompositionAsState(
+    val refreshingLoop by animateLottieCompositionAsState(
         composition = composition,
         isPlaying = isRefreshing,
         clipSpec = LottieClipSpec.Progress(0.52f, 1f),
-        iterations = LottieConstants.IterateForever
+        iterations = LottieConstants.IterateForever,
+        speed = 0.65f
     )
 
-    // 判断列表是否在顶部（只有顶端才允许下拉刷新）
+    val haptic = LocalHapticFeedback.current
+
+    // 是否在列表顶部
     val isAtTop by remember {
         derivedStateOf {
             listState.firstVisibleItemIndex == 0 &&
@@ -81,131 +130,103 @@ fun ToutiaoPullRefresh(
         }
     }
 
-    // 当前下拉进度（驱动动画用）
-    val currentPullProgress = remember(dragOffset, isRefreshing) {
-        if (isRefreshing) 1f else (dragOffset / maxPullPx).coerceIn(0f, 1f)
-    }
-
-    /**
-     * NestedScroll：整个下拉刷新的灵魂
-     * - 拦截“向下滑”的手势
-     * - 自己消耗掉并转换成 dragOffset
-     */
-    val nestedScrollConnection = remember {
-
-        object : NestedScrollConnection {
-
-            /** 手指向下拉时 → LazyColumn 本来不会动 → 我们拦截 */
-            override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
-                if (available.y > 0 && isAtTop && !isRefreshing) {
-
-                    val dy = available.y
-
-                    // 阻尼：越往下拉越难拉
-                    val damping = 1f / (1f + dragOffset / 200f)
-                    val consumed = dy * damping
-
-                    // 更新下拉距离
-                    dragOffset = (dragOffset + consumed).coerceIn(0f, maxPullPx)
-
-                    // 通知外部刷新头动画更新
-                    onPull(dragOffset / maxPullPx)
-
-                    // 消费掉这段位移（列表不会滚动）
-                    return Offset(0f, consumed)
-                }
-                return Offset.Zero
-            }
-
-            /** 额外剩余的位移也吃掉，继续增加 dragOffset */
-            override fun onPostScroll(consumed: Offset, available: Offset, source: NestedScrollSource): Offset {
-                if (available.y > 0 && isAtTop && !isRefreshing) {
-
-                    val dy = available.y
-                    val damping = 1f / (1f + dragOffset / 200f)
-                    val consumed = dy * damping
-
-                    dragOffset = (dragOffset + consumed).coerceIn(0f, maxPullPx)
-                    onPull(dragOffset / maxPullPx)
-
-                    return Offset(0f, consumed)
-                }
-                return Offset.Zero
-            }
-
-            /**
-             * 手指松手时：
-             *  - 如果达到刷新阈值 → 真刷新
-             *  - 不够 → 回弹到 0
-             */
-            override suspend fun onPreFling(available: Velocity): Velocity {
-
-                val hitRefresh =
-                    dragOffset >= maxPullPx * 0.8f &&
-                            !isRefreshing &&
-                            isAtTop
-
-                return when {
-
-                    // 达到阈值 → 刷新
-                    hitRefresh -> {
-                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                        onRefreshTriggered()
-
-                        // dragOffset 清零，接下来交给 isRefreshing 驱动吸顶高度
-                        dragOffset = 0f
-                        onPull(0f)
-                        Velocity.Zero
-                    }
-
-                    // 未达到阈值 → 回弹
-                    dragOffset > 0f -> {
-                        dragOffset = 0f
-                        onPull(0f)
-                        Velocity.Zero
-                    }
-
-                    else -> available
-                }
-            }
-        }
+    // NestedScroll → 使用 gestureState 进行逻辑拆分
+    val nestedScroll = remember {
+        RawPullRefreshNestedScroll(
+            gesture = gesture,
+            maxPullPx = maxPullPx,
+            isAtTop = { isAtTop },
+            isRefreshing = { isRefreshing },
+            isHoldingRefreshHeader = { isHoldingRefreshHeader },
+            onPull = onPull,
+            onRefreshTriggered = onRefreshTriggered,
+            haptic = haptic,
+            setDragOffset = { dragOffset = it }
+        )
     }
 
 
-    //   UI：Header + 列表
+    // UI（完全不动）
     Box(
-        modifier = Modifier
+        Modifier
             .fillMaxSize()
-            .nestedScroll(nestedScrollConnection) // 绑定 NestedScroll
+            .nestedScroll(nestedScroll)
+            .clipToBounds()
     ) {
 
-        Column(modifier = Modifier.fillMaxSize()) {
+        content(headerHeightPx)
 
-            val headerVisible = headerHeightPx > 0.5f || isRefreshing
+        val headerVisible = headerHeightPx > 0.5f
 
-            // 刷新头（被推下的区域
-            if (headerVisible) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(with(density) { headerHeightPx.toDp() }),
-                    contentAlignment = Alignment.Center
-                ) {
-                    LottieAnimation(
-                        composition = composition,
-                        progress = {
-                            if (isRefreshing) refreshingLoopProgress
-                            else currentPullProgress
-                        },
-                        modifier = Modifier
-                            .height(55.dp)
-                            .fillMaxWidth()
-                    )
+        if (headerVisible) {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .fillMaxWidth()
+                    .height(with(density) { headerHeightPx.toDp() }),
+                contentAlignment = Alignment.BottomCenter
+            ) {
+
+                //pullProgress 替换成 gesture.progress，但保持参数名一致
+                val progress = gesture.progress(maxPullPx)
+
+                //回弹判断交给 refreshLogic
+                val isRebounding = refreshLogic.isRebounding(
+                    pullProgress = progress,
+                    isRefreshing = isRefreshing,
+                    showUpdateBanner = showUpdateBanner,
+                    headerHeightPx = headerHeightPx,
+                    fixedHeaderPx = fixedHeaderPx
+                )
+
+                // 动画显示判断交给 refreshLogic
+                val shouldShowAnim = refreshLogic.shouldShowAnimation(
+                    pullProgress = progress,
+                    isRefreshing = isRefreshing,
+                    showUpdateBanner = showUpdateBanner,
+                    isHoldingRefreshHeader = isHoldingRefreshHeader,
+                    isRebounding = isRebounding,
+                    showRefreshAnimation = showRefreshAnimation
+                )
+
+                when {
+
+                    //Banner 显示逻辑移到 bannerLogic
+                    bannerLogic.shouldShowBanner(showUpdateBanner, newCount) -> {
+                        AnimatedVisibility(
+                            visible = true,
+                            enter = fadeIn(tween(250)) + scaleIn(initialScale = 0.88f),
+                            exit = fadeOut(tween(180))
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .align(Alignment.BottomCenter)
+                                    .background(Color(0xFFF5F5F5), shape = RoundedCornerShape(50.dp))
+                                    .padding(horizontal = 12.dp, vertical = 6.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = "今日头条推荐引擎有 $newCount 条更新",
+                                    color = Color(0xFF2F2F2F),
+                                    fontSize = 14.sp
+                                )
+                            }
+                        }
+                    }
+
+                    shouldShowAnim -> {
+                        LottieAnimation(
+                            composition = composition,
+                            progress = {
+                                if (isRefreshing) refreshingLoop else progress
+                            },
+                            modifier = Modifier
+                                .size(36.dp)
+                                .align(Alignment.BottomCenter)
+                        )
+                    }
                 }
             }
-
-            // 列表内容：跟随 header 被整体推下
-            content(headerHeightPx)
         }
     }
 }

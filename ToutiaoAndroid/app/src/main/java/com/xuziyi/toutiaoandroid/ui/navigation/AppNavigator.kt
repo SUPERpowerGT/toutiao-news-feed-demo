@@ -1,6 +1,8 @@
 package com.xuziyi.toutiaoandroid.ui.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -10,6 +12,7 @@ import com.xuziyi.toutiaoandroid.ui.feed.FeedViewModelFactory
 import com.xuziyi.toutiaoandroid.data.datasource.RemoteDataSource
 import com.xuziyi.toutiaoandroid.data.remote.RetrofitClient
 import com.xuziyi.toutiaoandroid.data.repository.FeedRepository
+import com.xuziyi.toutiaoandroid.di.DatabaseModule
 import com.xuziyi.toutiaoandroid.domain.usecase.LoadInitialFeedUseCase
 import com.xuziyi.toutiaoandroid.domain.usecase.RefreshFeedUseCase
 import com.xuziyi.toutiaoandroid.domain.usecase.LoadMoreFeedUseCase
@@ -47,29 +50,22 @@ sealed class Screen(val route: String) {
 @Composable
 fun AppNavigator() {
 
-    // 全局 NavController：用于页面跳转
     val navController = rememberNavController()
 
+    // 1) 获取 Context（构建数据库需要）
+    val context = LocalContext.current
 
-    /**
-     * ---------------------------
-     *  初始化 Feed 业务所需的依赖
-     * ---------------------------
-     *
-     * AppNavigator 负责创建这些对象，是为了让 FeedViewModel 生命周期保持稳定，
-     * 避免它随着 Tab 切换被反复销毁（提升首页推荐流的体验）。
-     */
+    // 2) 从 DI 模块拿仓库
+    val repository = remember {
+        DatabaseModule.provideFeedRepository(context)
+    }
 
-    val api = RetrofitClient.feedApi                           // Retrofit API 实例
-    val remoteDataSource = RemoteDataSource(api)               // 网络数据源
-    val repository = FeedRepository(remoteDataSource)          // 仓库（统一数据入口）
-
-    // UseCases（业务动作）
+    // 3) UseCases
     val loadInitial = LoadInitialFeedUseCase(repository)
     val refreshFeed = RefreshFeedUseCase(repository)
     val loadMore = LoadMoreFeedUseCase(repository)
 
-    // 创建首页 Feed 的 ViewModel，并注入所有 UseCase
+    // 4) 创建 ViewModel（注入 UseCase）
     val feedViewModel: FeedViewModel = viewModel(
         factory = FeedViewModelFactory(
             loadInitial = loadInitial,
@@ -78,69 +74,31 @@ fun AppNavigator() {
         )
     )
 
-    // 未来详情页需要时再开启
-    // val detailViewModel = viewModel<NewsDetailViewModel>()
-
-
-    /**
-     * NavHost：声明“每个路由页面”对应的 UI 页面。
-     * startDestination = Splash
-     * 表示 App 打开时先显示 SplashScreen。
-     */
     NavHost(
         navController = navController,
         startDestination = Screen.Splash.route
     ) {
-
-        /**
-         * 冷启动页面
-         */
         composable(Screen.Splash.route) {
             SplashScreen(
                 onFinish = {
-                    // 冷启动动画结束 → 跳转到主页面
                     navController.navigate(Screen.Main.route) {
-
-                        // 将 Splash 从返回栈中移除，避免按返回键回到它
                         popUpTo(Screen.Splash.route) { inclusive = true }
                     }
                 }
             )
         }
 
-
-        /**
-         * 主页面（包含底部导航）
-         * MainNavigator 会负责：
-         *  - tab 切换
-         *  - tab 内路由
-         *  - UI 排版
-         */
         composable(Screen.Main.route) {
             MainNavigator(
                 feedScreen = {
-
-                    // 首页推荐流的真正页面
                     FeedScreen(
-                        viewModel = feedViewModel,     // 注入 App 级别的 ViewModel
+                        viewModel = feedViewModel,
                         onOpenDetail = { id ->
-
-                            // 点击新闻卡片 → 跳转到详情页
                             navController.navigate(Screen.Detail.createRoute(id))
                         }
                     )
                 }
             )
         }
-
-
-        /**
-         * 新闻详情页（未来补充）
-         */
-        /*
-        composable(Screen.Detail.route) { entry ->
-            // TODO: 详情 UI 内容以后补充
-        }
-        */
     }
 }

@@ -17,7 +17,7 @@ import com.xuziyi.toutiaoandroid.domain.model.FeedItem
 fun CardActionRow(item: FeedItem) {
     Row(verticalAlignment = Alignment.CenterVertically) {
 
-        // 点赞 ❤️
+        //点赞
         Icon(
             painter = painterResource(R.drawable.ic_like),
             contentDescription = null,

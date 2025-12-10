@@ -17,11 +17,7 @@ func NewFeedItemRepositoryPG(db *sql.DB) *FeedItemRepositoryPG {
 	return &FeedItemRepositoryPG{db: db}
 }
 
-//////////////////////////////////////////
 // 首页首次加载 Top5 + Normal15
-//////////////////////////////////////////
-
-// 🎯 修正: 函数签名增加 int64 (最新的发布时间) 返回值
 func (r *FeedItemRepositoryPG) ListInitial(ctx context.Context) ([]domain.FeedItem, *int64, int64, error) {
 
 	sqlTop := `
@@ -60,7 +56,7 @@ LIMIT 5;
 
 	rows, err := r.db.QueryContext(ctx, sqlTop)
 	if err != nil {
-		// 🎯 修正: 错误返回时，增加 latestPublishTime 的默认值 0
+		//修正: 错误返回时，增加 latestPublishTime 的默认值 0
 		return nil, nil, 0, err
 	}
 	defer rows.Close()
@@ -69,23 +65,17 @@ LIMIT 5;
 	for rows.Next() {
 		item, err := scanFeedItem(rows)
 		if err != nil {
-			// 🎯 修正: 错误返回时，增加 latestPublishTime 的默认值 0
 			return nil, nil, 0, err
 		}
 
 		var loadErr error
-		// 🎯 修复: 从 item.NewsID 改为 item.ID
 		item.Media, loadErr = r.loadMedia(ctx, item.ID)
 		if loadErr != nil {
-			// 强烈建议使用 log 包打印到控制台，而不是直接返回
 			fmt.Printf("Error loading media for NewsID %d: %v\n", item.ID, loadErr)
-			// 生产环境中，通常会忽略这个子查询的错误，但为了调试，我们先打出来
-			// 如果不希望一个 media 错误导致整个 feed 列表崩溃，就继续，否则返回主错误
 		}
 		topItems = append(topItems, item)
 	}
 
-	// Normal15
 	sqlNormal := `
 SELECT
 	n.id AS news_id,
@@ -122,7 +112,6 @@ LIMIT 15;
 
 	rows2, err := r.db.QueryContext(ctx, sqlNormal)
 	if err != nil {
-		// 🎯 修正: 错误返回时，增加 latestPublishTime 的默认值 0
 		return nil, nil, 0, err
 	}
 	defer rows2.Close()
@@ -131,11 +120,9 @@ LIMIT 15;
 	for rows2.Next() {
 		item, err := scanFeedItem(rows2)
 		if err != nil {
-			// 🎯 修正: 错误返回时，增加 latestPublishTime 的默认值 0
 			return nil, nil, 0, err
 		}
 
-		// 🎯 修复: 从 item.NewsID 改为 item.ID
 		item.Media, _ = r.loadMedia(ctx, item.ID)
 		normalItems = append(normalItems, item)
 	}
@@ -149,14 +136,11 @@ LIMIT 15;
 		nextCursor = &last.PublishTime
 	}
 
-	// 🎯 新增: 计算 latestPublishTime
 	var latestPublishTime int64 = 0
 	if len(items) > 0 {
 		// 列表的第一项就是最新的，因为是 DESC 排序
 		latestPublishTime = items[0].PublishTime
 	}
-
-	// 🎯 修正: 返回 latestPublishTime
 	return items, nextCursor, latestPublishTime, nil
 }
 
@@ -164,10 +148,8 @@ LIMIT 15;
 // 加载更多
 //////////////////////////////////////////
 
-// 🎯 修正: 函数签名增加 int64 (最新的发布时间) 返回值
 func (r *FeedItemRepositoryPG) ListFeed(ctx context.Context, cursor *int64, limit int) ([]domain.FeedItem, *int64, int64, error) {
 	if cursor == nil {
-		// 🎯 修正: 错误返回时，增加 latestPublishTime 的默认值 0
 		return nil, nil, 0, fmt.Errorf("cursor is required")
 	}
 
@@ -207,7 +189,6 @@ LIMIT $2;
 
 	rows, err := r.db.QueryContext(ctx, sqlStr, *cursor, limit)
 	if err != nil {
-		// 🎯 修正: 错误返回时，增加 latestPublishTime 的默认值 0
 		return nil, nil, 0, err
 	}
 	defer rows.Close()
@@ -216,11 +197,9 @@ LIMIT $2;
 	for rows.Next() {
 		item, err := scanFeedItem(rows)
 		if err != nil {
-			// 🎯 修正: 错误返回时，增加 latestPublishTime 的默认值 0
 			return nil, nil, 0, err
 		}
 
-		// 🎯 修复: 从 item.NewsID 改为 item.ID
 		item.Media, _ = r.loadMedia(ctx, item.ID)
 		items = append(items, item)
 	}
@@ -231,14 +210,12 @@ LIMIT $2;
 		nextCursor = &last.PublishTime
 	}
 
-	// 🎯 新增: 计算 latestPublishTime
 	var latestPublishTime int64 = 0
 	if len(items) > 0 {
 		// 列表的第一项就是最新的，因为是 DESC 排序
 		latestPublishTime = items[0].PublishTime
 	}
 
-	// 🎯 修正: 返回 latestPublishTime
 	return items, nextCursor, latestPublishTime, nil
 }
 
@@ -293,7 +270,6 @@ LIMIT $2;
 // 		if err != nil {
 // 			return nil, err
 // 		}
-// 		// 🎯 修复: 从 item.NewsID 改为 item.ID
 // 		item.Media, _ = r.loadMedia(ctx, item.ID)
 // 		items = append(items, item)
 // 	}
@@ -490,8 +466,6 @@ ORDER BY id ASC;
 	if err := rows.Err(); err != nil {
 		return nil, err
 	}
-
-	// 🎯 调试行：打印结果长度
 	fmt.Printf("NewsID %d: successfully loaded %d media items.\n", newsID, len(result))
 
 	return result, nil
@@ -509,7 +483,6 @@ func scanFeedItem(row *sql.Rows) (domain.FeedItem, error) {
 
 	err := row.Scan(
 		&item.ID,
-		// 🚨 修正：item.NewsID 已移除，SQL 结果中的 n.id AS news_id 扫描到 item.ID
 		&item.Title,
 		&item.Summary,
 		&item.ContentType,
@@ -537,8 +510,6 @@ func scanFeedItem(row *sql.Rows) (domain.FeedItem, error) {
 	if err != nil {
 		return item, err
 	}
-
-	// 🎯 修正：手动将 ID 赋值给 NewsID 字段的逻辑已删除，因为 domain.FeedItem 中不再需要 NewsID
 
 	if rawTags.Valid {
 		item.Tags = parsePgArray(rawTags.String)

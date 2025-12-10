@@ -50,11 +50,11 @@ fun VideoCard(
                 .clip(RoundedCornerShape(8.dp))
         ) {
 
-            // ⭐ 完全优化版封面图 —— 强制 decode 限制
+            //完全优化版封面图 —— 强制 decode 限制
             AsyncImage(
                 model = ImageRequest.Builder(context)
                     .data(coverUrl)
-                    .size(400)               // ⭐ 核心：限制解码尺寸，避免原图解码
+                    .size(400)               //核心：限制解码尺寸，避免原图解码
                     .crossfade(true)
                     .allowHardware(true)
                     .build(),
@@ -73,7 +73,7 @@ fun VideoCard(
                     .padding(6.dp)
             )
 
-            // ▶️ 播放按钮（中间）
+            //播放按钮（中间）
             Image(
                 painter = painterResource(R.drawable.ic_play_circle),
                 contentDescription = null,

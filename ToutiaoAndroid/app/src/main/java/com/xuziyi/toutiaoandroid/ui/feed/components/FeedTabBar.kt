@@ -15,6 +15,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -26,12 +29,6 @@ import androidx.compose.ui.unit.sp
 import com.xuziyi.toutiaoandroid.R
 import kotlinx.coroutines.android.awaitFrame
 import kotlinx.coroutines.launch
-
-/**
- * —— 独立的 LazyRow 滚动，不与内容列表共享状态
- * —— 点击自动滚动并居中选中项（头条同款体验）
- * —— 支持红点提示、频道管理按钮与听新闻入口
- */
 
 @Composable
 fun FeedTabBar(
@@ -45,27 +42,25 @@ fun FeedTabBar(
     val activeColor = Color(0xFFFF4D4F)
     val inactiveColor = Color.Black
 
-    // ⭐ 关键：使用 TabBar 自己的 LazyListState
     val tabListState = rememberLazyListState()
-
     val coroutineScope = rememberCoroutineScope()
 
-    // ⭐ 点击 Tab 自动居中逻辑
+    //用户点击 tab 后三横线出现
+    var menuVisible by remember { mutableStateOf(false) }
+
+    //点击 Tab 自动居中逻辑
     LaunchedEffect(selectedIndex) {
         coroutineScope.launch {
 
             val layoutInfo = tabListState.layoutInfo
             val itemInfo = layoutInfo.visibleItemsInfo.find { it.index == selectedIndex }
-
             val viewportCenter = layoutInfo.viewportEndOffset / 2
 
-            // 不可见，先滚到可见
             if (itemInfo == null) {
                 tabListState.animateScrollToItem(selectedIndex)
             }
             awaitFrame()
 
-            // 再精确居中
             val newInfo =
                 tabListState.layoutInfo.visibleItemsInfo.find { it.index == selectedIndex }
                     ?: return@launch
@@ -84,7 +79,8 @@ fun FeedTabBar(
             .background(Color.White),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        //左侧 Tab 滚动区
+
+        // 左侧标签区域
         Box(modifier = Modifier.weight(1f)) {
 
             LazyRow(
@@ -102,7 +98,10 @@ fun FeedTabBar(
                             .clickable(
                                 indication = null,
                                 interactionSource = remember { MutableInteractionSource() }
-                            ) { onTabSelected(index) }
+                            ) {
+                                onTabSelected(index)
+                                menuVisible = true   //点击 tab → 三横线 & 渐变出现
+                            }
                             .padding(end = if (index == tabs.lastIndex) 30.dp else 0.dp),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
@@ -112,7 +111,7 @@ fun FeedTabBar(
 
                             Text(
                                 text = tab.title,
-                                fontSize = 19.sp,
+                                fontSize = 19.5.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = if (isSelected) activeColor else inactiveColor,
                             )
@@ -146,27 +145,35 @@ fun FeedTabBar(
                 }
             }
 
-            // 渐变遮罩
-            if (showChannelManager) {
+            //初始状态（未点击）：显示白色遮挡条 —— 完全盖住尾部标签
+            if (!menuVisible) {
                 Box(
                     modifier = Modifier
                         .align(Alignment.CenterEnd)
-                        .width(30.dp)
+                        .width(17.dp)     // 白挡板宽度，可调
+                        .fillMaxHeight()
+                        .background(Color.White)  // 不透明白色
+                )
+            }
+
+            //点击 Tab 后（menuVisible=true）：显示渐变遮挡条
+            if (menuVisible) {
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd)
+                        .width(18.dp)
                         .fillMaxHeight()
                         .background(
                             brush = Brush.horizontalGradient(
-                                colors = listOf(
-                                    Color.Transparent,
-                                    Color.White
-                                )
+                                colors = listOf(Color.Transparent, Color.White)
                             )
                         )
                 )
             }
         }
 
-        //频道管理按钮
-        if (showChannelManager) {
+        // ⭐ 三横线按钮（只在点击 Tab 后出现）
+        if (showChannelManager && menuVisible) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_menu),
                 contentDescription = null,
@@ -174,10 +181,11 @@ fun FeedTabBar(
                 modifier = Modifier
                     .padding(end = 8.dp)
                     .size(24.dp)
-                    .clickable {}
+                    .clickable { }
             )
         }
-        // 3. 听新闻按钮
+
+        // 听新闻按钮（始终显示）
         Icon(
             painter = painterResource(id = R.drawable.ic_listen),
             contentDescription = null,

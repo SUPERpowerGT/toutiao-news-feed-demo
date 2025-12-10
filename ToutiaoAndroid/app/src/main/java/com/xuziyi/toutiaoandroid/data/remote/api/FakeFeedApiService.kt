@@ -29,7 +29,7 @@ class FakeFeedApiService : FeedApiService {
                     tags = listOf("热点", "北京"),
                     city = "beijing",
                     isOfficialMedia = true,
-                    isTopOfficial = true,       // ⭐ MOCK：让它进 前5 官方专区
+                    isTopOfficial = true,
                     source = "新华网",
                     weight = 999f
                 ),
@@ -52,7 +52,7 @@ class FakeFeedApiService : FeedApiService {
                     category = "finance",
                     city = "shenzhen",
                     isOfficialMedia = true,
-                    isTopOfficial = false,        // ⭐ 也作为官方 TOP
+                    isTopOfficial = false,
                     source = "新华社",
                     weight = 800f
                 ),

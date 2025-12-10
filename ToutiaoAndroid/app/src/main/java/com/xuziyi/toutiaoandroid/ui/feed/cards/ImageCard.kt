@@ -20,13 +20,13 @@ fun ImageCard(
             .padding(horizontal = 16.dp, vertical = 12.dp)
     ) {
 
-        // ========== 标题 + 封面图 ==========
+        //标题 + 封面图
 
         Row(
             modifier = Modifier.fillMaxWidth()
         ) {
 
-            // ---- 左：标题 ----
+            //左：标题
             CardTitle(
                 title = item.title,
                 modifier = Modifier
@@ -34,7 +34,7 @@ fun ImageCard(
                     .padding(end = 12.dp)
             )
 
-            // ---- 右：封面图 ----
+            //右：封面图
             CardCoverImage(
                 url = coverUrl,
                 width = 120.dp,
@@ -44,7 +44,7 @@ fun ImageCard(
 
         Spacer(modifier = Modifier.height(10.dp))
 
-        // ========== 作者信息 + 点赞 + 更多 ==========
+        //作者信息 + 点赞 + 更多
 
         Row(
             modifier = Modifier.fillMaxWidth(),

@@ -15,6 +15,7 @@ uiUnit = "1.9.5"
 foundationLayout = "1.9.5"
 uiGeometry = "1.9.5"
 volley = "1.2.1"
+foundationVersion = "1.10.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -38,6 +39,7 @@ androidx-compose-ui-unit = { group = "androidx.compose.ui", name = "ui-unit", ve
 androidx-compose-foundation-layout = { group = "androidx.compose.foundation", name = "foundation-layout", version.ref = "foundationLayout" }
 androidx-compose-ui-geometry = { group = "androidx.compose.ui", name = "ui-geometry", version.ref = "uiGeometry" }
 volley = { group = "com.android.volley", name = "volley", version.ref = "volley" }
+androidx-foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "foundationVersion" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
