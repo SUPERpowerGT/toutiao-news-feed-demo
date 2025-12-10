@@ -39,9 +39,9 @@ This project was developed as part of the **ByteDance Engineering Training Camp*
 # 🎬 Demo Preview
 
 <p align="center">
-  <a href="https://github.com/user-attachments/assets/60a5138c-0a91-4888-98c4-5e5cadd3ffcb">
-    https://github.com/user-attachments/assets/60a5138c-0a91-4888-98c4-5e5cadd3ffcb
-  </a>
+
+https://github.com/user-attachments/assets/60a5138c-0a91-4888-98c4-5e5cadd3ffcb
+
 </p>
 
 
