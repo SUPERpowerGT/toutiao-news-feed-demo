@@ -38,8 +38,7 @@
 
 
 # 🎬 Demo 演示视频
-
-https://github.com/SUPERpowerGT/toutiao-news-feed-demo/releases/download/v0.1.0-demo/Screen_recording_20251210_094923.webm
+https://github.com/user-attachments/assets/06553943-40b6-423a-9cb0-884197786d79
 
 
 
