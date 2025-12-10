@@ -103,7 +103,7 @@ class FeedViewModelTest {
             fakeFeedItem(id = 1, publishTime = 1000)
         )
 
-        buildViewModel()  // ← 必须加
+        buildViewModel()
 
         coEvery { loadMoreFeedUseCase(any()) } returns FeedData(
             items = listOf(fakeFeedItem(id = 2, publishTime = 900)),

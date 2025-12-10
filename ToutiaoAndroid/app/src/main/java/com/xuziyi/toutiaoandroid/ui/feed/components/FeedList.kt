@@ -38,7 +38,6 @@ fun FeedList(
     isLoadingMore: Boolean,
     hasMore: Boolean,
 
-    // 🔥 新增：分页失败 UI
     loadMoreError: Boolean = false,
     loadMoreErrorMessage: String? = null,
     onLoadMoreRetry: () -> Unit = {},
@@ -51,9 +50,7 @@ fun FeedList(
         modifier = modifier.fillMaxSize()
     ) {
 
-        // ============================
         // 空数据页（Top5 + Mixed 都空）
-        // ============================
         if (officialItems.isEmpty() && mixedItems.isEmpty()) {
             item("empty-screen") {
                 EmptyScreen(modifier = Modifier.fillParentMaxSize())
@@ -105,9 +102,7 @@ fun FeedList(
             }
         }
 
-        // ============================
-        // 🔥 分页错误 UI（点击重试）
-        // ============================
+        //分页错误 UI（点击重试）
         if (loadMoreError) {
             item("load-more-error") {
                 LoadMoreErrorFooter(
@@ -117,9 +112,7 @@ fun FeedList(
             }
         }
 
-        // ============================
         // Footer 加载更多状态
-        // ============================
         item {
             FooterLoadingState(
                 isLoadingMore = isLoadingMore,

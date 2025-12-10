@@ -124,9 +124,7 @@ class FeedViewModel(
         _state.value = current.copy(newCount = 0)
     }
 
-    // ============================================================
-    // ⭐ 触底加载更多 —— 新增分页错误处理
-    // ============================================================
+    //触底加载更多 —— 新增分页错误处理
     fun loadMore() {
         val current = state.value as? FeedUiState.Success ?: return
 
@@ -136,7 +134,6 @@ class FeedViewModel(
 
         viewModelScope.launch {
 
-            // ⭐ 新增：开始时清除上一轮的分页错误
             _state.value = current.copy(
                 isLoadingMore = true,
                 loadMoreError = false,
@@ -174,7 +171,6 @@ class FeedViewModel(
 
                 val afterLoading = _state.value as FeedUiState.Success
 
-                // ⭐ 新增：分页失败 UI 状态
                 _state.value = afterLoading.copy(
                     isLoadingMore = false,
                     loadMoreError = true,                              // ← 告诉 UI 失败了

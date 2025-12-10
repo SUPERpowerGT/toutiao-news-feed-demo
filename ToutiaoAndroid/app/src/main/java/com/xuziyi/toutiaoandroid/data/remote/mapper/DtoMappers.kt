@@ -13,7 +13,7 @@ fun FeedItemDto.toDomain(): FeedItem {
         title = title,
         summary = summary,
 
-        // ❗cardType 由前端策略 UseCase 决定
+        //cardType 由前端策略 UseCase 决定
         cardType = FeedCardType.Text,
 
         // 媒体内容
@@ -73,7 +73,7 @@ fun StatsDto.toDomain(): FeedStatsItem {
 
 fun FeedResponseDto.toDomain(): FeedData {
     return FeedData(
-        items = items.map { it.toDomain() }, // ⭐ 复用你已有的 FeedItemDto.toDomain()
+        items = items.map { it.toDomain() },
         nextCursor = nextCursor,
         hasMore = hasMore,
         latestPublishTime = latestPublishTime

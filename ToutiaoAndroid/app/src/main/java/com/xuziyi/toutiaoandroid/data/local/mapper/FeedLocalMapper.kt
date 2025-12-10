@@ -11,9 +11,7 @@ object FeedLocalMapper {
 
     private val gson = Gson()
 
-    // ============================
     // FeedItemEntity → Domain FeedItem
-    // ============================
     fun toDomain(
         item: FeedItemEntity,
         author: AuthorEntity,
@@ -56,9 +54,7 @@ object FeedLocalMapper {
         )
     }
 
-    // ============================
     // Domain FeedItem → FeedItemEntity（用于写入本地）
-    // ============================
     fun fromDomain(
         item: FeedItem,
         authorId: Long,
@@ -94,9 +90,7 @@ object FeedLocalMapper {
         )
     }
 
-    // ============================
     // AuthorEntity → Domain
-    // ============================
     private fun AuthorEntity.toDomain() = FeedAuthorItem(
         id = id,
         name = name,
@@ -104,9 +98,7 @@ object FeedLocalMapper {
         certification = certification
     )
 
-    // ============================
     // StatsEntity → Domain
-    // ============================
     private fun StatsEntity.toDomain() = FeedStatsItem(
         likeCount = likeCount,
         commentCount = commentCount,

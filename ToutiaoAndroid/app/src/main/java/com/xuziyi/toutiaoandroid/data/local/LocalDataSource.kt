@@ -14,9 +14,7 @@ class LocalDataSource(
     private val statsDao: StatsDao
 ) {
 
-    // =========================================
-    // ⭐ 1. 首页秒开：读取所有本地 FeedItem
-    // =========================================
+    //1. 首页秒开：读取所有本地 FeedItem
     suspend fun getAllFeedItems(): List<FeedItem> {
         val itemEntities = feedItemDao.getAllFeedItems()
 
@@ -27,9 +25,7 @@ class LocalDataSource(
         }
     }
 
-    // =========================================
-    // ⭐ 2. 写入（网络成功后同步本地缓存）
-    // =========================================
+    //2. 写入（网络成功后同步本地缓存）
     suspend fun saveFeedItems(items: List<FeedItem>) {
 
         // 1. 写入 authors / stats（拆表结构）
@@ -54,7 +50,7 @@ class LocalDataSource(
             )
         }
 
-        // ⭐ 正确：一次性转换成 FeedItemEntity 列表
+        //正确：一次性转换成 FeedItemEntity 列表
         val feedEntities = items.map { feed ->
             FeedLocalMapper.fromDomain(
                 item = feed,
@@ -63,14 +59,12 @@ class LocalDataSource(
             )
         }
 
-        // ⭐ 正确：一次性写入，不要在 forEach 里重复写
+        //正确：一次性写入，不要在 forEach 里重复写
         feedItemDao.insertFeedItems(feedEntities)
     }
 
 
-    // =========================================
-    // ⭐ 3. 清空缓存（用于全量刷新）
-    // =========================================
+    //3. 清空缓存（用于全量刷新）
     suspend fun clearAll() {
         feedItemDao.clearAll()
         authorDao.clearAll()

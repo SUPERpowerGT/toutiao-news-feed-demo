@@ -45,10 +45,10 @@ fun FeedTabBar(
     val tabListState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
 
-    // ⭐ 用户点击 tab 后三横线出现
+    //用户点击 tab 后三横线出现
     var menuVisible by remember { mutableStateOf(false) }
 
-    // ⭐ 点击 Tab 自动居中逻辑
+    //点击 Tab 自动居中逻辑
     LaunchedEffect(selectedIndex) {
         coroutineScope.launch {
 
@@ -100,7 +100,7 @@ fun FeedTabBar(
                                 interactionSource = remember { MutableInteractionSource() }
                             ) {
                                 onTabSelected(index)
-                                menuVisible = true   // ⭐ 点击 tab → 三横线 & 渐变出现
+                                menuVisible = true   //点击 tab → 三横线 & 渐变出现
                             }
                             .padding(end = if (index == tabs.lastIndex) 30.dp else 0.dp),
                         horizontalAlignment = Alignment.CenterHorizontally,
@@ -145,7 +145,7 @@ fun FeedTabBar(
                 }
             }
 
-            // ⭐ 初始状态（未点击）：显示白色遮挡条 —— 完全盖住尾部标签
+            //初始状态（未点击）：显示白色遮挡条 —— 完全盖住尾部标签
             if (!menuVisible) {
                 Box(
                     modifier = Modifier
@@ -156,7 +156,7 @@ fun FeedTabBar(
                 )
             }
 
-            // ⭐ 点击 Tab 后（menuVisible=true）：显示渐变遮挡条
+            //点击 Tab 后（menuVisible=true）：显示渐变遮挡条
             if (menuVisible) {
                 Box(
                     modifier = Modifier

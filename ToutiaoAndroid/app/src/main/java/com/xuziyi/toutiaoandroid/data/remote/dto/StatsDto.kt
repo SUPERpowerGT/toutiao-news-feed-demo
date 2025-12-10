@@ -3,7 +3,6 @@ package com.xuziyi.toutiaoandroid.data.remote.dto
 import com.google.gson.annotations.SerializedName
 
 data class StatsDto(
-    // 优化：显式指定 JSON 字段名
     @SerializedName("like_count")
     val likeCount: Int = 0,
 

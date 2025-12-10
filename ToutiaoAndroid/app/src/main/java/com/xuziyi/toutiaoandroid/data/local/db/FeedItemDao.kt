@@ -6,15 +6,15 @@ import com.xuziyi.toutiaoandroid.data.local.entity.FeedItemEntity
 @Dao
 interface FeedItemDao {
 
-    // 1) 查询所有 FeedItem，按发布时间排序（用于首页秒开）
+    //查询所有 FeedItem，按发布时间排序（用于首页秒开）
     @Query("SELECT * FROM feed_items ORDER BY publishTime DESC")
     suspend fun getAllFeedItems(): List<FeedItemEntity>
 
-    // 2) 插入或更新
+    //插入或更新
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertFeedItems(items: List<FeedItemEntity>)
 
-    // 3) 清空（用于全量刷新策略）
+    //清空（用于全量刷新策略）
     @Query("DELETE FROM feed_items")
     suspend fun clearAll()
 }

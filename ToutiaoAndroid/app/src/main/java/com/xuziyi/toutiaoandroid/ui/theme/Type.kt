@@ -8,27 +8,19 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.xuziyi.toutiaoandroid.R // 导入 R 文件，以便访问 res/font
 
-// ------------------------------------------
 // 1. 定义 Noto Sans SC 字体族 (使用所有字重文件)
-// ------------------------------------------
 val NotoSansFontFamily = FontFamily(
-    // ❗ 修正：使用 notosanssc_medium.ttf 对应 Medium 权重
+
     Font(R.font.notosanssc_medium, FontWeight.Medium),
 
-    // ❗ 修正：将 FontWeight.Normal (Regular) 也指向 Medium，作为常规字体的默认文件
-    // 如果你有 notosanssc_regular.ttf，应该用它来替换
     Font(R.font.notosanssc_medium, FontWeight.Normal),
 
-    // ❗ 修正：使用 notosanssc_bold.ttf 对应 Bold 权重
     Font(R.font.notosanssc_bold, FontWeight.Bold),
 
-    // ❗ 额外：注册 Extrabold
     Font(R.font.notosanssc_extrabold, FontWeight.ExtraBold)
 )
 
-// ------------------------------------------
 // 2. 创建自定义 Typography 对象 (AppTypography)
-// ------------------------------------------
 val AppTypography = Typography(
 
     // 覆盖 Body Large (常规正文)
@@ -67,5 +59,4 @@ val AppTypography = Typography(
         letterSpacing = 0.5.sp
     )
 
-    // 如果需要，你可以在这里继续添加其他 Material 3 的样式，以确保完全统一。
 )

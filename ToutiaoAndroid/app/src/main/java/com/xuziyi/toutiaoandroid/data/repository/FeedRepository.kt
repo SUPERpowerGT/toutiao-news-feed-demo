@@ -31,7 +31,7 @@ class FeedRepository(
     override suspend fun refreshFeed(latestPublishTime: Long): List<FeedItem> =
         withContext(Dispatchers.IO) {
 
-            // ⭐ Fake 时间
+            //Fake 时间
             val fakeTime = fakeRefreshTime()
 
             return@withContext try {
