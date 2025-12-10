@@ -38,9 +38,7 @@ This project was developed as part of the **ByteDance Engineering Training Camp*
 
 
 # 🎬 Demo Preview
-
-[https://github.com/SUPERpowerGT/toutiao-news-feed-demo/releases/download/v0.1.0-demo/demo_video.mp4](https://github.com/SUPERpowerGT/toutiao-news-feed-demo/releases/download/v0.1.0-demo/demo_video.mp4)
-
+https://github.com/SUPERpowerGT/toutiao-news-feed-demo/releases/download/v0.1.0-demo/demo_video.mp4
 # ✨ Features
 
 ## **Android Client (Jetpack Compose)**
