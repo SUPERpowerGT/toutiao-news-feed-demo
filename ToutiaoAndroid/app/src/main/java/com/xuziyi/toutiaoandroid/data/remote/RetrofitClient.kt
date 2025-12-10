@@ -13,9 +13,9 @@ object RetrofitClient {
 
     // 使用 adb reverse 调试时，可以改为 http://localhost:8080/
     // 模拟器测试url
-    //private const val BASE_URL = "http://10.0.2.2:8080/"
+    private const val BASE_URL = "http://10.0.2.2:8080/"
     //真机测试url
-    private const val BASE_URL = "http://192.168.3.39:8080/"
+    //private const val BASE_URL = "http://192.168.3.39:8080/"
 
 
     private val okHttpClient: OkHttpClient by lazy {
