@@ -9,15 +9,15 @@ import androidx.navigation.compose.rememberNavController
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.xuziyi.toutiaoandroid.ui.feed.FeedViewModel
 import com.xuziyi.toutiaoandroid.ui.feed.FeedViewModelFactory
-import com.xuziyi.toutiaoandroid.data.datasource.RemoteDataSource
-import com.xuziyi.toutiaoandroid.data.remote.RetrofitClient
-import com.xuziyi.toutiaoandroid.data.repository.FeedRepository
 import com.xuziyi.toutiaoandroid.di.DatabaseModule
 import com.xuziyi.toutiaoandroid.domain.usecase.LoadInitialFeedUseCase
 import com.xuziyi.toutiaoandroid.domain.usecase.RefreshFeedUseCase
 import com.xuziyi.toutiaoandroid.domain.usecase.LoadMoreFeedUseCase
 import com.xuziyi.toutiaoandroid.ui.feed.FeedScreen
 import com.xuziyi.toutiaoandroid.ui.splash.SplashScreen
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
+import com.xuziyi.toutiaoandroid.ui.detail.NewsDetailScreen
 
 
 /**
@@ -100,5 +100,17 @@ fun AppNavigator() {
                 }
             )
         }
+
+        composable(
+            route = Screen.Detail.route,
+            arguments = listOf(
+                navArgument("newsId") {
+                    type = NavType.LongType
+                }
+            )
+        ) {
+            NewsDetailScreen()
+        }
+
     }
 }

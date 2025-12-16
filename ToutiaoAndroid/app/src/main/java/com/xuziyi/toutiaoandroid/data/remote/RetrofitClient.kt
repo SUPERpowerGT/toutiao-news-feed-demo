@@ -2,7 +2,7 @@ package com.xuziyi.toutiaoandroid.data.remote
 
 import com.xuziyi.toutiaoandroid.data.remote.api.FeedApiService
 import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor // 🎯 1. 导入日志拦截器
+import okhttp3.logging.HttpLoggingInterceptor //导入日志拦截器
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 

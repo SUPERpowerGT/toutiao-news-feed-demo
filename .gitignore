@@ -79,3 +79,9 @@ ToutiaoAndroid/.idea/
 ToutiaoAndroid/.gradle/
 ToutiaoAndroid/app/build/
 ToutiaoAndroid/build/
+
+##############################
+# VS Code Counter (local only)
+##############################
+.VSCodeCounter/
+

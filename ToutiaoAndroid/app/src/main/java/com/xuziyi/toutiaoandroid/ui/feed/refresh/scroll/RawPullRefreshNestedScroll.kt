@@ -44,6 +44,7 @@ class RawPullRefreshNestedScroll(
     private val setDragOffset: (Float) -> Unit
 ) : NestedScrollConnection {
 
+    //手指下拉不断回调
     override fun onPreScroll(
         available: Offset,
         source: NestedScrollSource

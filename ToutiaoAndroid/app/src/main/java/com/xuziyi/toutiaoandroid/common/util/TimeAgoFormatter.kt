@@ -3,7 +3,6 @@ package com.xuziyi.toutiaoandroid.common.util
 import kotlin.math.abs
 
 object TimeAgoFormatter {
-
     fun format(timestampSec: Long): String {
         val nowSec = System.currentTimeMillis() / 1000
         val diff = abs(nowSec - timestampSec)

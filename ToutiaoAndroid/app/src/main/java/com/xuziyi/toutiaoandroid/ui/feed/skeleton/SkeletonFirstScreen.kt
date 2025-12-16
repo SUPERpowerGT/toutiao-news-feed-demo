@@ -19,6 +19,7 @@ fun SkeletonFirstScreen() {
 
     // 灰阶呼吸动画（更像今日头条闪烁）
     val alpha by rememberInfiniteTransition().animateFloat(
+        //配置呼吸状态
         initialValue = 0.30f,
         targetValue = 0.75f,
         animationSpec = infiniteRepeatable(
@@ -26,7 +27,7 @@ fun SkeletonFirstScreen() {
             repeatMode = RepeatMode.Reverse
         )
     )
-
+    //配置全屏幕
     Box(
         modifier = Modifier
             .fillMaxSize()

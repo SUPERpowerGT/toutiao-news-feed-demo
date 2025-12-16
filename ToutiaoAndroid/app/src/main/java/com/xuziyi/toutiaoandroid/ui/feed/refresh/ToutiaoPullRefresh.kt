@@ -69,6 +69,11 @@ import com.xuziyi.toutiaoandroid.ui.feed.refresh.scroll.RawPullRefreshNestedScro
  *  → **渲染刷新头 UI + 组合拆分后的逻辑模块**
  */
 
+//复用组件，slot/插槽模式
+//ToutiaoPullRefresh 是一个可复用的容器型 Composable，
+// 负责下拉刷新交互与刷新头渲染，
+// 通过 slot content 包裹任意列表内容，
+// 并通过回调与 ViewModel 进行状态同步。
 @Composable
 fun ToutiaoPullRefresh(
     listState: LazyListState,
@@ -80,6 +85,7 @@ fun ToutiaoPullRefresh(
     pullProgress: Float = 0f,
     onPull: (Float) -> Unit,
     onRefreshTriggered: () -> Unit,
+    //slot 插槽设计
     content: @Composable (paddingTop: Float) -> Unit
 ) {
 
@@ -88,19 +94,26 @@ fun ToutiaoPullRefresh(
     val fixedHeaderPx = with(density) { 42.dp.toPx() }
 
     //3 个逻辑模块（全新拆分）
+    //手指拉了多少？进度是多少？
+    //生命周期十分短暂，专门解决手势state的
     val gesture = remember { PullGestureState() }
+    //什么时候该显示动画？什么时候该回弹？
     val refreshLogic = remember { RefreshStateLogic() }
+    //要不要显示“X 条更新”的 banner？
     val bannerLogic = remember { UpdateBannerLogic() }
 
     // Header 高度 = 吸顶 or 跟手
     var dragOffset by remember { mutableFloatStateOf(0f) }
 
+    //没吸顶 → 刷新头高度 = 手指拉了多远
+    //在吸顶 → 刷新头高度 = 固定高度（42dp）
     val headerTargetPx by remember(isHoldingRefreshHeader, dragOffset) {
         mutableFloatStateOf(
             if (isHoldingRefreshHeader) fixedHeaderPx else dragOffset
         )
     }
 
+    //平滑过渡 dragOffset → headerTargetPx → headerHeightPx
     val headerHeightPx by animateFloatAsState(
         targetValue = headerTargetPx.coerceIn(0f, maxPullPx),
         animationSpec = tween(220),
@@ -112,6 +125,7 @@ fun ToutiaoPullRefresh(
         LottieCompositionSpec.Asset("refreshAnimation.json")
     )
 
+    //循环播放
     val refreshingLoop by animateLottieCompositionAsState(
         composition = composition,
         isPlaying = isRefreshing,
@@ -130,7 +144,7 @@ fun ToutiaoPullRefresh(
         }
     }
 
-    // NestedScroll → 使用 gestureState 进行逻辑拆分
+    // NestedScroll监听手势，抓手指
     val nestedScroll = remember {
         RawPullRefreshNestedScroll(
             gesture = gesture,
@@ -150,10 +164,11 @@ fun ToutiaoPullRefresh(
     Box(
         Modifier
             .fillMaxSize()
+            //接收用户手势
             .nestedScroll(nestedScroll)
             .clipToBounds()
     ) {
-
+        // 将刷新头当前高度传递给内容区域，用于顶开列表并与刷新头保持视觉同步
         content(headerHeightPx)
 
         val headerVisible = headerHeightPx > 0.5f
@@ -167,7 +182,7 @@ fun ToutiaoPullRefresh(
                 contentAlignment = Alignment.BottomCenter
             ) {
 
-                //pullProgress 替换成 gesture.progress，但保持参数名一致
+                //唯一出口，当前收拾看，进度是多少
                 val progress = gesture.progress(maxPullPx)
 
                 //回弹判断交给 refreshLogic

@@ -42,10 +42,13 @@ fun FeedScreen(
     onOpenDetail: (Long) -> Unit = {}
 ) {
 
+    //从viewmodel订阅uistate，监听uistate状态切换，和stateflow配合使用
     val state = viewModel.state.collectAsState().value
+    //第一次创建后续重组仍存在
     val feedListState = rememberLazyListState()
-
+    //同理，重组保证状态
     var selectedIndex by remember { mutableIntStateOf(1) }
+    //同理，这里是频道是否有新内容
     var hasNewFollowingContent by remember { mutableStateOf(true) }
 
     val tabs = remember {
@@ -64,22 +67,27 @@ fun FeedScreen(
         )
     }
 
+    //避免重组失忆page切换状态
     val pagerState = rememberPagerState(
         initialPage = selectedIndex,
         pageCount = { tabs.size }
     )
 
+    //创建协程scope和当前composable生命周期绑定
     val scope = rememberCoroutineScope()
 
     //点击 tab → 滚动 pager
     fun onTabClick(index: Int) {
         selectedIndex = index
+        //animateScrollToPage是supend函数，需要在协程作用域使用
         scope.launch { pagerState.animateScrollToPage(index) }
+        //处理是否有最新内容，有的话则红点消失
         if (index == 0) hasNewFollowingContent = false
     }
 
     //滑动 pager → 更新 tab 选中项
     LaunchedEffect(pagerState) {
+        //监听
         snapshotFlow { pagerState.currentPage }.collect { page ->
             selectedIndex = page
         }
@@ -118,7 +126,7 @@ fun FeedScreen(
 
                     is FeedUiState.Success -> {
 
-                        // 自动加载更多（原逻辑保留）
+                        // 自动加载更多这里负面影响是effect频繁重启
                         LaunchedEffect(feedListState, state) {
                             snapshotFlow {
                                 val info = feedListState.layoutInfo
@@ -134,12 +142,17 @@ fun FeedScreen(
                         }
 
                         // 下拉刷新逻辑保留
+                        /*
+                        该页面通过自定义 PullRefresh 容器解耦刷新交互与列表渲染，
+                        所有刷新、分页、动画与错误状态均由 ViewModel 的 UiState 统一驱动，
+                        UI 仅负责事件上报与状态渲染，形成清晰的单向数据流。
+                         */
                         ToutiaoPullRefresh(
                             listState = feedListState,
                             isRefreshing = state.isRefreshing,
                             isHoldingRefreshHeader = state.isHoldingRefreshHeader,
 
-                            //新增两个核心状态（ViewModel 帮你管理）
+                            //新增两个核心状态（ViewModel）
                             showRefreshAnimation = state.showRefreshAnimation,
                             showUpdateBanner = state.showUpdateBanner,
 
