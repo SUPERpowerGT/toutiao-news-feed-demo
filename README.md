@@ -36,11 +36,8 @@ This project was developed as part of the **ByteDance Engineering Training Camp*
 > Full documentation, architecture diagrams, API specifications, and development logs are available in Feishu.
 
 
-
 # 🎬 Demo Preview
-
-https://github.com/SUPERpowerGT/toutiao-news-feed-demo/releases/download/v0.1.0-demo/Screen_recording_20251210_094923.webm
-
+https://github.com/user-attachments/assets/7af4154d-5152-486e-ba55-549284fff178
 
 
 # ✨ Features
