@@ -15,7 +15,7 @@ import androidx.compose.ui.unit.sp
  * 今日头条风格首屏骨架（灰阶呼吸动画）
  */
 @Composable
-fun SkeletonFirstScreen() {
+fun FeedLoadingPlaceholder() {
 
     // 灰阶呼吸动画（更像今日头条闪烁）
     val alpha by rememberInfiniteTransition().animateFloat(
