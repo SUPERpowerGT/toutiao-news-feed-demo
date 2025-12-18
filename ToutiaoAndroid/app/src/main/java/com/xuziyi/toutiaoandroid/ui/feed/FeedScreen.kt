@@ -16,7 +16,8 @@ import com.xuziyi.toutiaoandroid.ui.feed.refresh.ToutiaoPullRefresh
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.platform.LocalDensity
 import com.xuziyi.toutiaoandroid.ui.components.ErrorScreen
-import com.xuziyi.toutiaoandroid.ui.feed.skeleton.SkeletonFirstScreen
+import com.xuziyi.toutiaoandroid.ui.feed.skeleton.FeedLoadingPlaceholder
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 /**
@@ -117,7 +118,7 @@ fun FeedScreen(
                 // page == 1 → 推荐流
                 1 -> when (state) {
 
-                    is FeedUiState.Loading -> SkeletonFirstScreen()
+                    is FeedUiState.Loading -> FeedLoadingPlaceholder()
 
                     is FeedUiState.Error -> ErrorScreen(
                         message = state.message ?: "网络异常，请稍后重试",
@@ -126,65 +127,128 @@ fun FeedScreen(
 
                     is FeedUiState.Success -> {
 
-                        // 自动加载更多这里负面影响是effect频繁重启
-                        LaunchedEffect(feedListState, state) {
-                            snapshotFlow {
-                                val info = feedListState.layoutInfo
-                                val last = info.visibleItemsInfo.lastOrNull()?.index ?: 0
-                                val total = info.totalItemsCount
-                                last to total
-                            }.collect { (last, total) ->
-                                val s = state as? FeedUiState.Success ?: return@collect
-                                if (s.hasMore && !s.isLoadingMore && last >= total - 5) {
-                                    viewModel.loadMore()
+                        /**
+                         * Success 内部首帧 Gate
+                         *
+                         * 控制：
+                         * - Success 状态的第一阶段只展示 Skeleton
+                         * - 至少展示一个“人眼可感知”的最短时间
+                         * - 再进入真实 Feed UI
+                         */
+                        var showRealFeed by remember { mutableStateOf(false) }
+
+                        /**
+                         * 首帧 + 最短展示时间控制
+                         *
+                         * 为什么这样做？
+                         * 1. withFrameNanos {}：保证切换发生在帧边界
+                         * 2. minShowTime：保证 Skeleton 动画“看得见”
+                         * 3. 不阻塞主线程，仅延迟 UI 构建
+                         */
+                        LaunchedEffect(Unit) {
+
+                            val startNs = System.nanoTime()
+                            val minShowTimeNs = 300_000_000L // 300ms：经验值，视觉友好
+
+                            // 让出当前帧（Skeleton 消费首帧）
+                            withFrameNanos { }
+
+                            // 如果 Skeleton 展示时间还不够，继续等待
+                            val elapsedNs = System.nanoTime() - startNs
+                            if (elapsedNs < minShowTimeNs) {
+                                delay((minShowTimeNs - elapsedNs) / 1_000_000)
+                            }
+
+                            // 再等一帧，保证 Feed 在新帧进入（防撕裂）
+                            withFrameNanos { }
+
+                            showRealFeed = true
+                        }
+
+                        /**
+                         * Success 第一阶段：
+                         * - 仍然展示 Skeleton
+                         * - 不是 Loading 状态
+                         * - 只是 Success 的首帧缓冲
+                         */
+                        if (!showRealFeed) {
+
+                            FeedLoadingPlaceholder()
+
+                        } else {
+
+                            /**
+                             * Success 第二阶段：
+                             * 真正进入完整 Feed UI
+                             */
+
+                            /**
+                             * 自动加载更多（分页监听）
+                             *
+                             * 使用 feedListState 作为 key：
+                             * - 避免因 state.copy() 导致 effect 频繁重启
+                             * - 滚动频率 ≪ 状态变化频率
+                             */
+                            LaunchedEffect(feedListState) {
+                                snapshotFlow {
+                                    val info = feedListState.layoutInfo
+                                    val last = info.visibleItemsInfo.lastOrNull()?.index ?: 0
+                                    val total = info.totalItemsCount
+                                    last to total
+                                }.collect { (last, total) ->
+                                    val s = viewModel.state.value as? FeedUiState.Success ?: return@collect
+                                    if (s.hasMore && !s.isLoadingMore && last >= total - 5) {
+                                        viewModel.loadMore()
+                                    }
                                 }
                             }
-                        }
 
-                        // 下拉刷新逻辑保留
-                        /*
-                        该页面通过自定义 PullRefresh 容器解耦刷新交互与列表渲染，
-                        所有刷新、分页、动画与错误状态均由 ViewModel 的 UiState 统一驱动，
-                        UI 仅负责事件上报与状态渲染，形成清晰的单向数据流。
-                         */
-                        ToutiaoPullRefresh(
-                            listState = feedListState,
-                            isRefreshing = state.isRefreshing,
-                            isHoldingRefreshHeader = state.isHoldingRefreshHeader,
-
-                            //新增两个核心状态（ViewModel）
-                            showRefreshAnimation = state.showRefreshAnimation,
-                            showUpdateBanner = state.showUpdateBanner,
-
-                            newCount = state.newCount,
-                            pullProgress = state.pullProgress,
-                            onPull = { viewModel.updatePullProgress(it) },
-                            onRefreshTriggered = { viewModel.refresh() }
-                        ) { paddingTop ->
-
-                            FeedList(
-                                officialItems = state.officialItems,
-                                mixedItems = state.mixedItems,
-                                onItemClick = onOpenDetail,
+                            /**
+                             * 下拉刷新 + Feed 列表主体
+                             *
+                             * 所有业务状态：
+                             * - 刷新
+                             * - Banner
+                             * - 分页
+                             * 都由 ViewModel 驱动
+                             */
+                            ToutiaoPullRefresh(
                                 listState = feedListState,
+                                isRefreshing = state.isRefreshing,
+                                isHoldingRefreshHeader = state.isHoldingRefreshHeader,
+                                showRefreshAnimation = state.showRefreshAnimation,
+                                showUpdateBanner = state.showUpdateBanner,
+                                newCount = state.newCount,
+                                pullProgress = state.pullProgress,
+                                onPull = { viewModel.updatePullProgress(it) },
+                                onRefreshTriggered = { viewModel.refresh() }
+                            ) { paddingTop ->
 
-                                isLoadingMore = state.isLoadingMore,
-                                hasMore = state.hasMore,
+                                FeedList(
+                                    officialItems = state.officialItems,
+                                    mixedItems = state.mixedItems,
+                                    onItemClick = onOpenDetail,
+                                    listState = feedListState,
 
-                                //新增三行（让分页错误 UI 生效）
-                                loadMoreError = state.loadMoreError,
-                                loadMoreErrorMessage = state.loadMoreErrorMessage,
-                                onLoadMoreRetry = { viewModel.loadMore() },
+                                    isLoadingMore = state.isLoadingMore,
+                                    hasMore = state.hasMore,
 
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(top = with(LocalDensity.current) { paddingTop.toDp() })
-                            )
+                                    loadMoreError = state.loadMoreError,
+                                    loadMoreErrorMessage = state.loadMoreErrorMessage,
+                                    onLoadMoreRetry = { viewModel.loadMore() },
 
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .padding(top = with(LocalDensity.current) {
+                                            paddingTop.toDp()
+                                        })
+                                )
+                            }
                         }
-
-
                     }
+
+
+
                 }
 
                 // 其他 tab
