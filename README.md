@@ -25,6 +25,10 @@ It includes:
 
 The project is designed for demo, training, and architecture practice. It already includes seeded mock content, cursor-based pagination, pull-to-refresh, load-more behavior, and a local testing script for injecting fresh feed items.
 
+# 🎬 Demo Preview
+
+https://github.com/user-attachments/assets/7af4154d-5152-486e-ba55-549284fff178
+
 # Tech Stack
 
 - Android Studio Hedgehog / Koala

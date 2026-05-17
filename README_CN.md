@@ -24,6 +24,10 @@
 
 项目适合做训练营作业展示、架构练习和移动端联调。当前已经具备推荐流首屏加载、下拉刷新、上拉分页、预置 mock 数据，以及“手动追加一批更晚时间数据”这种刷新测试能力。
 
+# 🎬 Demo 演示视频
+
+https://github.com/user-attachments/assets/1aba5b82-5c24-4be5-b3b2-098721a7a249
+
 # 技术栈
 
 - Android Studio Hedgehog / Koala
