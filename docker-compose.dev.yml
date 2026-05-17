@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   db:
     image: postgres:16
@@ -18,6 +16,33 @@ services:
       - ./docker/db/data:/var/lib/postgresql/data
       - ./docker/db/init:/docker-entrypoint-initdb.d
 
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U toutiao -d toutiao"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
+
+    networks:
+      - toutiao_net
+
+  backend:
+    build: ./backend
+    container_name: toutiao-backend-dev
+    restart: unless-stopped
+    profiles:
+      - fullstack
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: toutiao
+      DB_PASSWORD: toutiao
+      DB_NAME: toutiao
+    ports:
+      - "8080:8080"
     networks:
       - toutiao_net
 

@@ -33,7 +33,7 @@ SELECT
 	f.is_official_media,
 	f.is_top_official,
 	f.source,
-	EXTRACT(EPOCH FROM f.publish_time)::bigint AS publish_time,
+	FLOOR(EXTRACT(EPOCH FROM f.publish_time))::bigint AS publish_time,
 	f.weight,
 
 	a.id AS author_id,
@@ -89,7 +89,7 @@ SELECT
 	f.is_official_media,
 	f.is_top_official,
 	f.source,
-	EXTRACT(EPOCH FROM f.publish_time)::bigint AS publish_time,
+	FLOOR(EXTRACT(EPOCH FROM f.publish_time))::bigint AS publish_time,
 	f.weight,
 
 	a.id AS author_id,
@@ -166,7 +166,7 @@ SELECT
 	f.is_official_media,
 	f.is_top_official,
 	f.source,
-	EXTRACT(EPOCH FROM f.publish_time)::bigint AS publish_time,
+	FLOOR(EXTRACT(EPOCH FROM f.publish_time))::bigint AS publish_time,
 	f.weight,
 
 	a.id AS author_id,
@@ -182,7 +182,7 @@ FROM feed_item f
 JOIN news n ON n.id = f.news_id
 LEFT JOIN author a ON a.id = n.author_id
 LEFT JOIN stats s ON s.news_id = n.id
-WHERE f.publish_time < to_timestamp($1)
+WHERE FLOOR(EXTRACT(EPOCH FROM f.publish_time))::bigint < $1
 ORDER BY f.publish_time DESC, f.weight DESC
 LIMIT $2;
 `
@@ -299,7 +299,7 @@ SELECT
     f.is_official_media,
     f.is_top_official,
     f.source,
-    EXTRACT(EPOCH FROM f.publish_time)::bigint AS publish_time,
+    FLOOR(EXTRACT(EPOCH FROM f.publish_time))::bigint AS publish_time,
     f.weight,
 
     a.id AS author_id,
@@ -316,7 +316,7 @@ JOIN news n ON n.id = f.news_id
 LEFT JOIN author a ON a.id = n.author_id
 LEFT JOIN stats s ON s.news_id = n.id
 WHERE f.is_top_official = TRUE
-  AND f.publish_time > to_timestamp($1)
+  AND FLOOR(EXTRACT(EPOCH FROM f.publish_time))::bigint > $1
 ORDER BY f.publish_time DESC
 LIMIT 5;
 `
@@ -351,7 +351,7 @@ SELECT
     f.is_official_media,
     f.is_top_official,
     f.source,
-    EXTRACT(EPOCH FROM f.publish_time)::bigint AS publish_time,
+    FLOOR(EXTRACT(EPOCH FROM f.publish_time))::bigint AS publish_time,
     f.weight,
 
     a.id AS author_id,
@@ -368,7 +368,7 @@ JOIN news n ON n.id = f.news_id
 LEFT JOIN author a ON a.id = n.author_id
 LEFT JOIN stats s ON s.news_id = n.id
 WHERE f.is_top_official = FALSE
-  AND f.publish_time > to_timestamp($1)
+  AND FLOOR(EXTRACT(EPOCH FROM f.publish_time))::bigint > $1
 ORDER BY f.publish_time DESC, f.weight DESC
 LIMIT 15;
 `
@@ -479,32 +479,46 @@ func scanFeedItem(row *sql.Rows) (domain.FeedItem, error) {
 
 	var item domain.FeedItem
 	var rawTags sql.NullString
+	var contentType sql.NullString
+	var category sql.NullString
+	var subCategory sql.NullString
+	var city sql.NullString
+	var source sql.NullString
+	var isOfficial sql.NullBool
+	var isTopOfficial sql.NullBool
+	var authorID sql.NullInt64
+	var authorName sql.NullString
+	var authorAvatar sql.NullString
 	var authorCert sql.NullString
+	var likeCount sql.NullInt64
+	var commentCount sql.NullInt64
+	var favoriteCount sql.NullInt64
+	var shareCount sql.NullInt64
 
 	err := row.Scan(
 		&item.ID,
 		&item.Title,
 		&item.Summary,
-		&item.ContentType,
-		&item.Category,
-		&item.SubCategory,
+		&contentType,
+		&category,
+		&subCategory,
 		&rawTags,
-		&item.City,
-		&item.IsOfficial,
-		&item.IsTopOfficial,
-		&item.Source,
+		&city,
+		&isOfficial,
+		&isTopOfficial,
+		&source,
 		&item.PublishTime,
 		&item.Weight,
 
-		&item.Author.ID,
-		&item.Author.Name,
-		&item.Author.AvatarURL,
+		&authorID,
+		&authorName,
+		&authorAvatar,
 		&authorCert,
 
-		&item.Stats.LikeCount,
-		&item.Stats.CommentCount,
-		&item.Stats.FavoriteCount,
-		&item.Stats.ShareCount,
+		&likeCount,
+		&commentCount,
+		&favoriteCount,
+		&shareCount,
 	)
 
 	if err != nil {
@@ -515,8 +529,50 @@ func scanFeedItem(row *sql.Rows) (domain.FeedItem, error) {
 		item.Tags = parsePgArray(rawTags.String)
 	}
 
+	if contentType.Valid {
+		item.ContentType = contentType.String
+	}
+	if category.Valid {
+		item.Category = category.String
+	}
+	if subCategory.Valid {
+		item.SubCategory = subCategory.String
+	}
+	if city.Valid {
+		item.City = city.String
+	}
+	if source.Valid {
+		item.Source = source.String
+	}
+	if isOfficial.Valid {
+		item.IsOfficial = isOfficial.Bool
+	}
+	if isTopOfficial.Valid {
+		item.IsTopOfficial = isTopOfficial.Bool
+	}
+	if authorID.Valid {
+		item.Author.ID = authorID.Int64
+	}
+	if authorName.Valid {
+		item.Author.Name = authorName.String
+	}
+	if authorAvatar.Valid {
+		item.Author.AvatarURL = authorAvatar.String
+	}
 	if authorCert.Valid {
 		item.Author.Certification = authorCert.String
+	}
+	if likeCount.Valid {
+		item.Stats.LikeCount = int(likeCount.Int64)
+	}
+	if commentCount.Valid {
+		item.Stats.CommentCount = int(commentCount.Int64)
+	}
+	if favoriteCount.Valid {
+		item.Stats.FavoriteCount = int(favoriteCount.Int64)
+	}
+	if shareCount.Valid {
+		item.Stats.ShareCount = int(shareCount.Int64)
 	}
 
 	return item, nil

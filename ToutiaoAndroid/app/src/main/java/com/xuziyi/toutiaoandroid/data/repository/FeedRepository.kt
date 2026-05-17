@@ -30,12 +30,8 @@ class FeedRepository(
 
     override suspend fun refreshFeed(latestPublishTime: Long): List<FeedItem> =
         withContext(Dispatchers.IO) {
-
-            //Fake 时间
-            val fakeTime = fakeRefreshTime()
-
             return@withContext try {
-                val response = remoteDataSource.refreshFeed(fakeTime)
+                val response = remoteDataSource.refreshFeed(latestPublishTime)
                 val items = response.items.map { it.toDomain() }
 
                 localDataSource.saveFeedItems(items)
@@ -60,9 +56,4 @@ class FeedRepository(
             localDataSource.saveFeedItems(items)
         } catch (_: Exception) { }
     }
-
-    private fun fakeRefreshTime(): Long {
-        return 1L // 永远触发“全量更新”
-    }
 }
-

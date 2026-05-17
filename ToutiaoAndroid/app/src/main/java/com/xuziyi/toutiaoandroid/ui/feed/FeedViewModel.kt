@@ -93,7 +93,10 @@ class FeedViewModel(
                     newCount = 0
                 )
 
-                val latest = System.currentTimeMillis() / 1000
+                val latest = (
+                    current.officialItems.map { it.publishTime } +
+                        current.mixedItems.map { it.publishTime }
+                    ).maxOrNull() ?: 0L
 
                 val startTime = System.currentTimeMillis()
                 val minDisplay = 1200L
@@ -101,21 +104,8 @@ class FeedViewModel(
 
                 val raw = withTimeout(maxTimeout) { refreshFeedUseCase(latest) }
 
-                //这里需要优化，不要再main线程做计算处理，我们选择把这两个分配给default来计算，用线程池（协程方式）
-                //val rendered = renderCardTypeUseCase.execute(raw)
-                //val processed = processFeedItemsUseCase.execute(rendered)
-
                 // [PERF-THREAD] refresh 阶段 CPU 计算下沉至 Default
                 val startCompute = System.currentTimeMillis()
-
-                //别在主线程算，交给 CPU 线程池去算
-                val processed = withContext(Dispatchers.Default) {
-                    val rendered = renderCardTypeUseCase.execute(raw)
-                    processFeedItemsUseCase.execute(rendered)
-                }
-
-                val computeCost = System.currentTimeMillis() - startCompute
-                android.util.Log.d("FeedPerf", "refresh compute cost = $computeCost ms")
 
                 // [PERF-GUARD] 并发保护：
                 // refresh 发生后，丢弃旧语义结果，避免无效计算回写 UI
@@ -129,9 +119,23 @@ class FeedViewModel(
                 if (elapsed < minDisplay) delay(minDisplay - elapsed)
 
                 //刷新成功更新状态（一定要做）
+                val mergedItems = (
+                    current.officialItems +
+                        current.mixedItems +
+                        raw
+                    ).distinctBy { it.id }
+
+                val mergedProcessed = withContext(Dispatchers.Default) {
+                    val rendered = renderCardTypeUseCase.execute(mergedItems)
+                    processFeedItemsUseCase.execute(rendered)
+                }
+
+                val computeCost = System.currentTimeMillis() - startCompute
+                android.util.Log.d("FeedPerf", "refresh compute cost = $computeCost ms")
+
                 _state.value = (_state.value as FeedUiState.Success).copy(
-                    officialItems = processed.officialList,
-                    mixedItems = processed.mixedList,
+                    officialItems = mergedProcessed.officialList,
+                    mixedItems = mergedProcessed.mixedList,
                     isRefreshing = false,
                     showRefreshAnimation = false,
                     isHoldingRefreshHeader = true,
@@ -233,8 +237,11 @@ class FeedViewModel(
                             afterLoading.officialItems + afterLoading.mixedItems
                         )
 
+                    val mergedUniqueItems = (existingRendered + newRendered)
+                        .distinctBy { it.id }
+
                     processFeedItemsUseCase.execute(
-                        existingRendered + newRendered
+                        mergedUniqueItems
                     )
                 }
 

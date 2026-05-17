@@ -178,6 +178,19 @@ fun FeedScreen(
                         } else {
 
                             /**
+                             * 刷新成功后主动回到列表顶部。
+                             *
+                             * Compose 默认会尽量保留 LazyListState 的锚点和偏移，
+                             * 当前面插入了新内容时，视觉上就可能停在“第二行附近”。
+                             * 在展示“已更新 X 条”时显式回到 item 0，体验会更符合信息流刷新预期。
+                             */
+                            LaunchedEffect(state.showUpdateBanner, state.newCount) {
+                                if (state.showUpdateBanner && state.newCount > 0) {
+                                    feedListState.scrollToItem(0)
+                                }
+                            }
+
+                            /**
                              * Success 第二阶段：
                              * 真正进入完整 Feed UI
                              */

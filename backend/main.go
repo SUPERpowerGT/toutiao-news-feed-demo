@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"path/filepath"
 	"runtime"
+	"strconv"
 
 	"toutiao-backend/api"
 	"toutiao-backend/application"
@@ -54,6 +55,21 @@ func main() {
 			return
 		}
 		w.Write([]byte("seed ok"))
+	})
+
+	mux.HandleFunc("/seed/append", func(w http.ResponseWriter, r *http.Request) {
+		count := 5
+		if v := r.URL.Query().Get("count"); v != "" {
+			if n, err := strconv.Atoi(v); err == nil && n > 0 && n <= 20 {
+				count = n
+			}
+		}
+
+		if err := seed.AppendRefreshBatch(db, count); err != nil {
+			http.Error(w, "append seed error: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+		w.Write([]byte("append seed ok"))
 	})
 
 	feedHandler.RegisterRoutes(mux)

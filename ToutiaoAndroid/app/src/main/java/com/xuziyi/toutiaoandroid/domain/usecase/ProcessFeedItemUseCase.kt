@@ -12,17 +12,11 @@ class ProcessFeedItemUseCase {
             .filter { it.isTopOfficial }
             .take(5)
 
+        // 2. 其余进入普通混合流
+        val mixed = rendered.filterNot { it in officials }
 
-        // 2. 不足 5 条则 mock 补齐
-        val filledOfficials = if (officials.size < 5) {
-            officials + mockOfficialItems().take(5 - officials.size)
-        } else officials
-
-        // 3. 其余进入普通混合流
-        val mixed = rendered.filterNot { it in filledOfficials }
-
-        // 4. 官方视频卡标题增强
-        val finalOfficials = filledOfficials.map { item ->
+        // 3. 官方视频卡标题增强
+        val finalOfficials = officials.map { item ->
             if (item.cardType is FeedCardType.Video) {
                 item.copy(title = "视频｜${item.title}")
             } else item
@@ -32,37 +26,5 @@ class ProcessFeedItemUseCase {
             officialList = finalOfficials,
             mixedList = mixed
         )
-    }
-
-    private fun mockOfficialItems(): List<FeedItem> {
-        return List(5) { index ->
-            FeedItem(
-                id = 10000L + index,
-                title = "【权威发布】今日最新重要时政要闻 $index",
-                summary = null,
-                cardType = FeedCardType.OfficialTop,
-                media = emptyList(),
-                author = FeedAuthorItem(
-                    id = 999,
-                    name = "新华社",
-                    avatarUrl = null,
-                    certification = "official"
-                ),
-                stats = FeedStatsItem(0, 0, 0, 0),
-                publishTime = System.currentTimeMillis(),
-
-                category = "official",
-                subCategory = null,
-                tags = null,
-                city = null,
-
-                isOfficialMedia = true,
-                isTopOfficial = true,
-                source = "新华社",
-
-                contentType = FeedContentType(FeedContentType.TEXT),
-                weight = 100f
-            )
-        }
     }
 }
