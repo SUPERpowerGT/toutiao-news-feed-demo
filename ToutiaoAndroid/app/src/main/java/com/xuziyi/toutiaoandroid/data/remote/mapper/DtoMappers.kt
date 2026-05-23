@@ -36,6 +36,8 @@ fun FeedItemDto.toDomain(): FeedItem {
         isTopOfficial = isTopOfficial,       // ← NEW!
         source = source,
         weight = weight,
+        recommendScore = recommendScore,
+        reason = reason,
 
         // ⬇ 前端强类型：contentType（由字符串转换）
         contentType = FeedContentType(contentType.lowercase()),
@@ -72,8 +74,20 @@ fun StatsDto.toDomain(): FeedStatsItem {
 }
 
 fun FeedResponseDto.toDomain(): FeedData {
+    val sceneKey = scene.lowercase()
+    val topDomainItems = topItems.map { it.toDomain() }
+    val topIds = topDomainItems.map { it.id }.toSet()
+    val contentItems = items
+        .map { itemDto ->
+            val item = itemDto.toDomain()
+            if (sceneKey == "recommend") item else item.copy(isTopOfficial = false)
+        }
+        .filterNot { sceneKey == "recommend" && it.id in topIds }
+
     return FeedData(
-        items = items.map { it.toDomain() },
+        scene = sceneKey,
+        topItems = topDomainItems,
+        items = contentItems,
         nextCursor = nextCursor,
         hasMore = hasMore,
         latestPublishTime = latestPublishTime

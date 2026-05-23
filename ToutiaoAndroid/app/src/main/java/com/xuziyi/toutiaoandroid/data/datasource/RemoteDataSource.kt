@@ -11,9 +11,13 @@ import com.xuziyi.toutiaoandroid.data.remote.dto.FeedResponseDto
 class RemoteDataSource(private val api: FeedApiService) {
 
     // 核心逻辑：封装一个私有函数来处理解包和异常
-    private suspend fun getAndUnwrapFeed(cursor: Long?, refreshTime: Long?): FeedResponseDto {
+    private suspend fun getAndUnwrapFeed(
+        scene: String,
+        cursor: Long?,
+        refreshTime: Long?
+    ): FeedResponseDto {
         // api.getFeed(...) 现在返回 ApiResponse<FeedResponseDto>
-        val apiResponse = api.getFeed(cursor = cursor, refreshTime = refreshTime)
+        val apiResponse = api.getFeed(scene = scene, cursor = cursor, refreshTime = refreshTime)
 
         //检查业务状态码 (假设 code == 0 为成功)
         if (apiResponse.code != 0) {
@@ -32,17 +36,17 @@ class RemoteDataSource(private val api: FeedApiService) {
     }
 
     // 调用封装的私有函数
-    suspend fun loadInitialFeed(): FeedResponseDto {
-        return getAndUnwrapFeed(cursor = null, refreshTime = null)
+    suspend fun loadInitialFeed(scene: String): FeedResponseDto {
+        return getAndUnwrapFeed(scene = scene, cursor = null, refreshTime = null)
     }
 
     // 调用封装的私有函数
-    suspend fun refreshFeed(latestPublishTime: Long): FeedResponseDto {
-        return getAndUnwrapFeed(cursor = null, refreshTime = latestPublishTime)
+    suspend fun refreshFeed(scene: String, latestPublishTime: Long): FeedResponseDto {
+        return getAndUnwrapFeed(scene = scene, cursor = null, refreshTime = latestPublishTime)
     }
 
     // 调用封装的私有函数
-    suspend fun loadMore(cursor: Long): FeedResponseDto {
-        return getAndUnwrapFeed(cursor = cursor, refreshTime = null)
+    suspend fun loadMore(scene: String, cursor: Long): FeedResponseDto {
+        return getAndUnwrapFeed(scene = scene, cursor = cursor, refreshTime = null)
     }
 }

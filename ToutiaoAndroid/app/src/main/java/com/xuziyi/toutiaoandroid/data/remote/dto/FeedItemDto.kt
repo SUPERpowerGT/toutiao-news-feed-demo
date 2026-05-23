@@ -59,5 +59,11 @@ data class FeedItemDto(
 
     // 推荐排序权重
     @SerializedName("weight")
-    val weight: Float = 0f
+    val weight: Float = 0f,
+
+    @SerializedName("recommend_score")
+    val recommendScore: Float = 0f,
+
+    @SerializedName("reason")
+    val reason: String? = null
 )

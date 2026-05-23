@@ -18,7 +18,16 @@ func NewFeedItemRepositoryPG(db *sql.DB) *FeedItemRepositoryPG {
 }
 
 // 首页首次加载 Top5 + Normal15
-func (r *FeedItemRepositoryPG) ListInitial(ctx context.Context) ([]domain.FeedItem, *int64, int64, error) {
+func (r *FeedItemRepositoryPG) ListInitial(ctx context.Context, scene string) ([]domain.FeedItem, []domain.FeedItem, *int64, int64, error) {
+	scene = normalizeScene(scene)
+
+	if scene != "recommend" {
+		items, next, latestTime, err := r.querySceneItems(ctx, scene, nil, nil, 15)
+		if err != nil {
+			return nil, nil, nil, 0, err
+		}
+		return []domain.FeedItem{}, items, next, latestTime, nil
+	}
 
 	sqlTop := `
 SELECT
@@ -56,8 +65,7 @@ LIMIT 5;
 
 	rows, err := r.db.QueryContext(ctx, sqlTop)
 	if err != nil {
-		//修正: 错误返回时，增加 latestPublishTime 的默认值 0
-		return nil, nil, 0, err
+		return nil, nil, nil, 0, err
 	}
 	defer rows.Close()
 
@@ -65,7 +73,7 @@ LIMIT 5;
 	for rows.Next() {
 		item, err := scanFeedItem(rows)
 		if err != nil {
-			return nil, nil, 0, err
+			return nil, nil, nil, 0, err
 		}
 
 		var loadErr error
@@ -112,7 +120,7 @@ LIMIT 15;
 
 	rows2, err := r.db.QueryContext(ctx, sqlNormal)
 	if err != nil {
-		return nil, nil, 0, err
+		return nil, nil, nil, 0, err
 	}
 	defer rows2.Close()
 
@@ -120,7 +128,7 @@ LIMIT 15;
 	for rows2.Next() {
 		item, err := scanFeedItem(rows2)
 		if err != nil {
-			return nil, nil, 0, err
+			return nil, nil, nil, 0, err
 		}
 
 		item.Media, _ = r.loadMedia(ctx, item.ID)
@@ -141,82 +149,19 @@ LIMIT 15;
 		// 列表的第一项就是最新的，因为是 DESC 排序
 		latestPublishTime = items[0].PublishTime
 	}
-	return items, nextCursor, latestPublishTime, nil
+	return topItems, normalItems, nextCursor, latestPublishTime, nil
 }
 
 //////////////////////////////////////////
 // 加载更多
 //////////////////////////////////////////
 
-func (r *FeedItemRepositoryPG) ListFeed(ctx context.Context, cursor *int64, limit int) ([]domain.FeedItem, *int64, int64, error) {
+func (r *FeedItemRepositoryPG) ListFeed(ctx context.Context, scene string, cursor *int64, limit int) ([]domain.FeedItem, *int64, int64, error) {
 	if cursor == nil {
 		return nil, nil, 0, fmt.Errorf("cursor is required")
 	}
 
-	sqlStr := `
-SELECT
-	n.id AS news_id,
-	n.title,
-	n.summary,
-	f.content_type,
-	f.category,
-	f.sub_category,
-	f.tags,
-	f.city,
-	f.is_official_media,
-	f.is_top_official,
-	f.source,
-	FLOOR(EXTRACT(EPOCH FROM f.publish_time))::bigint AS publish_time,
-	f.weight,
-
-	a.id AS author_id,
-	a.name AS author_name,
-	a.avatar_url AS author_avatar,
-	a.certification AS author_cert,
-
-	s.like_count,
-	s.comment_count,
-	s.favorite_count,
-	s.share_count
-FROM feed_item f
-JOIN news n ON n.id = f.news_id
-LEFT JOIN author a ON a.id = n.author_id
-LEFT JOIN stats s ON s.news_id = n.id
-WHERE FLOOR(EXTRACT(EPOCH FROM f.publish_time))::bigint < $1
-ORDER BY f.publish_time DESC, f.weight DESC
-LIMIT $2;
-`
-
-	rows, err := r.db.QueryContext(ctx, sqlStr, *cursor, limit)
-	if err != nil {
-		return nil, nil, 0, err
-	}
-	defer rows.Close()
-
-	items := []domain.FeedItem{}
-	for rows.Next() {
-		item, err := scanFeedItem(rows)
-		if err != nil {
-			return nil, nil, 0, err
-		}
-
-		item.Media, _ = r.loadMedia(ctx, item.ID)
-		items = append(items, item)
-	}
-
-	var nextCursor *int64
-	if len(items) > 0 {
-		last := items[len(items)-1]
-		nextCursor = &last.PublishTime
-	}
-
-	var latestPublishTime int64 = 0
-	if len(items) > 0 {
-		// 列表的第一项就是最新的，因为是 DESC 排序
-		latestPublishTime = items[0].PublishTime
-	}
-
-	return items, nextCursor, latestPublishTime, nil
+	return r.querySceneItems(ctx, normalizeScene(scene), cursor, nil, limit)
 }
 
 //////////////////////////////////////////
@@ -283,7 +228,16 @@ LIMIT $2;
 // 下拉刷新 (Top5 + Normal15 模式，带时间过滤)
 //////////////////////////////////////////
 
-func (r *FeedItemRepositoryPG) ListNewer(ctx context.Context, refreshTime int64) ([]domain.FeedItem, error) {
+func (r *FeedItemRepositoryPG) ListNewer(ctx context.Context, scene string, refreshTime int64) ([]domain.FeedItem, []domain.FeedItem, error) {
+	scene = normalizeScene(scene)
+
+	if scene != "recommend" {
+		items, _, _, err := r.querySceneItems(ctx, scene, nil, &refreshTime, 15)
+		if err != nil {
+			return nil, nil, err
+		}
+		return []domain.FeedItem{}, items, nil
+	}
 
 	// 1. 获取 Top 官方内容（最新的 5 条，且发布时间要比 refreshTime 新）
 	sqlTop := `
@@ -322,8 +276,7 @@ LIMIT 5;
 `
 	rowsTop, err := r.db.QueryContext(ctx, sqlTop, refreshTime) // 传入 refreshTime
 	if err != nil {
-		// 确保返回的错误清晰地包含是哪个 SQL 失败了
-		return nil, fmt.Errorf("query sqlTop failed: %w", err)
+		return nil, nil, fmt.Errorf("query sqlTop failed: %w", err)
 	}
 	defer rowsTop.Close()
 
@@ -331,7 +284,7 @@ LIMIT 5;
 	for rowsTop.Next() {
 		item, err := scanFeedItem(rowsTop)
 		if err != nil {
-			return nil, fmt.Errorf("scan top feed item failed: %w", err)
+			return nil, nil, fmt.Errorf("scan top feed item failed: %w", err)
 		}
 		item.Media, _ = r.loadMedia(ctx, item.ID)
 		topItems = append(topItems, item)
@@ -374,7 +327,7 @@ LIMIT 15;
 `
 	rowsNormal, err := r.db.QueryContext(ctx, sqlNormal, refreshTime) // 传入 refreshTime
 	if err != nil {
-		return nil, fmt.Errorf("query sqlNormal failed: %w", err)
+		return nil, nil, fmt.Errorf("query sqlNormal failed: %w", err)
 	}
 	defer rowsNormal.Close()
 
@@ -382,16 +335,142 @@ LIMIT 15;
 	for rowsNormal.Next() {
 		item, err := scanFeedItem(rowsNormal)
 		if err != nil {
-			return nil, fmt.Errorf("scan normal feed item failed: %w", err)
+			return nil, nil, fmt.Errorf("scan normal feed item failed: %w", err)
 		}
 		item.Media, _ = r.loadMedia(ctx, item.ID)
 		normalItems = append(normalItems, item)
 	}
 
-	// 3. 合并并返回
-	items := append(topItems, normalItems...)
+	return topItems, normalItems, nil
+}
 
-	return items, nil
+func (r *FeedItemRepositoryPG) querySceneItems(
+	ctx context.Context,
+	scene string,
+	cursor *int64,
+	refreshTime *int64,
+	limit int,
+) ([]domain.FeedItem, *int64, int64, error) {
+	filterClause, args, err := sceneFilterClause(scene, 1)
+	if err != nil {
+		return nil, nil, 0, err
+	}
+
+	sqlStr := baseFeedSelectSQL() + `
+WHERE 1=1` + filterClause
+
+	if cursor != nil {
+		sqlStr += fmt.Sprintf(`
+  AND FLOOR(EXTRACT(EPOCH FROM f.publish_time))::bigint < $%d`, len(args)+1)
+		args = append(args, *cursor)
+	}
+
+	if refreshTime != nil {
+		sqlStr += fmt.Sprintf(`
+  AND FLOOR(EXTRACT(EPOCH FROM f.publish_time))::bigint > $%d`, len(args)+1)
+		args = append(args, *refreshTime)
+	}
+
+	sqlStr += `
+ORDER BY f.publish_time DESC, f.weight DESC`
+
+	if limit > 0 {
+		sqlStr += fmt.Sprintf(`
+LIMIT $%d`, len(args)+1)
+		args = append(args, limit)
+	}
+	sqlStr += ";"
+
+	rows, err := r.db.QueryContext(ctx, sqlStr, args...)
+	if err != nil {
+		return nil, nil, 0, err
+	}
+	defer rows.Close()
+
+	items := []domain.FeedItem{}
+	for rows.Next() {
+		item, err := scanFeedItem(rows)
+		if err != nil {
+			return nil, nil, 0, err
+		}
+
+		item.Media, _ = r.loadMedia(ctx, item.ID)
+		items = append(items, item)
+	}
+
+	var nextCursor *int64
+	if len(items) > 0 {
+		last := items[len(items)-1]
+		nextCursor = &last.PublishTime
+	}
+
+	var latestPublishTime int64
+	if len(items) > 0 {
+		latestPublishTime = items[0].PublishTime
+	}
+
+	return items, nextCursor, latestPublishTime, nil
+}
+
+func baseFeedSelectSQL() string {
+	return `
+SELECT
+	n.id AS news_id,
+	n.title,
+	n.summary,
+	f.content_type,
+	f.category,
+	f.sub_category,
+	f.tags,
+	f.city,
+	f.is_official_media,
+	f.is_top_official,
+	f.source,
+	FLOOR(EXTRACT(EPOCH FROM f.publish_time))::bigint AS publish_time,
+	f.weight,
+
+	a.id AS author_id,
+	a.name AS author_name,
+	a.avatar_url AS author_avatar,
+	a.certification AS author_cert,
+
+	s.like_count,
+	s.comment_count,
+	s.favorite_count,
+	s.share_count
+FROM feed_item f
+JOIN news n ON n.id = f.news_id
+LEFT JOIN author a ON a.id = n.author_id
+LEFT JOIN stats s ON s.news_id = n.id
+`
+}
+
+func sceneFilterClause(scene string, startIndex int) (string, []any, error) {
+	switch normalizeScene(scene) {
+	case "recommend":
+		return "", nil, nil
+	case "video":
+		return fmt.Sprintf("\n  AND f.content_type = $%d", startIndex), []any{"video"}, nil
+	case "shenzhen":
+		return fmt.Sprintf("\n  AND f.city = $%d", startIndex), []any{"深圳"}, nil
+	case "tech":
+		return fmt.Sprintf("\n  AND f.category = $%d", startIndex), []any{"科技"}, nil
+	case "sports":
+		return fmt.Sprintf("\n  AND f.category = $%d", startIndex), []any{"体育"}, nil
+	case "finance":
+		return fmt.Sprintf("\n  AND f.category = $%d", startIndex), []any{"财经"}, nil
+	default:
+		return "", nil, fmt.Errorf("unsupported scene: %s", scene)
+	}
+}
+
+func normalizeScene(scene string) string {
+	switch scene {
+	case "video", "shenzhen", "tech", "sports", "finance":
+		return scene
+	default:
+		return "recommend"
+	}
 }
 
 //////////////////////////////////////////

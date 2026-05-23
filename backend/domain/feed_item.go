@@ -18,8 +18,10 @@ type FeedItem struct {
 	Tags        []string `json:"tags"`
 	City        string   `json:"city"`
 
-	IsOfficial    bool    `json:"is_official_media"`
-	IsTopOfficial bool    `json:"is_top_official"`
-	Source        string  `json:"source"`
-	Weight        float64 `json:"weight"`
+	IsOfficial     bool    `json:"is_official_media"`
+	IsTopOfficial  bool    `json:"is_top_official"`
+	Source         string  `json:"source"`
+	Weight         float64 `json:"weight"`
+	RecommendScore float64 `json:"recommend_score,omitempty"`
+	Reason         string  `json:"reason,omitempty"`
 }

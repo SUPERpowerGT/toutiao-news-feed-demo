@@ -14,9 +14,9 @@ import com.xuziyi.toutiaoandroid.domain.model.FeedItem
  */
 interface FeedRepositoryContract {
 
-    suspend fun loadInitialFeed(): List<FeedItem>
+    suspend fun loadInitialFeed(scene: String): FeedData
 
-    suspend fun refreshFeed(latestPublishTime: Long): List<FeedItem>
+    suspend fun refreshFeed(scene: String, latestPublishTime: Long): FeedData
 
-    suspend fun loadMore(cursor: Long): FeedData
+    suspend fun loadMore(scene: String, cursor: Long): FeedData
 }

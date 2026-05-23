@@ -3,6 +3,12 @@ package com.xuziyi.toutiaoandroid.data.remote.dto
 import com.google.gson.annotations.SerializedName
 
 data class FeedResponseDto(
+    @SerializedName("scene")
+    val scene: String = "recommend",
+
+    @SerializedName("top_items")
+    val topItems: List<FeedItemDto> = emptyList(),
+
     @SerializedName("items")
     val items: List<FeedItemDto> = emptyList(),
 

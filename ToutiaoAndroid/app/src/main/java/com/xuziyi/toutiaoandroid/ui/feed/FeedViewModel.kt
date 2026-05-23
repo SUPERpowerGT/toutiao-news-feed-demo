@@ -23,21 +23,36 @@ class FeedViewModel(
     //它既有当前值，又能在变化时自动通知 UI
     private val _state = MutableStateFlow<FeedUiState>(FeedUiState.Loading)
     val state: StateFlow<FeedUiState> = _state
+    private var currentScene: String = "recommend"
     // 语义代（generation）
     // 每次 refresh 发生，都会 +1
     private var requestVersion = 0
 
     init {
-        loadInitial()
+        loadInitial(currentScene)
+    }
+
+    fun selectScene(scene: String) {
+        val normalizedScene = normalizeScene(scene)
+        if (normalizedScene == currentScene && _state.value !is FeedUiState.Error) return
+
+        requestVersion++
+        currentScene = normalizedScene
+        loadInitial(normalizedScene)
+    }
+
+    fun reload() {
+        requestVersion++
+        loadInitial(currentScene)
     }
 
     //把 state 设为 Loading → 拉 raw 数据 → 计算卡片类型 → 拆成官方区 + 混排区 → 成功态塞进去
-    private fun loadInitial() {
+    private fun loadInitial(scene: String) {
         viewModelScope.launch {
             try {
                 _state.value = FeedUiState.Loading
 
-                val raw = loadInitialFeedUseCase()
+                val raw = loadInitialFeedUseCase(scene)
                 //val rendered = renderCardTypeUseCase.execute(raw)
                 //val processed = processFeedItemsUseCase.execute(rendered)
 
@@ -47,8 +62,7 @@ class FeedViewModel(
 
                 //切换到CPU线程池来运行
                 val processed = withContext(Dispatchers.Default) {
-                    val rendered = renderCardTypeUseCase.execute(raw)
-                    processFeedItemsUseCase.execute(rendered)
+                    processSceneFeedData(raw)
                 }
 
                 val computeCost = System.currentTimeMillis() - startCompute
@@ -57,7 +71,10 @@ class FeedViewModel(
 
                 _state.value = FeedUiState.Success(
                     officialItems = processed.officialList,
-                    mixedItems = processed.mixedList
+                    mixedItems = processed.mixedList,
+                    latestPublishTime = raw.latestPublishTime,
+                    nextCursor = raw.nextCursor,
+                    hasMore = raw.hasMore
                 )
 
             } catch (e: Exception) {
@@ -90,7 +107,8 @@ class FeedViewModel(
                     isHoldingRefreshHeader = true,
                     showRefreshAnimation = true,
                     showUpdateBanner = false,
-                    newCount = 0
+                    newCount = 0,
+                    updateBannerText = null
                 )
 
                 val latest = (
@@ -102,7 +120,7 @@ class FeedViewModel(
                 val minDisplay = 1200L
                 val maxTimeout = 5000L
 
-                val raw = withTimeout(maxTimeout) { refreshFeedUseCase(latest) }
+                val raw = withTimeout(maxTimeout) { refreshFeedUseCase(currentScene, latest) }
 
                 // [PERF-THREAD] refresh 阶段 CPU 计算下沉至 Default
                 val startCompute = System.currentTimeMillis()
@@ -122,13 +140,24 @@ class FeedViewModel(
                 val mergedItems = (
                     current.officialItems +
                         current.mixedItems +
-                        raw
-                    ).distinctBy { it.id }
+                        raw.topItems +
+                        raw.items
+                    )
+                    .distinctBy { it.id }
+                    .sortedWith(
+                        compareByDescending<com.xuziyi.toutiaoandroid.domain.model.FeedItem> { it.publishTime }
+                            .thenByDescending { it.weight }
+                    )
 
                 val mergedProcessed = withContext(Dispatchers.Default) {
-                    val rendered = renderCardTypeUseCase.execute(mergedItems)
-                    processFeedItemsUseCase.execute(rendered)
+                    processSceneItems(currentScene, mergedItems)
                 }
+
+                val updateCount = raw.topItems.size + raw.items.size
+                val bannerText = buildRefreshBannerText(
+                    scene = currentScene,
+                    updateCount = updateCount
+                )
 
                 val computeCost = System.currentTimeMillis() - startCompute
                 android.util.Log.d("FeedPerf", "refresh compute cost = $computeCost ms")
@@ -139,8 +168,11 @@ class FeedViewModel(
                     isRefreshing = false,
                     showRefreshAnimation = false,
                     isHoldingRefreshHeader = true,
-                    newCount = raw.size,
-                    showUpdateBanner = true
+                    newCount = updateCount,
+                    showUpdateBanner = true,
+                    updateBannerText = bannerText,
+                    latestPublishTime = raw.latestPublishTime.takeIf { it != null && it > 0 }
+                        ?: mergedItems.maxOfOrNull { it.publishTime }
                 )
 
                 //banner显示1秒自动消失
@@ -159,7 +191,8 @@ class FeedViewModel(
                 _state.value = (_state.value as FeedUiState.Success).copy(
                     pullProgress = 0f,
                     newCount = 0,
-                    showRefreshAnimation = false
+                    showRefreshAnimation = false,
+                    updateBannerText = null
                 )
 
             } catch (_: Exception) {
@@ -169,9 +202,22 @@ class FeedViewModel(
                     isRefreshing = false,
                     showRefreshAnimation = false,
                     isHoldingRefreshHeader = false,
-                    showUpdateBanner = false
+                    showUpdateBanner = false,
+                    updateBannerText = null
                 )
             }
+        }
+    }
+
+    private fun buildRefreshBannerText(scene: String, updateCount: Int): String {
+        if (updateCount <= 0) {
+            return "当前已是最新内容"
+        }
+
+        return if (scene == "recommend") {
+            "今日头条推荐引擎有 $updateCount 条更新"
+        } else {
+            "$updateCount 条内容已更新"
         }
     }
 
@@ -201,7 +247,7 @@ class FeedViewModel(
             )
 
             try {
-                val feedData = loadMoreFeedUseCase(cursor)
+                val feedData = loadMoreFeedUseCase(currentScene, cursor)
 
                 val afterLoading = _state.value as FeedUiState.Success
 
@@ -227,22 +273,14 @@ class FeedViewModel(
                 val startCompute = System.currentTimeMillis()
 
                 val processed = withContext(Dispatchers.Default){
-                    //新数据
-                    val newRendered =
-                        renderCardTypeUseCase.execute(feedData.items)
-
-                    //已有数据
-                    val existingRendered =
-                        renderCardTypeUseCase.execute(
-                            afterLoading.officialItems + afterLoading.mixedItems
+                    val mergedUniqueItems = (
+                        afterLoading.officialItems +
+                            afterLoading.mixedItems +
+                            feedData.items
                         )
-
-                    val mergedUniqueItems = (existingRendered + newRendered)
                         .distinctBy { it.id }
 
-                    processFeedItemsUseCase.execute(
-                        mergedUniqueItems
-                    )
+                    processSceneItems(currentScene, mergedUniqueItems)
                 }
 
                 val computeCost = System.currentTimeMillis() - startCompute
@@ -264,7 +302,8 @@ class FeedViewModel(
                     officialItems = processed.officialList,
                     mixedItems = processed.mixedList,
                     hasMore = feedData.hasMore,
-                    nextCursor = feedData.nextCursor
+                    nextCursor = feedData.nextCursor,
+                    latestPublishTime = afterLoading.latestPublishTime ?: feedData.latestPublishTime
                 )
 
             } catch (e: Exception) {
@@ -278,6 +317,27 @@ class FeedViewModel(
                     loadMoreErrorMessage = e.message ?: "加载更多失败"     //显示错误信息
                 )
             }
+        }
+    }
+
+    private fun processSceneFeedData(feedData: com.xuziyi.toutiaoandroid.domain.model.FeedData) =
+        processSceneItems(currentScene, feedData.topItems + feedData.items)
+
+    private fun processSceneItems(scene: String, items: List<com.xuziyi.toutiaoandroid.domain.model.FeedItem>) =
+        processFeedItemsUseCase.execute(
+            renderCardTypeUseCase.execute(
+                if (scene == "recommend") {
+                    items
+                } else {
+                    items.map { it.copy(isTopOfficial = false) }
+                }
+            )
+        )
+
+    private fun normalizeScene(scene: String): String {
+        return when (scene) {
+            "video", "shenzhen", "tech", "sports", "finance" -> scene
+            else -> "recommend"
         }
     }
 }

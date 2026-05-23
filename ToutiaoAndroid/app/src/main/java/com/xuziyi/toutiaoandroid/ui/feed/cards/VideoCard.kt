@@ -41,6 +41,15 @@ fun VideoCard(
 
         Spacer(modifier = Modifier.height(8.dp))
 
+        RecommendationReasonChip(
+            reason = item.reason,
+            modifier = Modifier.padding(horizontal = 16.dp)
+        )
+
+        if (!item.reason.isNullOrBlank()) {
+            Spacer(modifier = Modifier.height(10.dp))
+        }
+
         // ====== 视频封面图区域 ======
         Box(
             modifier = Modifier

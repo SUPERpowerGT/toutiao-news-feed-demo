@@ -7,6 +7,7 @@ import androidx.compose.ui.unit.dp
 import com.xuziyi.toutiaoandroid.domain.model.FeedItem
 import com.xuziyi.toutiaoandroid.ui.feed.cards.components.CardTitle
 import com.xuziyi.toutiaoandroid.ui.feed.cards.components.CardMetaRow
+import com.xuziyi.toutiaoandroid.ui.feed.cards.components.RecommendationReasonChip
 
 @Composable
 fun OfficialTopCard(
@@ -24,7 +25,12 @@ fun OfficialTopCard(
             title = item.title
         )
 
-        Spacer(modifier = Modifier.height(0.dp))
+        if (!item.reason.isNullOrBlank()) {
+            Spacer(modifier = Modifier.height(6.dp))
+            RecommendationReasonChip(item.reason)
+        }
+
+        Spacer(modifier = Modifier.height(4.dp))
 
         //官方来源 & 评论数
         CardMetaRow(

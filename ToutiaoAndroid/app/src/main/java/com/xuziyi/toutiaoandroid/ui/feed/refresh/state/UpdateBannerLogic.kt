@@ -15,21 +15,21 @@ package com.xuziyi.toutiaoandroid.ui.feed.refresh.state
  *    可以在本类扩展，而无需改主文件
  *
  * 使用场景：
- *  - 在刷新成功、newCount > 0 时弹出推荐更新提示
+ *  - 在刷新成功后根据最终文案决定 Banner 是否展示
  */
 
 class UpdateBannerLogic {
 
     /**
-     * 是否应该显示“X条内容已更新”Banner
+     * 是否应该显示刷新提示 Banner
      *
-     * 原逻辑：
-     * showUpdateBanner && newCount > 0
+     * 新逻辑：
+     * showUpdateBanner && updateBannerText 非空
      */
     fun shouldShowBanner(
         showUpdateBanner: Boolean,
-        newCount: Int
+        updateBannerText: String?
     ): Boolean {
-        return showUpdateBanner && newCount > 0
+        return showUpdateBanner && !updateBannerText.isNullOrBlank()
     }
 }

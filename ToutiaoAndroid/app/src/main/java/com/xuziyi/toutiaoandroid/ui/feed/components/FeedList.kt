@@ -70,13 +70,15 @@ fun FeedList(
         }
 
         // 分割条
-        item("divider") {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(5.dp)
-                    .background(Color(0xFFF5F5F5))
-            )
+        if (officialItems.isNotEmpty()) {
+            item("divider") {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(5.dp)
+                        .background(Color(0xFFF5F5F5))
+                )
+            }
         }
 
         // 主推荐流

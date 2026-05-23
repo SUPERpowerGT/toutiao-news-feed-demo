@@ -28,6 +28,10 @@ func (h *FeedHandler) handleFeed(w http.ResponseWriter, r *http.Request) {
 	log.Printf("API: Feed Request received from %s for URL %s", r.RemoteAddr, r.URL.String())
 
 	q := r.URL.Query()
+	scene := q.Get("scene")
+	if scene == "" {
+		scene = "recommend"
+	}
 
 	// ① cursor
 	var cursor *int64
@@ -54,7 +58,7 @@ func (h *FeedHandler) handleFeed(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 调用服务层
-	resp, err := h.service.GetFeed(r.Context(), cursor, refreshTime, limit)
+	resp, err := h.service.GetFeed(r.Context(), scene, cursor, refreshTime, limit)
 
 	//统一包装响应函数 —— 永远不再 chunked
 	writeJSON := func(status int, body map[string]any) {

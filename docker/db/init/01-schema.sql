@@ -95,3 +95,15 @@ CREATE TABLE IF NOT EXISTS feed_item (
     seq_id          BIGSERIAL,
     created_at      TIMESTAMP DEFAULT NOW()
 );
+
+CREATE INDEX IF NOT EXISTS idx_feed_item_scene_publish_seq
+ON feed_item(scene, publish_time DESC, seq_id DESC);
+
+CREATE INDEX IF NOT EXISTS idx_feed_item_category_publish_seq
+ON feed_item(category, publish_time DESC, seq_id DESC);
+
+CREATE INDEX IF NOT EXISTS idx_feed_item_city_publish_seq
+ON feed_item(city, publish_time DESC, seq_id DESC);
+
+CREATE INDEX IF NOT EXISTS idx_feed_item_content_type_publish_seq
+ON feed_item(content_type, publish_time DESC, seq_id DESC);

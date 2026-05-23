@@ -44,6 +44,12 @@ fun ImageCard(
 
         Spacer(modifier = Modifier.height(10.dp))
 
+        RecommendationReasonChip(item.reason)
+
+        if (!item.reason.isNullOrBlank()) {
+            Spacer(modifier = Modifier.height(10.dp))
+        }
+
         //作者信息 + 点赞 + 更多
 
         Row(

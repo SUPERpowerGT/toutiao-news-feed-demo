@@ -65,6 +65,10 @@ sealed interface FeedUiState {
         // 通常在刷新完成后短暂展示
         val showUpdateBanner: Boolean = false,
 
+        // 刷新提示 Banner 展示的文案
+        // 用于区分“X 条更新”和“当前已是最新内容”
+        val updateBannerText: String? = null,
+
         // 是否处于“无数据”状态
         // 表示请求成功但列表为空，用于展示 Empty View
         val isEmpty: Boolean = false,

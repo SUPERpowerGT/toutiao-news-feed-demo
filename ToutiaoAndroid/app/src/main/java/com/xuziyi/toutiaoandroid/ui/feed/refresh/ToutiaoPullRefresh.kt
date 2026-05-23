@@ -82,6 +82,7 @@ fun ToutiaoPullRefresh(
     showRefreshAnimation: Boolean,
     showUpdateBanner: Boolean,
     newCount: Int,
+    updateBannerText: String?,
     pullProgress: Float = 0f,
     onPull: (Float) -> Unit,
     onRefreshTriggered: () -> Unit,
@@ -171,6 +172,30 @@ fun ToutiaoPullRefresh(
         // 将刷新头当前高度传递给内容区域，用于顶开列表并与刷新头保持视觉同步
         content(headerHeightPx)
 
+        if (bannerLogic.shouldShowBanner(showUpdateBanner, updateBannerText)) {
+            AnimatedVisibility(
+                visible = true,
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .padding(top = 8.dp),
+                enter = fadeIn(tween(250)) + scaleIn(initialScale = 0.88f),
+                exit = fadeOut(tween(180))
+            ) {
+                Box(
+                    modifier = Modifier
+                        .background(Color(0xFFF5F5F5), shape = RoundedCornerShape(50.dp))
+                        .padding(horizontal = 12.dp, vertical = 6.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = updateBannerText.orEmpty(),
+                        color = Color(0xFF2F2F2F),
+                        fontSize = 14.sp
+                    )
+                }
+            }
+        }
+
         val headerVisible = headerHeightPx > 0.5f
 
         if (headerVisible) {
@@ -205,30 +230,6 @@ fun ToutiaoPullRefresh(
                 )
 
                 when {
-
-                    //Banner 显示逻辑移到 bannerLogic
-                    bannerLogic.shouldShowBanner(showUpdateBanner, newCount) -> {
-                        AnimatedVisibility(
-                            visible = true,
-                            enter = fadeIn(tween(250)) + scaleIn(initialScale = 0.88f),
-                            exit = fadeOut(tween(180))
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .align(Alignment.BottomCenter)
-                                    .background(Color(0xFFF5F5F5), shape = RoundedCornerShape(50.dp))
-                                    .padding(horizontal = 12.dp, vertical = 6.dp),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text(
-                                    text = "今日头条推荐引擎有 $newCount 条更新",
-                                    color = Color(0xFF2F2F2F),
-                                    fontSize = 14.sp
-                                )
-                            }
-                        }
-                    }
-
                     shouldShowAnim -> {
                         LottieAnimation(
                             composition = composition,

@@ -54,17 +54,17 @@ fun FeedScreen(
 
     val tabs = remember {
         listOf(
-            FeedTabItem(1L, "关注"),
-            FeedTabItem(2L, "推荐"),
-            FeedTabItem(3L, "热榜"),
-            FeedTabItem(4L, "深圳"),
-            FeedTabItem(5L, "视频"),
-            FeedTabItem(6L, "精选"),
-            FeedTabItem(7L, "图片"),
-            FeedTabItem(8L, "抗战"),
-            FeedTabItem(9L, "体育"),
-            FeedTabItem(10L, "财经"),
-            FeedTabItem(11L, "科技")
+            FeedTabItem(1L, title = "关注"),
+            FeedTabItem(2L, sceneKey = "recommend", title = "推荐"),
+            FeedTabItem(3L, title = "热榜"),
+            FeedTabItem(4L, sceneKey = "shenzhen", title = "深圳"),
+            FeedTabItem(5L, sceneKey = "video", title = "视频"),
+            FeedTabItem(6L, title = "精选"),
+            FeedTabItem(7L, title = "图片"),
+            FeedTabItem(8L, title = "抗战"),
+            FeedTabItem(9L, sceneKey = "sports", title = "体育"),
+            FeedTabItem(10L, sceneKey = "finance", title = "财经"),
+            FeedTabItem(11L, sceneKey = "tech", title = "科技")
         )
     }
 
@@ -91,6 +91,7 @@ fun FeedScreen(
         //监听
         snapshotFlow { pagerState.currentPage }.collect { page ->
             selectedIndex = page
+            tabs[page].sceneKey?.let(viewModel::selectScene)
         }
     }
 
@@ -113,16 +114,15 @@ fun FeedScreen(
 
             val tab = tabs[page]
 
-            when (page) {
+            when {
 
-                // page == 1 → 推荐流
-                1 -> when (state) {
+                tab.sceneKey != null -> when (state) {
 
                     is FeedUiState.Loading -> FeedLoadingPlaceholder()
 
                     is FeedUiState.Error -> ErrorScreen(
                         message = state.message ?: "网络异常，请稍后重试",
-                        onRetry = { viewModel.refresh() }
+                        onRetry = { viewModel.reload() }
                     )
 
                     is FeedUiState.Success -> {
@@ -232,13 +232,14 @@ fun FeedScreen(
                                 showRefreshAnimation = state.showRefreshAnimation,
                                 showUpdateBanner = state.showUpdateBanner,
                                 newCount = state.newCount,
+                                updateBannerText = state.updateBannerText,
                                 pullProgress = state.pullProgress,
                                 onPull = { viewModel.updatePullProgress(it) },
                                 onRefreshTriggered = { viewModel.refresh() }
                             ) { paddingTop ->
 
                                 FeedList(
-                                    officialItems = state.officialItems,
+                                    officialItems = if (tab.sceneKey == "recommend") state.officialItems else emptyList(),
                                     mixedItems = state.mixedItems,
                                     onItemClick = onOpenDetail,
                                     listState = feedListState,

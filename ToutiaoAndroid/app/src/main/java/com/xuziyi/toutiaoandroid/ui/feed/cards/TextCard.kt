@@ -23,6 +23,12 @@ fun TextCard(
 
         Spacer(modifier = Modifier.height(8.dp))
 
+        RecommendationReasonChip(item.reason)
+
+        if (!item.reason.isNullOrBlank()) {
+            Spacer(modifier = Modifier.height(8.dp))
+        }
+
         //作者 + 时间 + 点赞 + 更多（统一组件
         Row(
             modifier = Modifier.fillMaxWidth(),
