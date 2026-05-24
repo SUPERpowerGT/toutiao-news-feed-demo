@@ -275,6 +275,8 @@ This project uses Room local cache. If backend data has changed a lot but the ap
 
 More notes and development materials are available in [`docs/`](./docs).
 
+test
+
 # License
 
 MIT.
