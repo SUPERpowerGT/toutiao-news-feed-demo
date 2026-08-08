@@ -688,7 +688,7 @@ func alternateContentType(index int) string {
 func insertMedia(stmt *sql.Stmt, newsID int, contentType string) error {
 	image1 := fmt.Sprintf("https://picsum.photos/seed/news-%d-a/800/600", newsID)
 	image2 := fmt.Sprintf("https://picsum.photos/seed/news-%d-b/800/600", newsID)
-	videoURL := "http://10.0.2.2:8080/media/demo-video.mp4"
+	videoURL := "/media/demo-video.mp4"
 
 	switch contentType {
 	case "video":

@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import com.xuziyi.toutiaoandroid.data.remote.resolveBackendUrl
 import com.xuziyi.toutiaoandroid.data.remote.dto.NewsDetailDto
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -81,7 +82,7 @@ fun NewsDetailScreen(
 
 @Composable
 private fun DetailContent(detail: NewsDetailDto, modifier: Modifier = Modifier) {
-    val videoUrl = detail.media.firstOrNull { it.mediaType == "video" }?.url
+    val videoUrl = detail.media.firstOrNull { it.mediaType == "video" }?.url?.let(::resolveBackendUrl)
     Column(modifier = modifier.fillMaxSize()) {
         Text(
             text = detail.title,

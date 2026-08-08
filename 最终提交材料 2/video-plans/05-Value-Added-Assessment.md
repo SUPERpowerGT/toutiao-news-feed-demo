@@ -44,6 +44,18 @@ The implemented system provides scene-aware recommendation scores and reasons, o
 - [ ] Obtain sanitized Sponsor acceptance or feedback evidence. PDF page 38 explicitly assesses Sponsor acceptance, page 25 states that NUS will contact the Sponsor, and page 29 says confidentiality is not a reason to omit evidence. A developer declaration does not satisfy this item.
 - [ ] Prepare a sanitized go-live/acceptance view, such as a redacted approval email, signed acceptance note, release record, or Sponsor statement that exposes no production URL, user data, credentials, or infrastructure identifiers.
 
+## Sponsor Meaning for This Company Internship
+
+For this internship, the **Sponsor is the company representative who supervised, reviewed, or accepted the work**. This can be the internship supervisor, project owner, engineering manager, technical lead, or another company representative registered as the project Sponsor. A separate external client is not required.
+
+The evidence needed for page 38 is therefore not a public production screenshot. It is a short Sponsor-originated record confirming review or acceptance. A corporate email, feedback form, signed note, or redacted approval message is sufficient if it keeps the Sponsor role, acceptance meaning, and date readable. Production URLs, infrastructure identifiers, customer information, traffic, and personal data may be redacted.
+
+Suggested English wording for the Sponsor to approve or send from a company account:
+
+> I confirm that the student completed the agreed internship project work. The delivered system was reviewed and accepted by the project Sponsor and has been deployed in an internal company environment. Due to company confidentiality, cybersecurity, and data-compliance requirements, production URLs, infrastructure details, user data, and internal screenshots cannot be disclosed.
+
+This wording is a template only. It must come from the real Sponsor and must not be created or signed by the student.
+
 ## Page 38 Rubric Alignment
 
 | PDF Requirement | Evidence and Recording Position | Status |
@@ -84,10 +96,14 @@ Prepare the recommendation implementation, the five screenshots above, and `evid
 | 2:00-2:50 | Show Following, Hot, Video, and Image screenshots in that order | "The second capability is genuine multi-channel separation. The application supports eleven independent channel views, including Recommend, Following, Hot, Shenzhen, Video, Featured, Image, War, Sports, Finance, and Technology. Our deterministic dataset contains at least twenty records for every channel. Following and Hot show different ranked feeds. The Video channel renders large video covers, a play action, and duration metadata, while the Image channel applies content-type filtering and image-card presentation. Local and category channels use the same API contract with their own scene filters. These are not duplicated screenshots of one list; they represent separate query and rendering behaviour." |
 | 2:50-3:25 | Briefly demonstrate refresh, open an article detail, and return to the feed | "The mobile client adds practical user value beyond presentation. Feed data is stored in Room and loaded cache-first, so previously fetched stories can appear without waiting for the network. A background request refreshes the local cache when connectivity is available. Pull-to-refresh and load-more update that cache, and selecting an item opens a dedicated detail route backed by the news detail API. Video items also use lifecycle-aware playback. Together, these features turn the project from a static interface mock-up into a usable end-to-end application flow." |
 | 3:25-4:25 | Open `evidence/verification-2026-08-08.md` and show the before/after table | "The third area of value is measurable backend resilience. During stress testing, the original implementation exhausted a ten-connection database pool. It kept outer query rows open while nested media queries attempted to acquire additional connections. As a result, only one request completed before the test timed out. We corrected the query lifecycle by reading and closing the outer rows before loading related media. After the fix, ApacheBench completed five hundred requests at concurrency twenty-five with zero failed requests. Throughput reached one thousand two hundred and sixty-seven point seven six requests per second. Mean latency was nineteen point seven two milliseconds, P ninety-five was thirty-five milliseconds, P ninety-nine was forty milliseconds, and maximum latency was forty-five milliseconds. A second run again produced zero failures, with more than one thousand one hundred requests per second and P ninety-nine below sixty milliseconds. This repeat run shows that the improvement was reproducible rather than a single favourable result." |
-| 4:25-4:48 | Return to the Recommend and Video screenshots | "The advanced area demonstrated here is explainable algorithmic recommendation combined with performance and resilience engineering. The system has been deployed in an internal environment of a China-based company. Corporate confidentiality, cybersecurity, and data-compliance requirements prevent me from showing production URLs, screenshots, traffic, user data, or sponsor communications. I therefore present internal go-live as a developer declaration, not as independently verifiable public evidence or a published sponsor sign-off." |
-| 4:48-5:00 | Closing slide with limitation and next experiment | "The next measurable experiment would add consented interaction signals and compare click-through rate, latency, and retention with the rule-based baseline. This separates delivered value from future work. Thank you." |
+| 4:25-4:48 | Show the sanitized Sponsor email, note, or feedback record; then return to the Recommend screenshot | "For this company internship, the Sponsor is the company representative who supervised and reviewed my work; there is no separate external client. The Sponsor confirms that the agreed project work was reviewed and accepted and that the system has been deployed in an internal company environment. The evidence on screen is intentionally redacted. Corporate confidentiality, cybersecurity, and data-compliance requirements prevent disclosure of production URLs, infrastructure details, user data, traffic, and internal system screenshots. The Sponsor role, acceptance statement, and date remain visible for verification." |
+| 4:48-5:00 | Closing slide with limitation and next experiment | "The advanced area demonstrated here is explainable algorithmic recommendation combined with performance and resilience engineering. The next measurable experiment would add consented interaction signals and compare click-through rate, latency, and retention with the rule-based baseline. This separates delivered value from future work. Thank you." |
 
 Recording control: keep the performance table visible while reading every metric, do not skip the sponsor-status sentence, and avoid presenting the final experiment as an implemented feature.
+
+Only use the Sponsor-confirmation narration above after a genuine Sponsor-originated record is available. If it cannot be obtained before recording, use this honest fallback instead:
+
+> "For this company internship, the Sponsor is the company representative who supervised my work; there is no separate external client. I report that the system has been deployed internally, but I do not have a Sponsor-originated acceptance record that I can show in this video. I therefore present internal deployment as a developer declaration and do not claim that Sponsor acceptance is independently evidenced."
 
 ## Suggested Timeline
 
@@ -106,7 +122,8 @@ Recording control: keep the performance table visible while reading every metric
 - Do not present future AI, ML, analytics, or real-time ideas as implemented value.
 - Focus on implemented behavior and measurable outcomes.
 - Explain that the ranking is rule-based and interpretable, not a trained ML model.
-- State the internal go-live and confidentiality boundary exactly; do not invent a public URL, screenshot, usage metric, or formal Sponsor signature.
+- State the internal go-live and confidentiality boundary exactly; do not invent a public URL, screenshot, usage metric, or Sponsor signature.
+- In a company internship, describe the registered company supervisor or project owner as the Sponsor. Do not imply that a separate client is required.
 - Name all three page 38 criteria explicitly; do not imply that technical evidence replaces sponsor acceptance.
 - PDF page 29 explicitly rejects confidentiality as a reason for showing no evidence. Use redaction or a sanitized Sponsor statement rather than omitting the evidence entirely.
 - Export at exactly 1920x1080 and keep the speaker's face clearly visible, as required by PDF page 40.
