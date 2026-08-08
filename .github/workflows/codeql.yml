@@ -43,7 +43,7 @@ jobs:
 
       - name: Scan historical source with privacy rule
         run: |
-          semgrep scan --config .semgrep/privacy.yml --json \
+          semgrep scan --config .semgrep/privacy.yml --no-git-ignore --json \
             --output sast-evidence/semgrep-before.json sast-evidence/before \
             || test -s sast-evidence/semgrep-before.json
 
