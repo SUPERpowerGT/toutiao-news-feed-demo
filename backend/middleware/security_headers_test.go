@@ -15,12 +15,13 @@ func TestSecurityHeaders(t *testing.T) {
 	handler.ServeHTTP(recorder, httptest.NewRequest(http.MethodGet, "/api/v1/feed", nil))
 
 	expected := map[string]string{
-		"Cache-Control":           "no-store",
-		"Content-Security-Policy": "default-src 'none'; frame-ancestors 'none'",
-		"Permissions-Policy":      "camera=(), microphone=(), geolocation=()",
-		"Referrer-Policy":         "no-referrer",
-		"X-Content-Type-Options":  "nosniff",
-		"X-Frame-Options":         "DENY",
+		"Cache-Control":                "no-store",
+		"Content-Security-Policy":      "default-src 'none'; frame-ancestors 'none'",
+		"Cross-Origin-Resource-Policy": "same-origin",
+		"Permissions-Policy":           "camera=(), microphone=(), geolocation=()",
+		"Referrer-Policy":              "no-referrer",
+		"X-Content-Type-Options":       "nosniff",
+		"X-Frame-Options":              "DENY",
 	}
 
 	for name, want := range expected {

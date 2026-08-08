@@ -93,6 +93,7 @@ jobs:
           fail_action: true
           allow_issue_writing: false
           artifact_name: zap-dast-report
+          rules_file_name: .zap/rules.tsv
 
       - name: Show service logs on failure
         if: failure()
