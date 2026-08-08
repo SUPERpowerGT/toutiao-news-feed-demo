@@ -37,6 +37,7 @@
 - [x] Container health, inspect, runtime identity, network, and log evidence in E26.
 - [x] Git commit SHA associated with all shown GitHub results.
 - [x] GDPR applicability and machine-validated control mapping.
+- [ ] A CodeQL SAST finding-to-resolution example is unavailable because retained CodeQL runs show successful analysis but no actionable finding. State this limitation; do not substitute Trivy dependency remediation as CodeQL remediation.
 
 ## Suggested Timeline
 
@@ -104,6 +105,7 @@ Open E12 and E19-E30, `evidence/verification-2026-08-08.md`, `.github/workflows/
 - Say that CodeQL completed; do not claim a remediated CodeQL alert without retained alert evidence.
 - Describe the GDPR section as an applicability mapping, not certification or legal advice.
 - Show the image artifact name but avoid downloading the large archive during the recording.
+- Page 36 asks for SAST resolution and rescan results. Explain that CodeQL was rerun successfully but produced no actionable finding requiring resolution; the project cannot truthfully demonstrate a CodeQL before/after fix.
 
 ## Recording Notes
 
@@ -120,4 +122,5 @@ Open E12 and E19-E30, `evidence/verification-2026-08-08.md`, `.github/workflows/
 - [x] Trivy and ZAP remediation/rescan loops are demonstrated.
 - [x] Container build/save, inspect, health, logs, IaC, compliance-as-code, and Git audit are visible.
 - [x] Every screenshot belongs to the final or a clearly identified historical remediation commit.
+- [ ] CodeQL SAST resolution evidence is not available; successful clean analysis is disclosed instead.
 - [ ] Final video is ten minutes or shorter, 1920x1080, with the speaker's face clearly visible.

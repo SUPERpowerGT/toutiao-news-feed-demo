@@ -31,12 +31,13 @@
 
 ## Preparation Checklist
 
-- [ ] Run `docker compose -f docker-compose.prod.yml up --build -d`.
-- [ ] Confirm `/health` returns `ok`.
+- [x] Run `docker compose -f docker-compose.prod.yml up --build -d`; backend and PostgreSQL are healthy in the latest preflight.
+- [x] Confirm `/health` returns `ok`.
 - [ ] Reset data through `/seed`.
 - [ ] Launch the app and wait for initial image caching before the final take.
-- [ ] Prepare `scripts/append_refresh_data.sh` in a visible terminal.
-- [ ] Confirm all required channels contain suitable data.
+- [x] Prepare `scripts/append_refresh_data.sh` in a visible terminal.
+- [x] Confirm the channel seed endpoint succeeds; latest preflight returned `channel seed ok: added 0`.
+- [x] Confirm `adb devices` shows `emulator-5554` with status `device`, not `offline`.
 - [ ] Confirm refresh and load-more work twice consecutively.
 - [ ] Prepare backend stop/start commands for the controlled recovery scene.
 - [ ] Prepare a backup recording of the complete flow.

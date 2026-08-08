@@ -16,6 +16,9 @@ The implemented system provides scene-aware recommendation scores and reasons, o
 
 ## Required Content
 
+- Explicitly address PDF page 38 item 1: how the delivered full-stack system meets the minimum MTech SE internship/capstone standard through implemented software, architecture, testing, DevSecOps, evidence, and a working demonstration.
+- Explicitly address PDF page 38 item 2: formal sponsor acceptance and go-live evidence are unavailable, so this criterion is a disclosed limitation rather than a completed claim.
+- Explicitly address PDF page 38 item 3: the implemented advanced area is explainable algorithmic recommendation and measurable performance/resilience engineering under the rubric's `etc.` category. It is not presented as machine learning, Gen AI, Agentic AI, analytics, or real-time streaming.
 - Baseline problem and why a static feed is insufficient.
 - Implemented recommendation signals: weight, freshness, engagement, official boost, and scene boost.
 - Explainable recommendation reasons shown to the client.
@@ -36,6 +39,16 @@ The implemented system provides scene-aware recommendation scores and reasons, o
 - [x] After result: 500 requests, 25 concurrency, zero failures.
 - [x] Throughput and P95/P99 metrics.
 - [x] Sponsor/mentor status documented transparently: formal acceptance was unavailable, so no acceptance claim is made.
+- [x] Minimum MTech SE requirement coverage is linked to the working full stack, design artifacts, tests, security controls, and demonstrations.
+- [x] Advanced-area wording is accurate: explainable recommendation and performance engineering, not unimplemented AI/ML or real-time processing.
+
+## Page 38 Rubric Alignment
+
+| PDF Requirement | Evidence and Recording Position | Status |
+|---|---|---|
+| Meet minimum MTech SE project requirements | Android + Go + PostgreSQL implementation, architecture/design documentation, automated testing, DevSecOps, and live demos | Evidenced |
+| Sponsor acceptance and preferably go live | No formal acceptance or production go-live record is available | Limitation; do not claim completion |
+| Explore an advanced or innovative area | Explainable multi-signal ranking, recommendation reasons, offline-first behavior, and measured connection-pool remediation | Evidenced under `etc.`; not AI/ML |
 
 ## App Evidence Screenshots
 
@@ -61,14 +74,14 @@ Prepare the recommendation implementation, the five screenshots above, and `evid
 
 | Time | Screen | Exact English Narration |
 |---|---|---|
-| 0:00-0:35 | Title slide, then Recommend screenshot | "This video assesses the additional value delivered by our news feed application. A basic feed could simply display a static list of articles. Our implementation goes further by combining explainable multi-channel ranking, content-specific presentation, cache-first mobile behavior, and measured backend resilience. The value hypothesis is that users can find relevant content more quickly, understand why key stories are surfaced, and continue using previously loaded content when the network is unstable." |
+| 0:00-0:35 | PDF page 38, title slide, then Recommend screenshot | "This assessment follows the three Added Value criteria on page thirty-eight. First, the delivered Android, Go, and PostgreSQL system meets the minimum project standard through working software, documented architecture and design, automated tests, security controls, and live demonstrations. Beyond a basic static feed, it combines explainable multi-channel ranking, content-specific presentation, cache-first mobile behavior, and measured backend resilience." |
 | 0:35-1:25 | Open `backend/application/feed_service.go` and highlight the score calculation | "The first value-adding capability is the recommendation service. It uses five transparent signals. Content weight contributes forty percent, freshness contributes thirty percent, and engagement contributes twenty percent. Engagement combines likes, comments, shares, and favourites, then applies logarithmic normalisation so that a single large count does not dominate the ranking. Official and top stories receive a small authority boost, while content matching the requested scene receives a scene boost. The final score is calculated in the application service and covered by automated tests. This is deliberately a rule-based and interpretable ranking model, not a trained machine-learning model, so every result can be explained and reproduced." |
 | 1:25-2:00 | Show the Recommend screenshot and, if convenient, the recommendation-reason code or API field | "The ranking also returns a human-readable recommendation reason. Examples include authoritative release, official media recommendation, popular discussion, latest update, and channel-specific reasons. On the Recommend screen, the top stories are clearly labelled with an authoritative-release reason. This makes the result more understandable than an unexplained score and gives the client a consistent field that can be displayed directly in the interface." |
 | 2:00-2:50 | Show Following, Hot, Video, and Image screenshots in that order | "The second capability is genuine multi-channel separation. The application supports eleven independent channel views, including Recommend, Following, Hot, Shenzhen, Video, Featured, Image, War, Sports, Finance, and Technology. Our deterministic dataset contains at least twenty records for every channel. Following and Hot show different ranked feeds. The Video channel renders large video covers, a play action, and duration metadata, while the Image channel applies content-type filtering and image-card presentation. Local and category channels use the same API contract with their own scene filters. These are not duplicated screenshots of one list; they represent separate query and rendering behaviour." |
 | 2:50-3:25 | Briefly demonstrate refresh, open an article detail, and return to the feed | "The mobile client adds practical user value beyond presentation. Feed data is stored in Room and loaded cache-first, so previously fetched stories can appear without waiting for the network. A background request refreshes the local cache when connectivity is available. Pull-to-refresh and load-more update that cache, and selecting an item opens a dedicated detail route backed by the news detail API. Video items also use lifecycle-aware playback. Together, these features turn the project from a static interface mock-up into a usable end-to-end application flow." |
 | 3:25-4:25 | Open `evidence/verification-2026-08-08.md` and show the before/after table | "The third area of value is measurable backend resilience. During stress testing, the original implementation exhausted a ten-connection database pool. It kept outer query rows open while nested media queries attempted to acquire additional connections. As a result, only one request completed before the test timed out. We corrected the query lifecycle by reading and closing the outer rows before loading related media. After the fix, ApacheBench completed five hundred requests at concurrency twenty-five with zero failed requests. Throughput reached one thousand two hundred and sixty-seven point seven six requests per second. Mean latency was nineteen point seven two milliseconds, P ninety-five was thirty-five milliseconds, P ninety-nine was forty milliseconds, and maximum latency was forty-five milliseconds. A second run again produced zero failures, with more than one thousand one hundred requests per second and P ninety-nine below sixty milliseconds. This repeat run shows that the improvement was reproducible rather than a single favourable result." |
-| 4:25-4:48 | Return to the Recommend and Video screenshots | "These delivered capabilities create value in two ways. Users receive faster, clearer navigation across content types and more understandable recommendations. From an engineering perspective, deterministic ranking, cached mobile data, automated tests, and repeatable load results make the system easier to validate and maintain. Formal sponsor or mentor acceptance was not available at the time of submission, so no acceptance claim is made in this assessment." |
-| 4:48-5:00 | Closing slide with limitation and next experiment | "The main limitation is that ranking is not yet personalised from individual behaviour. The next measurable experiment would add consented interaction signals and compare click-through rate, feed latency, and retention against the current rule-based baseline. This separates delivered value from future work. Thank you." |
+| 4:25-4:48 | Return to the Recommend and Video screenshots | "The advanced area demonstrated here is explainable algorithmic recommendation combined with performance and resilience engineering. It belongs to the rubric's open-ended innovation category, but it is not presented as machine learning, Gen AI, analytics, or real-time streaming. Formal sponsor or mentor acceptance and production go-live evidence were unavailable, so that rubric criterion remains an explicit limitation rather than a claimed result." |
+| 4:48-5:00 | Closing slide with limitation and next experiment | "The next measurable experiment would add consented interaction signals and compare click-through rate, latency, and retention with the rule-based baseline. This separates delivered value from future work. Thank you." |
 
 Recording control: keep the performance table visible while reading every metric, do not skip the sponsor-status sentence, and avoid presenting the final experiment as an implemented feature.
 
@@ -90,6 +103,7 @@ Recording control: keep the performance table visible while reading every metric
 - Focus on implemented behavior and measurable outcomes.
 - Explain that the ranking is rule-based and interpretable, not a trained ML model.
 - If sponsor feedback is unavailable, state that limitation explicitly instead of inventing acceptance.
+- Name all three page 38 criteria explicitly; do not imply that technical evidence replaces sponsor acceptance.
 
 ## Definition of Done
 

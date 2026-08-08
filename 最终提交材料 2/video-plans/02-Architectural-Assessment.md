@@ -22,14 +22,14 @@
 
 ## Evidence Required Before Recording
 
-- [ ] DevSecOps and runtime architecture diagram `E12`.
-- [ ] Logical architecture diagram.
-- [ ] Physical deployment diagram showing Android, backend, PostgreSQL, ports, and Docker network.
-- [ ] Lightweight DDD boundary diagram.
-- [ ] Technology decision comparison.
-- [ ] Architecture constraints or ADR summary.
-- [ ] Docker Compose configuration and healthy container screenshot.
-- [ ] Security threat/control table.
+- [x] DevSecOps and runtime architecture diagram `E12`.
+- [x] Logical architecture diagram in report Sections 4.1.1 and 4.1.2.
+- [x] Physical deployment diagram showing Android, backend, PostgreSQL, ports, and Docker network in Section 4.1.3 and E12.
+- [x] Lightweight DDD boundary diagram in Section 4.2.4.
+- [x] Technology decision comparison in report Sections 2.1 to 2.4.
+- [x] Architecture constraints and decision rationale in the architecture overview and script.
+- [x] Docker Compose configuration and healthy container evidence in E08/E26.
+- [x] Security threat/control table in report Section 6.5.
 
 ## Suggested Timeline
 
