@@ -164,14 +164,7 @@ def build_document(args):
     for row in confirmation_table.rows[1:]:
         row.cells[2].paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
 
-    add_heading(document, "5. Optional Comment", 1)
-    comment_table = document.add_table(rows=2, cols=1)
-    comment_table.style = "Table Grid"
-    for row in comment_table.rows:
-        row.height = Inches(0.35)
-        border_cell(row.cells[0])
-
-    add_heading(document, "6. Sponsor / Mentor Sign-off", 1)
+    add_heading(document, "5. Sponsor / Mentor Sign-off", 1)
     document.add_paragraph(
         "I have reviewed the pre-filled project summary and corrected it where necessary. "
         "I confirm that the selected ratings, acceptance status, and deployment status reflect "

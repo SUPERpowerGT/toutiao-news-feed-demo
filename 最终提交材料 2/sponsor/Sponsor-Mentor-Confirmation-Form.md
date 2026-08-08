@@ -49,13 +49,7 @@ Enter one option number for each item.
 | Deployment status | 1 = Deployed internally; 2 = Ready for internal deployment or trial; 3 = Demonstrated but not deployed; 4 = Not confirmed | |
 | Confidentiality restriction applies | 1 = Yes; 2 = No | |
 
-## 5. Optional Comment
-
-______________________________________________________________________________
-
-______________________________________________________________________________
-
-## 6. Sponsor / Mentor Sign-off
+## 5. Sponsor / Mentor Sign-off
 
 I have reviewed the pre-filled project summary and corrected it where necessary. I confirm that the selected ratings, acceptance status, and deployment status reflect my assessment of the student's internship project.
 
