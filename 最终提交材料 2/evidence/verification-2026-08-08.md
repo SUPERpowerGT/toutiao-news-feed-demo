@@ -111,7 +111,7 @@ Runtime inspection additionally confirmed:
 ## Final GitHub Evidence
 
 - Android CI and downloadable APK/quality artifacts: E19
-- Backend tests, coverage, binary, image build, and artifacts: E20
+- Backend GDPR validation, tests, coverage, binary, image build/save, and artifacts: E30
 - CodeQL Go and Java/Kotlin analysis: E23
 - Trivy filesystem, secret, misconfiguration, and image scans: E21, with E24 as the pre-remediation failure
 - OWASP ZAP DAST: E22, with E28 as the pre-remediation failure

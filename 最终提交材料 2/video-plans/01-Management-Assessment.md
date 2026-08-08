@@ -58,9 +58,9 @@ Prepare these CI images in this order for the final minute:
 
 1. `../assets/E24-trivy-remediation-before.png` - historical security-gate failure.
 2. `../assets/E21-container-security-final-success.png` - successful rescan with two retained artifacts.
-3. `../assets/E18-github-actions-final-overview.png` - final five-workflow acceptance view.
+3. `../assets/E29-github-actions-compliance-final-overview.png` - final five-workflow acceptance view.
 
-The red E24 image must be introduced as an earlier finding that triggered remediation. Do not leave it on screen at the end; finish on the green E18 overview.
+The red E24 image must be introduced as an earlier finding that triggered remediation. Do not leave it on screen at the end; finish on the green E29 overview.
 
 ### Exact Five-Minute English Script
 
@@ -74,7 +74,7 @@ The red E24 image must be introduced as an earlier finding that triggered remedi
 | 3:05-3:40 | `effort-tracking.csv` | "This was a one-person project. I was the sole developer for Android, backend, database, testing, DevSecOps, and documentation. At approximately twenty working days per month for five months, planned effort was one hundred man-days, or eight hundred hours. My retrospective actual estimate is also approximately one hundred man-days and eight hundred hours. This is not a daily timesheet. SUPERpowerGT, Zee, and Xu Ziyi are three Git identities for the same person, not three members." |
 | 3:40-4:20 | Report Section 1.11 and Team Management table | "Client and sponsor management focused on scope alignment, visible acceptance criteria, progress evidence, and transparent status. Formal sponsor approval is unavailable, so technical verification is not presented as sponsor sign-off. Team management for a sole developer focused on controlling role switching and review risk. Sprint goals and P zero, P one, and future-scope priorities limited concurrent work. Automated tests, Git history, CodeQL, Trivy, and ZAP provided independent quality gates where a second developer review was unavailable." |
 | 4:20-4:45 | Review table, then E24 and E21 | "The review loop produced measurable mitigation. Refresh concerns led to isolated state flows, network failure led to Room fallback, and database pool exhaustion led to corrected query lifecycle management and a repeated load test with zero failures. Trivy then blocked real dependency findings; dependencies and the container base were upgraded, and both security scans passed on rescan." |
-| 4:45-4:55 | E18 final GitHub Actions overview | "The final evidence commit shows all five project workflows green, tying the management closure to tested final code." |
+| 4:45-4:55 | E29 final GitHub Actions overview | "The final evidence commit shows all five project workflows green, tying the management closure to tested final code." |
 | 4:55-5:00 | Sponsor status | "Formal sponsor acceptance is unavailable, so no acceptance or go-live claim is made. Thank you." |
 
 ### Recording Controls

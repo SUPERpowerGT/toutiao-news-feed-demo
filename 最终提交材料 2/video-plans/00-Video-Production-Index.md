@@ -26,18 +26,17 @@ All seven videos must be placed in one ZIP file named:
 | 1 | `TeamXX- Management Assessment.mp4` | 5 minutes | [01-Management-Assessment.md](./01-Management-Assessment.md) | Evidence and exact script ready; recording pending |
 | 2 | `TeamXX- Architectural Assessment.mp4` | 10 minutes | [02-Architectural-Assessment.md](./02-Architectural-Assessment.md) | Architecture evidence and exact script ready; recording pending |
 | 3 | `TeamXX- Technical Assessment - Software Design.mp4` | 5 minutes | [03-Software-Design-Assessment.md](./03-Software-Design-Assessment.md) | Traceability evidence and exact script ready; recording pending |
-| 4 | `TeamXX- Technical Assessment - DevSecOps.mp4` | 10 minutes | [04-DevSecOps-Assessment.md](./04-DevSecOps-Assessment.md) | Evidence and exact script ready; final saved-image CI artifact verification pending |
+| 4 | `TeamXX- Technical Assessment - DevSecOps.mp4` | 10 minutes | [04-DevSecOps-Assessment.md](./04-DevSecOps-Assessment.md) | Evidence, final artifacts, and exact script ready; recording pending |
 | 5 | `TeamXX- Value Added Assessment.mp4` | 5 minutes | [05-Value-Added-Assessment.md](./05-Value-Added-Assessment.md) | Evidence and exact script ready; unavailable sponsor acceptance disclosed |
 | 6 | `TeamXX- Presentation Assessment App Demo.mp4` | Maximum 5 minutes | [06-App-Demo.md](./06-App-Demo.md) | Requires final emulator rehearsal and backup recording |
 | 7 | `TeamXX- Presentation Assessment CICD Demo.mp4` | Maximum 5 minutes | [07-CICD-Demo.md](./07-CICD-Demo.md) | CI evidence ready; exact script and artifact-opening rehearsal still required |
 
 ## Recommended Production Order
 
-1. Push and verify the final saved-image and compliance workflow changes.
-2. Record Architecture, Software Design, Management, Value Added, and DevSecOps from the prepared scripts.
-3. Rehearse and record the App Demo while the full stack and emulator are stable.
-4. Complete the CI/CD Demo script, rehearse artifact opening, and record it.
-5. Verify, rename, and package all seven videos.
+1. Record Architecture, Software Design, Management, Value Added, and DevSecOps from the prepared scripts.
+2. Rehearse and record the App Demo while the full stack and emulator are stable.
+3. Complete the CI/CD Demo script, rehearse artifact opening, and record it.
+4. Verify, rename, and package all seven videos.
 
 ## Final Package Check
 

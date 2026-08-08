@@ -103,7 +103,7 @@ For a one-person project, team management focused on role switching and independ
 
 This was a one-person project completed by Xu Ziyi as the sole developer. The delivery period was 2026-03-23 to 2026-08-14. Using the developer-confirmed working intensity of approximately 20 workdays per month for about five months, planned effort is reported as approximately 100 man-days or 800 hours. Actual effort is retrospectively reported at approximately the same level: 100 man-days or 800 hours. This is an honest retrospective estimate, not a daily timesheet, and should be described that way in the recording.
 
-Git contains 64 commits at final evidence commit `f397240` under the author identities `SUPERpowerGT`, `Zee`, and `xu ziyi`. The developer confirmed that this is a solo project, so these identities must not be presented as three team members. Git activity provides an audit trail, while `effort-tracking.csv` provides the separate retrospective effort declaration.
+Git contains 65 commits at final technical evidence commit `900f4e5` under the author identities `SUPERpowerGT`, `Zee`, and `xu ziyi`. The developer confirmed that this is a solo project, so these identities must not be presented as three team members. Git activity provides an audit trail, while `effort-tracking.csv` provides the separate retrospective effort declaration.
 
 ## Sponsor and Acceptance Status
 
