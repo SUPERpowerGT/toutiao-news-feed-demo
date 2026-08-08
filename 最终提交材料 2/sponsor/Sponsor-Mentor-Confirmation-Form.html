@@ -14,8 +14,8 @@
     th, td { border: 1px solid #777; padding: 6px 8px; vertical-align: top; font-size: 10px; }
     th { background: #e8edf0; text-align: left; }
     .field { width: 34%; font-weight: bold; }
-    .rating th:not(:first-child), .rating td:not(:first-child) { text-align: center; width: 7%; }
-    .check { margin: 4px 0; }
+    .score { text-align: center; width: 18%; }
+    .response { text-align: center; width: 14%; }
     .line { border-bottom: 1px solid #777; height: 20px; }
     .small { font-size: 9px; color: #444; }
   </style>
@@ -48,25 +48,25 @@
   </ul>
 
   <h2>3. Sponsor / Mentor Rating</h2>
-  <p>Tick one rating in each row. <strong>1 = Unsatisfactory, 2 = Needs Improvement, 3 = Satisfactory, 4 = Good, 5 = Excellent.</strong></p>
-  <table class="rating">
-    <tr><th>Assessment area</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr>
-    <tr><td>Completion of the agreed project scope</td><td>&#9744;</td><td>&#9744;</td><td>&#9744;</td><td>&#9744;</td><td>&#9744;</td></tr>
-    <tr><td>Technical quality and engineering approach</td><td>&#9744;</td><td>&#9744;</td><td>&#9744;</td><td>&#9744;</td><td>&#9744;</td></tr>
-    <tr><td>Testing, security, and delivery discipline</td><td>&#9744;</td><td>&#9744;</td><td>&#9744;</td><td>&#9744;</td><td>&#9744;</td></tr>
-    <tr><td>Professionalism and communication</td><td>&#9744;</td><td>&#9744;</td><td>&#9744;</td><td>&#9744;</td><td>&#9744;</td></tr>
-    <tr><td>Business or user value of the delivered work</td><td>&#9744;</td><td>&#9744;</td><td>&#9744;</td><td>&#9744;</td><td>&#9744;</td></tr>
-    <tr><td>Overall project performance</td><td>&#9744;</td><td>&#9744;</td><td>&#9744;</td><td>&#9744;</td><td>&#9744;</td></tr>
+  <p>Enter one number in each row. <strong>1 = Unsatisfactory, 2 = Needs Improvement, 3 = Satisfactory, 4 = Good, 5 = Excellent.</strong></p>
+  <table>
+    <tr><th>Assessment area</th><th class="score">Score (1-5)</th></tr>
+    <tr><td>Completion of the agreed project scope</td><td class="score"></td></tr>
+    <tr><td>Technical quality and engineering approach</td><td class="score"></td></tr>
+    <tr><td>Testing, security, and delivery discipline</td><td class="score"></td></tr>
+    <tr><td>Professionalism and communication</td><td class="score"></td></tr>
+    <tr><td>Business or user value of the delivered work</td><td class="score"></td></tr>
+    <tr><td>Overall project performance</td><td class="score"></td></tr>
   </table>
 
   <h2>4. Acceptance and Deployment Confirmation</h2>
-  <h3>Project acceptance</h3>
-  <p class="check">&#9744; Accepted &nbsp;&nbsp;&nbsp; &#9744; Accepted with minor follow-up items &nbsp;&nbsp;&nbsp; &#9744; Not yet accepted</p>
-  <h3>Deployment status</h3>
-  <p class="check">&#9744; Deployed in an internal company environment &nbsp;&nbsp; &#9744; Ready for internal deployment or trial</p>
-  <p class="check">&#9744; Demonstrated but not deployed &nbsp;&nbsp; &#9744; Not confirmed</p>
-  <h3>Confidentiality boundary</h3>
-  <p class="check">&#9744; Company confidentiality, cybersecurity, or data-compliance requirements restrict disclosure of production URLs, infrastructure details, internal screenshots, traffic, customer information, or user data.</p>
+  <p>Enter one option number for each item.</p>
+  <table>
+    <tr><th>Confirmation item</th><th>Numbered options</th><th class="response">Response</th></tr>
+    <tr><td>Project acceptance</td><td>1 = Accepted<br>2 = Accepted with minor follow-up items<br>3 = Not yet accepted</td><td class="response"></td></tr>
+    <tr><td>Deployment status</td><td>1 = Deployed internally<br>2 = Ready for internal deployment or trial<br>3 = Demonstrated but not deployed<br>4 = Not confirmed</td><td class="response"></td></tr>
+    <tr><td>Confidentiality restriction applies</td><td>1 = Yes<br>2 = No</td><td class="response"></td></tr>
+  </table>
 
   <h2>5. Optional Comment</h2>
   <div class="line"></div><div class="line"></div>

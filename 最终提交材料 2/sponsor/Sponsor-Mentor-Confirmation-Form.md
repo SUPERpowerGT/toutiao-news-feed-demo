@@ -28,35 +28,26 @@ The student reports completion of the following agreed project work for Sponsor 
 
 ## 3. Sponsor / Mentor Rating
 
-Please tick one rating in each row. Rating scale: **1 = Unsatisfactory, 2 = Needs Improvement, 3 = Satisfactory, 4 = Good, 5 = Excellent**.
+Enter one number in each row. Rating scale: **1 = Unsatisfactory, 2 = Needs Improvement, 3 = Satisfactory, 4 = Good, 5 = Excellent**.
 
-| Assessment area | 1 | 2 | 3 | 4 | 5 |
-|---|:---:|:---:|:---:|:---:|:---:|
-| Completion of the agreed project scope | ☐ | ☐ | ☐ | ☐ | ☐ |
-| Technical quality and engineering approach | ☐ | ☐ | ☐ | ☐ | ☐ |
-| Testing, security, and delivery discipline | ☐ | ☐ | ☐ | ☐ | ☐ |
-| Professionalism and communication | ☐ | ☐ | ☐ | ☐ | ☐ |
-| Business or user value of the delivered work | ☐ | ☐ | ☐ | ☐ | ☐ |
-| Overall project performance | ☐ | ☐ | ☐ | ☐ | ☐ |
+| Assessment area | Score (1-5) |
+|---|:---:|
+| Completion of the agreed project scope | |
+| Technical quality and engineering approach | |
+| Testing, security, and delivery discipline | |
+| Professionalism and communication | |
+| Business or user value of the delivered work | |
+| Overall project performance | |
 
 ## 4. Acceptance and Deployment Confirmation
 
-### Project acceptance
+Enter one option number for each item.
 
-- [ ] Accepted
-- [ ] Accepted with minor follow-up items
-- [ ] Not yet accepted
-
-### Deployment status
-
-- [ ] Deployed in an internal company environment
-- [ ] Ready for internal deployment or trial
-- [ ] Demonstrated but not deployed
-- [ ] Not confirmed
-
-### Confidentiality boundary
-
-- [ ] Company confidentiality, cybersecurity, or data-compliance requirements restrict disclosure of production URLs, infrastructure details, internal screenshots, traffic, customer information, or user data.
+| Confirmation item | Numbered options | Response |
+|---|---|:---:|
+| Project acceptance | 1 = Accepted; 2 = Accepted with minor follow-up items; 3 = Not yet accepted | |
+| Deployment status | 1 = Deployed internally; 2 = Ready for internal deployment or trial; 3 = Demonstrated but not deployed; 4 = Not confirmed | |
+| Confidentiality restriction applies | 1 = Yes; 2 = No | |
 
 ## 5. Optional Comment
 
