@@ -3,7 +3,7 @@
 ## Delivery Information
 
 - Required filename: `TeamXX- Value Added Assessment.mp4`
-- Target duration: 5 minutes
+- Maximum duration: 5 minutes
 - Primary purpose: prove measurable value beyond a basic static feed demo.
 
 ## Recommended Value Story
@@ -41,13 +41,15 @@ The implemented system provides scene-aware recommendation scores and reasons, o
 - [x] Internal go-live is documented as a developer declaration; public production evidence and formal Sponsor sign-off are unavailable because company information cannot be disclosed.
 - [x] Minimum MTech SE requirement coverage is linked to the working full stack, design artifacts, tests, security controls, and demonstrations.
 - [x] Advanced-area wording is accurate: explainable recommendation and performance engineering, not unimplemented AI/ML or real-time processing.
+- [ ] Obtain sanitized Sponsor acceptance or feedback evidence. PDF page 38 explicitly assesses Sponsor acceptance, page 25 states that NUS will contact the Sponsor, and page 29 says confidentiality is not a reason to omit evidence. A developer declaration does not satisfy this item.
+- [ ] Prepare a sanitized go-live/acceptance view, such as a redacted approval email, signed acceptance note, release record, or Sponsor statement that exposes no production URL, user data, credentials, or infrastructure identifiers.
 
 ## Page 38 Rubric Alignment
 
 | PDF Requirement | Evidence and Recording Position | Status |
 |---|---|---|
 | Meet minimum MTech SE project requirements | Android + Go + PostgreSQL implementation, architecture/design documentation, automated testing, DevSecOps, and live demos | Evidenced |
-| Sponsor acceptance and preferably go live | Developer reports internal deployment in a China-based company; technical production details and communications cannot be disclosed | Internal go-live declared; no public screenshot or formal Sponsor sign-off attached |
+| Sponsor acceptance and preferably go live | Developer reports internal deployment, but no Sponsor-originated acceptance or feedback evidence is attached | **Not yet evidenced**; developer declaration alone does not meet this criterion |
 | Explore an advanced or innovative area | Explainable multi-signal ranking, recommendation reasons, offline-first behavior, and measured connection-pool remediation | Evidenced under `etc.`; not AI/ML |
 
 ## App Evidence Screenshots
@@ -68,7 +70,7 @@ These screenshots were captured from the installed Debug APK on the Android emul
 
 Recommended recording use: show the Recommend screenshot first, then use the Following/Hot pair to prove scene separation, and finish with the Video/Image pair to prove content-type-specific rendering. Keep the complete screenshot sequence within 35 to 40 seconds.
 
-For the go-live criterion, show Section 8.4 of the final report rather than a production screenshot. Introduce it as a disclosure boundary: internal deployment is reported by the developer, while production identifiers, operational data, and Sponsor communications are not included. Do not present this written declaration as independent Sponsor acceptance.
+For the go-live criterion, the preferred screen is a sanitized Sponsor-originated acceptance or feedback record. Section 8.4 of the final report may explain the disclosure boundary, but it cannot replace Sponsor evidence. Redact production identifiers and personal data while keeping the Sponsor role, acceptance meaning, and date verifiable.
 
 ## Exact Recording Runbook and Oral Script
 
@@ -106,11 +108,14 @@ Recording control: keep the performance table visible while reading every metric
 - Explain that the ranking is rule-based and interpretable, not a trained ML model.
 - State the internal go-live and confidentiality boundary exactly; do not invent a public URL, screenshot, usage metric, or formal Sponsor signature.
 - Name all three page 38 criteria explicitly; do not imply that technical evidence replaces sponsor acceptance.
+- PDF page 29 explicitly rejects confidentiality as a reason for showing no evidence. Use redaction or a sanitized Sponsor statement rather than omitting the evidence entirely.
+- Export at exactly 1920x1080 and keep the speaker's face clearly visible, as required by PDF page 40.
 
 ## Definition of Done
 
 - [x] One clear value proposition connects all sections.
 - [x] Implementation and test evidence are prepared and linked.
 - [x] Before/after metrics are included.
-- [x] Internal go-live, confidentiality restrictions, and unavailable public Sponsor evidence are stated accurately.
+- [ ] Sponsor acceptance is supported by sanitized Sponsor-originated evidence; internal go-live remains only a developer declaration until then.
 - [x] Future ideas are clearly separated from delivered value.
+- [ ] Final video is five minutes or shorter, exactly 1920x1080, and shows the speaker's face clearly.

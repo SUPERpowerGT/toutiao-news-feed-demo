@@ -3,7 +3,7 @@
 ## Delivery Information
 
 - Required filename: `TeamXX- Technical Assessment - DevSecOps.mp4`
-- Target duration: 10 minutes
+- Maximum duration: 10 minutes
 - Primary purpose: prove a working build, test, security, container, deployment, audit, remediation, and evidence pipeline.
 
 ## Required Content
@@ -38,6 +38,9 @@
 - [x] Git commit SHA associated with all shown GitHub results.
 - [x] GDPR applicability and machine-validated control mapping.
 - [x] Reproducible SAST finding-to-resolution evidence in E33: the same versioned Semgrep privacy rule detects one client-IP logging finding in historical commit `f397240` and zero findings in the current backend. CodeQL remains the two-language broad SAST control.
+- [ ] Open and capture the actual Android/Go unit-test report contents, including test counts and backend coverage; a green workflow and artifact name alone are weaker than the result artifact required by PDF page 36.
+- [ ] Open and capture the final ZAP report contents, including target, alert summary, and PASS/IGNORE result; E22 currently proves the job and artifact exist, but not the report contents.
+- [ ] Decide and evidence the CD position. Current workflows build delivery artifacts and deploy an ephemeral Compose stack for verification, but do not automatically deploy to a persistent environment. Either show a sanitized staging/internal deployment execution or describe this accurately as continuous delivery readiness rather than production CD.
 
 ## Suggested Timeline
 
@@ -85,6 +88,8 @@
 
 Open E12, E19-E34, `evidence/verification-2026-08-08.md`, `.github/workflows/`, `backend/Dockerfile`, `docker-compose.prod.yml`, `compliance/gdpr-controls.json`, and the report's GDPR table. In GitHub, prepare SAST run `#15` for the successful Semgrep remediation job and the retained earlier final workflow runs for the other controls. Download or open at least one small report artifact before recording; do not download the full saved image during the take.
 
+Before recording, add two readable captures: an opened unit-test/coverage result and an opened final ZAP report. For CD, do not call the Compose integration environment a production deployment. Use the wording "delivery-ready artifact plus automated deployment verification" unless sanitized persistent-environment evidence is available.
+
 ### Exact Ten-Minute English Script
 
 | Time | Screen Evidence | Exact English Narration |
@@ -129,4 +134,6 @@ Open E12, E19-E34, `evidence/verification-2026-08-08.md`, `.github/workflows/`, 
 - [x] Container build/save, inspect, health, logs, IaC, compliance-as-code, and Git audit are visible.
 - [x] Every screenshot belongs to the final or a clearly identified historical remediation commit.
 - [x] SAST resolution and same-rule rescan evidence is available in E33 and `evidence/sast-remediation/`; it is correctly attributed to Semgrep rather than CodeQL.
+- [ ] Opened unit-test result and final ZAP result content are visible, not only workflow summaries.
+- [ ] CI/CD wording and evidence accurately distinguish artifact delivery, ephemeral deployment verification, and any real persistent deployment.
 - [ ] Final video is ten minutes or shorter, 1920x1080, with the speaker's face clearly visible.

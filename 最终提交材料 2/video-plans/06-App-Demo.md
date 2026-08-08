@@ -8,7 +8,8 @@
 
 ## Demo Environment
 
-- Android emulator at 1920x1080 recording resolution or a clearly readable equivalent.
+- Final recording canvas and exported MP4 must be exactly 1920x1080 HD. Place the portrait emulator inside that landscape canvas; a merely readable alternative resolution does not meet PDF page 40.
+- Keep the speaker camera visible with the face clearly readable throughout the recording, without covering the app or terminal evidence.
 - Docker Compose backend and PostgreSQL healthy.
 - Backend available to the emulator at `http://10.0.2.2:8080`.
 - Seed data reset before recording.
@@ -41,6 +42,7 @@
 - [x] Confirm refresh and load-more work twice consecutively: two `refresh_time` requests and two successive `cursor` requests returned HTTP 200 in the rehearsal logs.
 - [x] Prepare and verify backend stop/start commands for the controlled recovery scene.
 - [ ] Prepare a backup recording of the complete flow.
+- [ ] Configure the recorder to 1920x1080 and position the portrait emulator plus speaker camera before the final take.
 
 ## Verified Runtime Evidence
 
@@ -160,3 +162,4 @@ Export as `TeamXX- Presentation Assessment App Demo.mp4`, verify 1920x1080 resol
 - [x] Initial load, channels, playback, refresh, pagination, offline fallback, and error recovery were verified in rehearsal.
 - [ ] No passwords or private desktop content appear.
 - [ ] A backup take exists.
+- [ ] Exported MP4 is exactly 1920x1080 and the speaker's face is clearly visible, as required by PDF page 40.
