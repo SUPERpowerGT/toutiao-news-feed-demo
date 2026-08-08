@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.xuziyi.toutiaoandroid.domain.usecase.*
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -16,7 +17,8 @@ class FeedViewModel(
     private val refreshFeedUseCase: RefreshFeedUseCase,
     private val loadMoreFeedUseCase: LoadMoreFeedUseCase,
     private val renderCardTypeUseCase: RenderCardTypeUseCase = RenderCardTypeUseCase(),
-    private val processFeedItemsUseCase: ProcessFeedItemUseCase = ProcessFeedItemUseCase()
+    private val processFeedItemsUseCase: ProcessFeedItemUseCase = ProcessFeedItemUseCase(),
+    private val computationDispatcher: CoroutineDispatcher = Dispatchers.Default
 ) : ViewModel() {
 
     //是 ViewModel 里用来保存和更新 UI 状态的“可观察变量”，
@@ -61,7 +63,7 @@ class FeedViewModel(
                 val startCompute = System.currentTimeMillis()
 
                 //切换到CPU线程池来运行
-                val processed = withContext(Dispatchers.Default) {
+                val processed = withContext(computationDispatcher) {
                     processSceneFeedData(raw)
                 }
 
@@ -149,7 +151,7 @@ class FeedViewModel(
                             .thenByDescending { it.weight }
                     )
 
-                val mergedProcessed = withContext(Dispatchers.Default) {
+                val mergedProcessed = withContext(computationDispatcher) {
                     processSceneItems(currentScene, mergedItems)
                 }
 
@@ -272,7 +274,7 @@ class FeedViewModel(
                 // [PERF-THREAD] loadMore 场景数据量递增，计算更重，必须下沉 Default
                 val startCompute = System.currentTimeMillis()
 
-                val processed = withContext(Dispatchers.Default){
+                val processed = withContext(computationDispatcher){
                     val mergedUniqueItems = (
                         afterLoading.officialItems +
                             afterLoading.mixedItems +
@@ -336,7 +338,8 @@ class FeedViewModel(
 
     private fun normalizeScene(scene: String): String {
         return when (scene) {
-            "video", "shenzhen", "tech", "sports", "finance" -> scene
+            "following", "hot", "video", "shenzhen", "featured", "image", "war",
+            "tech", "sports", "finance" -> scene
             else -> "recommend"
         }
     }

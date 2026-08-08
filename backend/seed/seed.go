@@ -66,7 +66,7 @@ func InsertSeedData(db *sql.DB) error {
 	}
 
 	authors := buildAuthors()
-	articles := buildArticles()
+	articles := ensureChannelMinimums(buildArticles(), 20)
 
 	authorStmt, err := tx.Prepare(`
         INSERT INTO author (id, name, avatar_url, description, certification)
@@ -180,6 +180,92 @@ func AppendRefreshBatch(db *sql.DB, count int) error {
 	}
 
 	return nil
+}
+
+// AppendChannelMinimums adds only the records missing from the demo channels.
+// Unlike InsertSeedData, it preserves every existing row.
+func AppendChannelMinimums(db *sql.DB, minimum int) (int, error) {
+	if minimum <= 0 {
+		minimum = 20
+	}
+
+	tx, err := db.Begin()
+	if err != nil {
+		return 0, fmt.Errorf("begin channel seed transaction error: %w", err)
+	}
+	defer tx.Rollback()
+
+	rows, err := tx.Query(`SELECT content_type, category, city FROM feed_item`)
+	if err != nil {
+		return 0, fmt.Errorf("query existing channel data error: %w", err)
+	}
+
+	existing := make([]articleSeed, 0)
+	for rows.Next() {
+		var article articleSeed
+		if err := rows.Scan(&article.ContentType, &article.Category, &article.City); err != nil {
+			rows.Close()
+			return 0, fmt.Errorf("scan existing channel data error: %w", err)
+		}
+		existing = append(existing, article)
+	}
+	if err := rows.Close(); err != nil {
+		return 0, fmt.Errorf("close channel data rows error: %w", err)
+	}
+	if err := rows.Err(); err != nil {
+		return 0, fmt.Errorf("read existing channel data error: %w", err)
+	}
+
+	completed := ensureChannelMinimums(existing, minimum)
+	missing := completed[len(existing):]
+	if len(missing) == 0 {
+		if err := tx.Commit(); err != nil {
+			return 0, fmt.Errorf("commit channel seed transaction error: %w", err)
+		}
+		return 0, nil
+	}
+
+	// Keep the endpoint usable even if it is called against an empty schema.
+	authorStmt, err := tx.Prepare(`
+        INSERT INTO author (id, name, avatar_url, description, certification)
+        VALUES ($1, $2, $3, $4, NULLIF($5, ''))
+        ON CONFLICT (id) DO NOTHING
+    `)
+	if err != nil {
+		return 0, fmt.Errorf("prepare channel author insert error: %w", err)
+	}
+	defer authorStmt.Close()
+	for _, author := range buildAuthors() {
+		if _, err := authorStmt.Exec(author.ID, author.Name, author.AvatarURL, author.Description, author.Certification); err != nil {
+			return 0, fmt.Errorf("ensure author %d error: %w", author.ID, err)
+		}
+	}
+
+	helpers, err := prepareInsertHelpers(tx)
+	if err != nil {
+		return 0, err
+	}
+	defer helpers.close()
+
+	var maxNewsID int
+	if err := tx.QueryRow(`SELECT COALESCE(MAX(id), 0) FROM news`).Scan(&maxNewsID); err != nil {
+		return 0, fmt.Errorf("query max news id error: %w", err)
+	}
+
+	baseTime := time.Now().Add(-time.Duration(len(missing)) * time.Minute)
+	for i, article := range missing {
+		newsID := maxNewsID + i + 1
+		publishTime := baseTime.Add(time.Duration(i) * time.Minute)
+		weight := 0.72 + float64(i%6)*0.02
+		if err := insertArticle(helpers, newsID, article, publishTime, weight, newsID); err != nil {
+			return 0, err
+		}
+	}
+
+	if err := tx.Commit(); err != nil {
+		return 0, fmt.Errorf("commit channel seed transaction error: %w", err)
+	}
+	return len(missing), nil
 }
 
 func buildRefreshTemplates() []articleSeed {
@@ -458,6 +544,145 @@ func buildArticles() []articleSeed {
 		{"地铁新线路开通，市民出行更加便捷", "新开通线路将极大缓解城市交通压力。", "image", 40, "本地事件通", "民生", "地铁", "成都", []string{"地铁", "出行"}, false, false},
 		{"旧小区电梯更新工程启动，居民拍手称赞", "多栋楼将陆续完成电梯升级施工。", "text", 40, "本地事件通", "民生", "社区改造", "重庆", []string{"旧改", "电梯"}, false, false},
 	}
+}
+
+type channelSeedPlan struct {
+	matches func(articleSeed) bool
+	build   func(int) articleSeed
+}
+
+// ensureChannelMinimums keeps the hand-written lead stories intact and only
+// appends ordinary stories needed by each demo channel.
+func ensureChannelMinimums(articles []articleSeed, minimum int) []articleSeed {
+	if minimum <= 0 {
+		return articles
+	}
+
+	plans := buildChannelSeedPlans()
+
+	for _, plan := range plans {
+		count := 0
+		for _, article := range articles {
+			if plan.matches(article) {
+				count++
+			}
+		}
+		for count < minimum {
+			count++
+			articles = append(articles, plan.build(count))
+		}
+	}
+
+	return articles
+}
+
+func buildChannelSeedPlans() []channelSeedPlan {
+	return []channelSeedPlan{
+		categoryChannelPlan("关注", 19, "关注动态", []string{"职场成长", "生活记录", "创作者问答", "实用技巧", "读者分享"}),
+		categoryChannelPlan("热榜", 35, "全站热榜", []string{"城市热点", "科技趋势", "文化话题", "民生观察", "网络热议"}),
+		{
+			matches: func(article articleSeed) bool { return article.ContentType == "video" },
+			build: func(index int) articleSeed {
+				topics := []string{"城市夜景延时摄影", "非遗手艺制作过程", "周末露营实用技巧", "博物馆数字展览", "春日自然风光"}
+				topic := topics[(index-1)%len(topics)]
+				return articleSeed{
+					Title:       fmt.Sprintf("视频精选 %02d｜%s带来沉浸式体验", index, topic),
+					Summary:     fmt.Sprintf("镜头记录%s的精彩瞬间，完整视频包含现场画面与实用解说。", topic),
+					ContentType: "video", AuthorID: 12, Source: "视频精选频道", Category: "视频",
+					SubCategory: "精选短片", City: "全国", Tags: []string{"视频", topic},
+				}
+			},
+		},
+		{
+			matches: func(article articleSeed) bool { return article.City == "深圳" },
+			build: func(index int) articleSeed {
+				topics := []string{"地铁出行", "公园改造", "社区服务", "文化展览", "便民设施"}
+				topic := topics[(index-1)%len(topics)]
+				return articleSeed{
+					Title:       fmt.Sprintf("深圳本地 %02d｜%s迎来新进展", index, topic),
+					Summary:     fmt.Sprintf("深圳持续完善%s，相关安排和开放信息已陆续公布。", topic),
+					ContentType: alternateContentType(index), AuthorID: 40, Source: "深圳本地通", Category: "民生",
+					SubCategory: topic, City: "深圳", Tags: []string{"深圳", topic},
+				}
+			},
+		},
+		categoryChannelPlan("精选", 37, "编辑精选", []string{"深度阅读", "人物故事", "城市观察", "文化随笔", "生活美学"}),
+		{
+			matches: func(article articleSeed) bool { return article.ContentType == "image" },
+			build: func(index int) articleSeed {
+				topics := []string{"自然风光", "城市建筑", "人文纪实", "艺术展览", "四季景色"}
+				topic := topics[(index-1)%len(topics)]
+				return articleSeed{
+					Title:       fmt.Sprintf("图片故事 %02d｜%s高清图集", index, topic),
+					Summary:     fmt.Sprintf("一组高清图片带你观察%s的丰富细节，记录镜头背后的故事。", topic),
+					ContentType: "image", AuthorID: 18, Source: "摄影新视界", Category: "图片",
+					SubCategory: topic, City: "全国", Tags: []string{"图片", topic},
+				}
+			},
+		},
+		categoryChannelPlan("抗战", 8, "抗战历史", []string{"历史档案", "英雄人物", "纪念场馆", "口述历史", "文物故事"}),
+		{
+			matches: func(article articleSeed) bool { return article.Category == "科技" },
+			build: func(index int) articleSeed {
+				topics := []string{"人工智能", "智能终端", "机器人", "云计算", "低空经济"}
+				topic := topics[(index-1)%len(topics)]
+				return articleSeed{
+					Title:       fmt.Sprintf("科技前沿 %02d｜%s应用加速落地", index, topic),
+					Summary:     fmt.Sprintf("行业机构发布最新观察，%s正在多个真实场景中提升效率。", topic),
+					ContentType: alternateContentType(index), AuthorID: 3, Source: "科技每日说", Category: "科技",
+					SubCategory: topic, City: "北京", Tags: []string{"科技", topic},
+				}
+			},
+		},
+		{
+			matches: func(article articleSeed) bool { return article.Category == "体育" },
+			build: func(index int) articleSeed {
+				topics := []string{"篮球联赛", "足球青训", "全民健身", "羽毛球公开赛", "田径锦标赛"}
+				topic := topics[(index-1)%len(topics)]
+				return articleSeed{
+					Title:       fmt.Sprintf("体育速递 %02d｜%s焦点赛况盘点", index, topic),
+					Summary:     fmt.Sprintf("%s最新一轮结束，多位选手展现良好状态，精彩数据同步出炉。", topic),
+					ContentType: alternateContentType(index), AuthorID: 5, Source: "体育风云", Category: "体育",
+					SubCategory: topic, City: "广州", Tags: []string{"体育", topic},
+				}
+			},
+		},
+		{
+			matches: func(article articleSeed) bool { return article.Category == "财经" },
+			build: func(index int) articleSeed {
+				topics := []string{"消费市场", "资本市场", "外贸数据", "中小企业", "金融服务"}
+				topic := topics[(index-1)%len(topics)]
+				return articleSeed{
+					Title:       fmt.Sprintf("财经观察 %02d｜%s释放积极信号", index, topic),
+					Summary:     fmt.Sprintf("最新数据反映%s保持活跃，专家建议继续关注长期趋势与结构变化。", topic),
+					ContentType: alternateContentType(index), AuthorID: 28, Source: "财经热搜榜", Category: "财经",
+					SubCategory: topic, City: "上海", Tags: []string{"财经", topic},
+				}
+			},
+		},
+	}
+}
+
+func categoryChannelPlan(category string, authorID int, source string, topics []string) channelSeedPlan {
+	return channelSeedPlan{
+		matches: func(article articleSeed) bool { return article.Category == category },
+		build: func(index int) articleSeed {
+			topic := topics[(index-1)%len(topics)]
+			return articleSeed{
+				Title:       fmt.Sprintf("%s %02d｜%s专题更新", source, index, topic),
+				Summary:     fmt.Sprintf("本期围绕%s整理重点信息，通过背景资料和现场观察呈现完整内容。", topic),
+				ContentType: alternateContentType(index), AuthorID: authorID, Source: source, Category: category,
+				SubCategory: topic, City: "全国", Tags: []string{category, topic},
+			}
+		},
+	}
+}
+
+func alternateContentType(index int) string {
+	if index%2 == 0 {
+		return "image"
+	}
+	return "text"
 }
 
 func insertMedia(stmt *sql.Stmt, newsID int, contentType string) error {

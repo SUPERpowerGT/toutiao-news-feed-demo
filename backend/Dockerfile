@@ -1,16 +1,25 @@
-FROM golang:1.24-alpine
+FROM golang:1.24-alpine AS builder
 
-WORKDIR /app
+WORKDIR /src
 
-# 1. 复制依赖定义并下载
 COPY go.mod go.sum ./
 RUN go mod download
 
-# 2. 复制源码
 COPY . .
+RUN CGO_ENABLED=0 GOOS=linux go build -trimpath -ldflags="-s -w" -o /out/server .
 
-# 3. 编译二进制
-RUN go build -o server .
+FROM alpine:3.21
 
-# 4. 启动命令
-CMD ["./server"]
+RUN apk add --no-cache ca-certificates \
+    && addgroup -S app \
+    && adduser -S -G app app
+
+WORKDIR /app
+COPY --from=builder --chown=app:app /out/server ./server
+
+USER app
+EXPOSE 8080
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+    CMD wget -qO- http://127.0.0.1:8080/health >/dev/null || exit 1
+
+ENTRYPOINT ["./server"]

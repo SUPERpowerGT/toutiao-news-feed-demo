@@ -67,21 +67,13 @@ LIMIT 5;
 	if err != nil {
 		return nil, nil, nil, 0, err
 	}
-	defer rows.Close()
-
-	topItems := []domain.FeedItem{}
-	for rows.Next() {
-		item, err := scanFeedItem(rows)
-		if err != nil {
-			return nil, nil, nil, 0, err
-		}
-
-		var loadErr error
-		item.Media, loadErr = r.loadMedia(ctx, item.ID)
-		if loadErr != nil {
-			fmt.Printf("Error loading media for NewsID %d: %v\n", item.ID, loadErr)
-		}
-		topItems = append(topItems, item)
+	topItems, err := scanFeedRows(rows)
+	rows.Close()
+	if err != nil {
+		return nil, nil, nil, 0, err
+	}
+	if err := r.attachMedia(ctx, topItems); err != nil {
+		return nil, nil, nil, 0, err
 	}
 
 	sqlNormal := `
@@ -122,17 +114,13 @@ LIMIT 15;
 	if err != nil {
 		return nil, nil, nil, 0, err
 	}
-	defer rows2.Close()
-
-	normalItems := []domain.FeedItem{}
-	for rows2.Next() {
-		item, err := scanFeedItem(rows2)
-		if err != nil {
-			return nil, nil, nil, 0, err
-		}
-
-		item.Media, _ = r.loadMedia(ctx, item.ID)
-		normalItems = append(normalItems, item)
+	normalItems, err := scanFeedRows(rows2)
+	rows2.Close()
+	if err != nil {
+		return nil, nil, nil, 0, err
+	}
+	if err := r.attachMedia(ctx, normalItems); err != nil {
+		return nil, nil, nil, 0, err
 	}
 
 	// 合并
@@ -278,16 +266,13 @@ LIMIT 5;
 	if err != nil {
 		return nil, nil, fmt.Errorf("query sqlTop failed: %w", err)
 	}
-	defer rowsTop.Close()
-
-	topItems := []domain.FeedItem{}
-	for rowsTop.Next() {
-		item, err := scanFeedItem(rowsTop)
-		if err != nil {
-			return nil, nil, fmt.Errorf("scan top feed item failed: %w", err)
-		}
-		item.Media, _ = r.loadMedia(ctx, item.ID)
-		topItems = append(topItems, item)
+	topItems, err := scanFeedRows(rowsTop)
+	rowsTop.Close()
+	if err != nil {
+		return nil, nil, fmt.Errorf("scan top feed item failed: %w", err)
+	}
+	if err := r.attachMedia(ctx, topItems); err != nil {
+		return nil, nil, err
 	}
 
 	// 2. 获取 普通内容（最新的 15 条，且发布时间要比 refreshTime 新）
@@ -329,16 +314,13 @@ LIMIT 15;
 	if err != nil {
 		return nil, nil, fmt.Errorf("query sqlNormal failed: %w", err)
 	}
-	defer rowsNormal.Close()
-
-	normalItems := []domain.FeedItem{}
-	for rowsNormal.Next() {
-		item, err := scanFeedItem(rowsNormal)
-		if err != nil {
-			return nil, nil, fmt.Errorf("scan normal feed item failed: %w", err)
-		}
-		item.Media, _ = r.loadMedia(ctx, item.ID)
-		normalItems = append(normalItems, item)
+	normalItems, err := scanFeedRows(rowsNormal)
+	rowsNormal.Close()
+	if err != nil {
+		return nil, nil, fmt.Errorf("scan normal feed item failed: %w", err)
+	}
+	if err := r.attachMedia(ctx, normalItems); err != nil {
+		return nil, nil, err
 	}
 
 	return topItems, normalItems, nil
@@ -385,17 +367,13 @@ LIMIT $%d`, len(args)+1)
 	if err != nil {
 		return nil, nil, 0, err
 	}
-	defer rows.Close()
-
-	items := []domain.FeedItem{}
-	for rows.Next() {
-		item, err := scanFeedItem(rows)
-		if err != nil {
-			return nil, nil, 0, err
-		}
-
-		item.Media, _ = r.loadMedia(ctx, item.ID)
-		items = append(items, item)
+	items, err := scanFeedRows(rows)
+	rows.Close()
+	if err != nil {
+		return nil, nil, 0, err
+	}
+	if err := r.attachMedia(ctx, items); err != nil {
+		return nil, nil, 0, err
 	}
 
 	var nextCursor *int64
@@ -451,6 +429,8 @@ func sceneFilterClause(scene string, startIndex int) (string, []any, error) {
 		return "", nil, nil
 	case "video":
 		return fmt.Sprintf("\n  AND f.content_type = $%d", startIndex), []any{"video"}, nil
+	case "image":
+		return fmt.Sprintf("\n  AND f.content_type = $%d", startIndex), []any{"image"}, nil
 	case "shenzhen":
 		return fmt.Sprintf("\n  AND f.city = $%d", startIndex), []any{"深圳"}, nil
 	case "tech":
@@ -459,6 +439,14 @@ func sceneFilterClause(scene string, startIndex int) (string, []any, error) {
 		return fmt.Sprintf("\n  AND f.category = $%d", startIndex), []any{"体育"}, nil
 	case "finance":
 		return fmt.Sprintf("\n  AND f.category = $%d", startIndex), []any{"财经"}, nil
+	case "following":
+		return fmt.Sprintf("\n  AND f.category = $%d", startIndex), []any{"关注"}, nil
+	case "hot":
+		return fmt.Sprintf("\n  AND f.category = $%d", startIndex), []any{"热榜"}, nil
+	case "featured":
+		return fmt.Sprintf("\n  AND f.category = $%d", startIndex), []any{"精选"}, nil
+	case "war":
+		return fmt.Sprintf("\n  AND f.category = $%d", startIndex), []any{"抗战"}, nil
 	default:
 		return "", nil, fmt.Errorf("unsupported scene: %s", scene)
 	}
@@ -466,7 +454,7 @@ func sceneFilterClause(scene string, startIndex int) (string, []any, error) {
 
 func normalizeScene(scene string) string {
 	switch scene {
-	case "video", "shenzhen", "tech", "sports", "finance":
+	case "following", "hot", "video", "shenzhen", "featured", "image", "war", "tech", "sports", "finance":
 		return scene
 	default:
 		return "recommend"
@@ -545,9 +533,33 @@ ORDER BY id ASC;
 	if err := rows.Err(); err != nil {
 		return nil, err
 	}
-	fmt.Printf("NewsID %d: successfully loaded %d media items.\n", newsID, len(result))
-
 	return result, nil
+}
+
+func (r *FeedItemRepositoryPG) attachMedia(ctx context.Context, items []domain.FeedItem) error {
+	for i := range items {
+		media, err := r.loadMedia(ctx, items[i].ID)
+		if err != nil {
+			return fmt.Errorf("load media for news %d: %w", items[i].ID, err)
+		}
+		items[i].Media = media
+	}
+	return nil
+}
+
+func scanFeedRows(rows *sql.Rows) ([]domain.FeedItem, error) {
+	items := []domain.FeedItem{}
+	for rows.Next() {
+		item, err := scanFeedItem(rows)
+		if err != nil {
+			return nil, err
+		}
+		items = append(items, item)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 //////////////////////////////////////////

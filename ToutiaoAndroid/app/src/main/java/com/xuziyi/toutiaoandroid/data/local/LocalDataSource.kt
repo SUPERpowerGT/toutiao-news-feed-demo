@@ -7,6 +7,7 @@ import com.xuziyi.toutiaoandroid.data.local.entity.AuthorEntity
 import com.xuziyi.toutiaoandroid.data.local.entity.StatsEntity
 import com.xuziyi.toutiaoandroid.data.local.mapper.FeedLocalMapper
 import com.xuziyi.toutiaoandroid.domain.model.FeedItem
+import com.xuziyi.toutiaoandroid.domain.model.FeedData
 
 class LocalDataSource(
     private val feedItemDao: FeedItemDao,
@@ -23,6 +24,34 @@ class LocalDataSource(
             val stats = statsDao.getStatsById(item.statsId)
             FeedLocalMapper.toDomain(item, author, stats)
         }
+    }
+
+    suspend fun getFeed(scene: String): FeedData {
+        val filtered = getAllFeedItems().filter { item ->
+            when (scene) {
+                "following" -> item.category == "关注"
+                "hot" -> item.category == "热榜"
+                "video" -> item.contentType.value == "video"
+                "shenzhen" -> item.city == "深圳"
+                "featured" -> item.category == "精选"
+                "image" -> item.contentType.value == "image"
+                "war" -> item.category == "抗战"
+                "sports" -> item.category == "体育"
+                "finance" -> item.category == "财经"
+                "tech" -> item.category == "科技"
+                else -> true
+            }
+        }
+        val topItems = if (scene == "recommend") filtered.filter { it.isTopOfficial }.take(5) else emptyList()
+        val normalItems = filtered.filterNot { it.id in topItems.map(FeedItem::id).toSet() }
+        return FeedData(
+            scene = scene,
+            topItems = topItems,
+            items = normalItems,
+            nextCursor = null,
+            hasMore = false,
+            latestPublishTime = filtered.maxOfOrNull(FeedItem::publishTime)
+        )
     }
 
     //2. 写入（网络成功后同步本地缓存）

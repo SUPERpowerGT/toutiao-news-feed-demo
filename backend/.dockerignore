@@ -1,0 +1,6 @@
+.git
+.github
+coverage.out
+server
+*_test.go
+*.log

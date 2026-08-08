@@ -27,6 +27,8 @@ data class FeedItemEntity(
     // ===== 内容类型（用于卡片渲染决策）=====
     val contentType: String,     // FeedContentType.value
     val weight: Float,
+    val recommendScore: Float,
+    val reason: String?,
 
     // ===== 外键引用 =====
     val authorId: Long,          // FK → authors.id

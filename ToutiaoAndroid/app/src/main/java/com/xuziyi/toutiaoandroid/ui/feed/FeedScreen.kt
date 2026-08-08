@@ -54,14 +54,14 @@ fun FeedScreen(
 
     val tabs = remember {
         listOf(
-            FeedTabItem(1L, title = "关注"),
+            FeedTabItem(1L, sceneKey = "following", title = "关注"),
             FeedTabItem(2L, sceneKey = "recommend", title = "推荐"),
-            FeedTabItem(3L, title = "热榜"),
+            FeedTabItem(3L, sceneKey = "hot", title = "热榜"),
             FeedTabItem(4L, sceneKey = "shenzhen", title = "深圳"),
             FeedTabItem(5L, sceneKey = "video", title = "视频"),
-            FeedTabItem(6L, title = "精选"),
-            FeedTabItem(7L, title = "图片"),
-            FeedTabItem(8L, title = "抗战"),
+            FeedTabItem(6L, sceneKey = "featured", title = "精选"),
+            FeedTabItem(7L, sceneKey = "image", title = "图片"),
+            FeedTabItem(8L, sceneKey = "war", title = "抗战"),
             FeedTabItem(9L, sceneKey = "sports", title = "体育"),
             FeedTabItem(10L, sceneKey = "finance", title = "财经"),
             FeedTabItem(11L, sceneKey = "tech", title = "科技")

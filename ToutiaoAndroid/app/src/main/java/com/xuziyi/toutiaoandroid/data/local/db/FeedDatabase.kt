@@ -11,7 +11,7 @@ import com.xuziyi.toutiaoandroid.data.local.entity.*
         AuthorEntity::class,
         StatsEntity::class
     ],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 @TypeConverters(Converters::class)

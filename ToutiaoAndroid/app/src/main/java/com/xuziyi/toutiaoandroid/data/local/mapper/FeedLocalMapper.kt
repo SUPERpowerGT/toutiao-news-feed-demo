@@ -50,7 +50,9 @@ object FeedLocalMapper {
             source = item.source,
 
             contentType = FeedContentType(item.contentType),
-            weight = item.weight
+            weight = item.weight,
+            recommendScore = item.recommendScore,
+            reason = item.reason
         )
     }
 
@@ -82,6 +84,8 @@ object FeedLocalMapper {
 
             contentType = item.contentType.value,
             weight = item.weight,
+            recommendScore = item.recommendScore,
+            reason = item.reason,
 
             authorId = authorId,
             statsId = statsId,

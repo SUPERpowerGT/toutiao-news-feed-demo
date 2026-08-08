@@ -114,7 +114,7 @@ type FeedResponse struct {
 
 func normalizeScene(scene string) string {
 	switch scene {
-	case "video", "shenzhen", "tech", "sports", "finance":
+	case "following", "hot", "video", "shenzhen", "featured", "image", "war", "tech", "sports", "finance":
 		return scene
 	default:
 		return "recommend"
@@ -149,8 +149,18 @@ func buildRecommendationReason(scene string, item domain.FeedItem) string {
 		return "视频内容优先展示"
 	case scene == "video":
 		return "视频频道精选"
+	case scene == "following":
+		return "来自你的关注"
+	case scene == "hot":
+		return "全站热榜内容"
 	case scene == "shenzhen":
 		return "深圳本地热点"
+	case scene == "featured":
+		return "编辑精选内容"
+	case scene == "image":
+		return "高清图片内容"
+	case scene == "war":
+		return "抗战历史专题"
 	case scene == "tech":
 		return "科技频道精选"
 	case scene == "sports":
@@ -199,6 +209,10 @@ func calculateRecommendationScore(scene string, item domain.FeedItem) float64 {
 		if strings.EqualFold(item.ContentType, "video") {
 			sceneBoost = 0.10
 		}
+	case "image":
+		if strings.EqualFold(item.ContentType, "image") {
+			sceneBoost = 0.10
+		}
 	case "shenzhen":
 		if item.City == "深圳" {
 			sceneBoost = 0.10
@@ -215,10 +229,29 @@ func calculateRecommendationScore(scene string, item domain.FeedItem) float64 {
 		if item.Category == "财经" {
 			sceneBoost = 0.10
 		}
+	case "following", "hot", "featured", "war":
+		if item.Category == sceneCategory(scene) {
+			sceneBoost = 0.10
+		}
 	}
 
 	score := weightScore*0.40 + freshnessScore*0.30 + engagementScore*0.20 + officialBoost + sceneBoost
 	return roundTo(score, 3)
+}
+
+func sceneCategory(scene string) string {
+	switch scene {
+	case "following":
+		return "关注"
+	case "hot":
+		return "热榜"
+	case "featured":
+		return "精选"
+	case "war":
+		return "抗战"
+	default:
+		return ""
+	}
 }
 
 func clampFloat64(v, min, max float64) float64 {

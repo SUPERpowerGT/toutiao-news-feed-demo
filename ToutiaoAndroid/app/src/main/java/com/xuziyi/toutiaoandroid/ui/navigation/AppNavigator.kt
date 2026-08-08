@@ -18,6 +18,9 @@ import com.xuziyi.toutiaoandroid.ui.splash.SplashScreen
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import com.xuziyi.toutiaoandroid.ui.detail.NewsDetailScreen
+import com.xuziyi.toutiaoandroid.ui.detail.NewsDetailViewModel
+import com.xuziyi.toutiaoandroid.ui.detail.NewsDetailViewModelFactory
+import com.xuziyi.toutiaoandroid.data.remote.RetrofitClient
 
 
 /**
@@ -108,8 +111,16 @@ fun AppNavigator() {
                     type = NavType.LongType
                 }
             )
-        ) {
-            NewsDetailScreen()
+        ) { backStackEntry ->
+            val newsId = backStackEntry.arguments?.getLong("newsId") ?: return@composable
+            val detailViewModel: NewsDetailViewModel = viewModel(
+                key = "news-detail-$newsId",
+                factory = NewsDetailViewModelFactory(newsId, RetrofitClient.feedApi)
+            )
+            NewsDetailScreen(
+                viewModel = detailViewModel,
+                onBack = navController::navigateUp
+            )
         }
 
     }

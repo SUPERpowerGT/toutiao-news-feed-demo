@@ -1,0 +1,103 @@
+name: Integration, Load and DAST
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  integration-and-load:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Start full stack
+        run: docker compose -f docker-compose.prod.yml up --build --detach
+
+      - name: Wait for backend health
+        run: |
+          for attempt in {1..30}; do
+            if curl --fail --silent http://127.0.0.1:8080/health; then
+              exit 0
+            fi
+            sleep 2
+          done
+          docker compose -f docker-compose.prod.yml logs
+          exit 1
+
+      - name: Install load-test tool
+        run: sudo apt-get update && sudo apt-get install --yes apache2-utils
+
+      - name: Run API integration tests
+        run: |
+          mkdir -p test-results
+          ./scripts/run_integration_tests.sh 5 2>&1 | tee test-results/integration-test.log
+
+      - name: Run API load test
+        run: ./scripts/run_stress_tests.sh 500 25 2>&1 | tee test-results/load-test.log
+
+      - name: Upload integration and load results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: integration-load-test-results
+          path: test-results/
+
+      - name: Show service logs on failure
+        if: failure()
+        run: docker compose -f docker-compose.prod.yml logs
+
+      - name: Stop full stack
+        if: always()
+        run: docker compose -f docker-compose.prod.yml down --volumes
+
+  dast:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Start full stack
+        run: docker compose -f docker-compose.prod.yml up --build --detach
+
+      - name: Wait for backend health
+        run: |
+          for attempt in {1..30}; do
+            if curl --fail --silent http://127.0.0.1:8080/health; then
+              curl --fail --silent http://127.0.0.1:8080/seed
+              exit 0
+            fi
+            sleep 2
+          done
+          docker compose -f docker-compose.prod.yml logs
+          exit 1
+
+      - name: Run OWASP ZAP baseline scan
+        uses: zaproxy/action-baseline@v0.14.0
+        with:
+          target: http://127.0.0.1:8080/api/v1/feed?scene=recommend&limit=15
+          fail_action: true
+          allow_issue_writing: false
+          artifact_name: zap-dast-report
+
+      - name: Show service logs on failure
+        if: failure()
+        run: docker compose -f docker-compose.prod.yml logs
+
+      - name: Stop full stack
+        if: always()
+        run: docker compose -f docker-compose.prod.yml down --volumes

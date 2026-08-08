@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"path/filepath"
@@ -37,6 +38,7 @@ func main() {
 	feedRepo := infrastructure.NewFeedItemRepositoryPG(db)
 	feedService := application.NewFeedService(feedRepo)
 	feedHandler := api.NewFeedHandler(feedService)
+	newsDetailHandler := api.NewNewsDetailHandler(db)
 
 	// ---------- 路由 ----------
 	mux := http.NewServeMux()
@@ -72,7 +74,17 @@ func main() {
 		w.Write([]byte("append seed ok"))
 	})
 
+	mux.HandleFunc("/seed/channels", func(w http.ResponseWriter, r *http.Request) {
+		added, err := seed.AppendChannelMinimums(db, 20)
+		if err != nil {
+			http.Error(w, "channel seed error: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+		fmt.Fprintf(w, "channel seed ok: added %d", added)
+	})
+
 	feedHandler.RegisterRoutes(mux)
+	newsDetailHandler.RegisterRoutes(mux)
 
 	// ---------- 中间件 ----------
 	var h http.Handler = mux

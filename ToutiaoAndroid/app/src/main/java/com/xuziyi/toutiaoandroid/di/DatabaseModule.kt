@@ -15,7 +15,7 @@ object DatabaseModule {
             context,
             AppDatabase::class.java,
             "feed_cache.db"
-        ).build()
+        ).fallbackToDestructiveMigration().build()
 
     fun provideLocalDataSource(db: AppDatabase): LocalDataSource =
         LocalDataSource(

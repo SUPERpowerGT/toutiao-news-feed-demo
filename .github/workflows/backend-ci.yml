@@ -1,0 +1,62 @@
+name: Backend CI
+
+on:
+  push:
+    branches:
+      - main
+      - master
+      - "feature/*"
+  pull_request:
+    branches:
+      - main
+      - master
+
+permissions:
+  contents: read
+
+jobs:
+  backend-test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: backend/go.mod
+          cache-dependency-path: backend/go.sum
+
+      - name: Verify formatting
+        run: test -z "$(gofmt -l .)"
+
+      - name: Vet
+        run: go vet ./...
+
+      - name: Test with race detector and coverage
+        run: go test -race -coverprofile=coverage.out -covermode=atomic ./...
+
+      - name: Build backend
+        run: go build -trimpath -o server .
+
+      - name: Upload backend and coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-ci-artifacts
+          path: |
+            backend/server
+            backend/coverage.out
+
+  container-build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build backend image
+        run: docker build --tag toutiao-backend:ci backend

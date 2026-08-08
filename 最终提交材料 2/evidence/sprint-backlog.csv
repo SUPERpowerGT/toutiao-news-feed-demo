@@ -1,0 +1,25 @@
+Sprint,Timeline,Backlog Item,Category,Priority,Status,Evidence
+Sprint 0,03/23-04/05,Initialize Android Compose project,Android,P0,Done,ToutiaoAndroid/
+Sprint 0,03/23-04/05,Initialize Go backend service,Backend,P0,Done,backend/main.go
+Sprint 0,03/23-04/05,Create PostgreSQL schema and Docker Compose setup,Database/DevOps,P0,Done,docker-compose.dev.yml;docker/db/init/01-schema.sql
+Sprint 0,03/23-04/05,Create project README and startup guide,Documentation,P1,Done,README.md;README_CN.md
+Sprint 1,04/06-04/27,Implement feed API endpoint,Backend,P0,Done,backend/api/feed_handler.go
+Sprint 1,04/06-04/27,Implement feed DTO and API response structure,Backend/API,P0,Done,backend/domain/;ToutiaoAndroid/data/remote/dto/
+Sprint 1,04/06-04/27,Implement Compose feed list and multi-card rendering,Android,P0,Done,ToutiaoAndroid/app/src/main/java/com/xuziyi/toutiaoandroid/ui/feed/
+Sprint 1,04/06-04/27,Implement cursor pagination,Backend/Android,P0,Done,backend/domain/cursor.go;LoadMoreFeedUseCase.kt
+Sprint 2,04/28-05/25,Implement pull-to-refresh gesture and state logic,Android,P0,Done,ToutiaoPullRefresh.kt;RefreshStateLogic.kt
+Sprint 2,04/28-05/25,Implement Room local cache and cache-first flow,Android,P0,Done,data/local/;FeedRepository.kt
+Sprint 2,04/28-05/25,Implement skeleton loading state,Android,P1,Done,ui/feed/skeleton/
+Sprint 2,04/28-05/25,Implement weak-network fallback behavior,Android,P1,Done,docs/11-DevelopmentLog.md
+Sprint 3,05/26-06/29,Refine client Clean Architecture layering,Architecture,P0,Done,docs/07-ClientArchitectureDesign.md
+Sprint 3,05/26-06/29,Refine Go backend layered architecture,Architecture,P0,Done,docs/08-BackendArchitectureDesign.md
+Sprint 3,05/26-06/29,Separate DTO Domain Entity mapping,Architecture,P0,Done,data/remote/mapper/;data/local/mapper/
+Sprint 3,05/26-06/29,Optimize refresh and pagination state boundaries,Android,P1,Done,FeedViewModel.kt;RefreshFeedUseCase.kt;LoadMoreFeedUseCase.kt
+Sprint 4,06/30-07/27,Write system architecture documentation,Documentation,P0,Done,docs/04-SystemArchitectureDesign.md
+Sprint 4,06/30-07/27,Write database and API documentation,Documentation,P0,Done,docs/05-DatabaseDesign.md;docs/06-APIInterfaceDesign.md
+Sprint 4,06/30-07/27,Write use case and function design documentation,Documentation,P0,Done,docs/03-UseCaseAnalysis&UseCaseDiagram.md;docs/09-CoreFunctionDescription.md
+Sprint 4,06/30-07/27,Collect development logs and screenshots,Documentation,P1,Done,docs/11-DevelopmentLog.md;docs/*.assets/
+Sprint 5,07/28-08/20,Add Android GitHub Actions baseline CI,DevOps,P0,Done,.github/workflows/android-ci.yml
+Sprint 5,07/28-08/20,Prepare Docker full-stack startup path,DevOps,P0,Done,docker-compose.prod.yml;backend/Dockerfile
+Sprint 5,07/28-08/20,Prepare assessment evidence gap analysis,Documentation,P1,Done,docs/14-AssessmentEvidenceGapAnalysis.md
+Sprint 5,07/28-08/20,Prepare final report and presentation mapping,Documentation,P1,Done,docs/12-FinalSummary.md

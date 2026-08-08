@@ -45,6 +45,19 @@ jobs:
       - name: Run Unit Tests
         run: ./gradlew testDebugUnitTest --stacktrace
 
+      - name: Run Android lint
+        run: ./gradlew lintDebug
+
+      - name: Upload unit-test and lint reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: android-quality-reports
+          path: |
+            ToutiaoAndroid/app/build/reports/tests/testDebugUnitTest/
+            ToutiaoAndroid/app/build/reports/lint-results-debug.html
+            ToutiaoAndroid/app/build/reports/lint-results-debug.xml
+
       - name: Build Debug APK
         run: ./gradlew assembleDebug
 
