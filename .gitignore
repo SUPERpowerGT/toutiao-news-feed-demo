@@ -48,6 +48,7 @@ backend/vendor/
 docker/db/data/
 docker/logs/
 docker/data/
+/toutiao-backend-image.tar.gz
 
 ##############################
 # Node / Frontend (future)
@@ -84,4 +85,3 @@ ToutiaoAndroid/build/
 # VS Code Counter (local only)
 ##############################
 .VSCodeCounter/
-

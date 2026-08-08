@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900">
+  <rect width="1600" height="900" fill="#0d1117"/>
+  <rect x="0" y="0" width="1600" height="56" fill="#161b22"/>
+  <circle cx="28" cy="28" r="8" fill="#ff5f56"/><circle cx="54" cy="28" r="8" fill="#ffbd2e"/><circle cx="80" cy="28" r="8" fill="#27c93f"/>
+  <text x="112" y="36" font-family="Menlo, monospace" font-size="20" fill="#c9d1d9">Backend Image Build and Save Evidence - 2026-08-08</text>
+  <g font-family="Menlo, monospace" font-size="18" fill="#c9d1d9">
+    <text x="42" y="110" fill="#58a6ff">$ docker image inspect toutiao-news-feed-demo-backend:latest --format ...</text>
+    <text x="42" y="150">id=sha256:d296be039cd577b3e4a57db4c7749684b5820e112ac82b1facdfc8a4eebbe15a</text>
+    <text x="42" y="188">size=7907066 bytes</text>
+    <text x="42" y="226">user=app</text>
+    <text x="42" y="264">healthcheck=["CMD-SHELL","wget -qO- http://127.0.0.1:8080/health &gt;/dev/null || exit 1"]</text>
+
+    <text x="42" y="334" fill="#58a6ff">$ docker save toutiao-news-feed-demo-backend:latest | gzip -c &gt; toutiao-backend-image.tar.gz</text>
+    <text x="42" y="388" fill="#58a6ff">$ gzip -t toutiao-backend-image.tar.gz &amp;&amp; ls -lh toutiao-backend-image.tar.gz</text>
+    <text x="42" y="428" fill="#3fb950">-rw-r--r--  1 zee  staff  7.5M  Aug 8 13:39  toutiao-backend-image.tar.gz</text>
+
+    <text x="42" y="498" fill="#58a6ff">$ shasum -a 256 toutiao-backend-image.tar.gz</text>
+    <text x="42" y="538" fill="#3fb950">356a7d553eb68b1356f5c718d9113baedd002d3057040f361aa21f2889e2df4f</text>
+    <text x="42" y="576">toutiao-backend-image.tar.gz</text>
+
+    <text x="42" y="658" fill="#8b949e">The local archive is excluded from Git because it is generated binary output.</text>
+    <text x="42" y="696" fill="#8b949e">Backend CI now repeats docker save, records SHA-256, and uploads both files as</text>
+    <text x="42" y="734" fill="#8b949e">the short-retention backend-container-image artifact.</text>
+
+    <rect x="42" y="784" width="1516" height="70" rx="8" fill="#13233a" stroke="#1f6feb"/>
+    <text x="66" y="828" fill="#79c0ff">Control outcome: built image + saved archive + digest + CI artifact traceability</text>
+  </g>
+</svg>

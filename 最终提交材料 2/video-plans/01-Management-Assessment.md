@@ -29,6 +29,8 @@ Sprint Review outcomes, retrospective actions, roadmap decisions, scope changes,
 - [x] Retrospective improvement actions linked to closure commits or verification.
 - [x] Git commit evidence linked to each claimed iteration.
 - [x] Client/sponsor status documented transparently: formal acceptance is unavailable.
+- [x] Sprint completion summary shows 24 of 24 items complete and every Sprint goal achieved.
+- [x] Client/sponsor management and sole-developer team management have explicit mitigations.
 
 ## Suggested Timeline
 
@@ -36,22 +38,29 @@ Sprint Review outcomes, retrospective actions, roadmap decisions, scope changes,
 |---|---|---|
 | 0:00-0:30 | Problem, users, project objective | Title, problem statement, success criteria |
 | 0:30-1:00 | Scope and Journey Map | In/out-of-scope table and Journey Map |
-| 1:00-1:40 | Roadmap and Product Backlog | Release roadmap and prioritized backlog |
-| 1:40-2:30 | Sprint execution | Sprint goals, selected stories, milestones |
-| 2:30-3:20 | Tracking and effort | Burndown, actual effort, commit/issue links |
-| 3:20-4:10 | Review and retrospective | Feedback, incomplete items, improvement actions |
-| 4:10-4:40 | Risks and mitigations | Risk register with owner and status |
-| 4:40-5:00 | Outcome and acceptance | Delivered scope and sponsor status |
+| 1:00-1:40 | Product and Sprint backlogs | Release stories, Sprint tasks, completion counts |
+| 1:40-2:35 | Scrum conduct and tracking | Sprint goals, Git/GitHub traceability, burndown |
+| 2:35-3:15 | Project effort | Sole member, man-days, planned versus actual hours |
+| 3:15-4:20 | Management issues | Client/sponsor and sole-developer team management |
+| 4:20-5:00 | Improvement, final evidence, acceptance | Remediation loop, final CI, sponsor status |
 
 ## Exact Recording Runbook and Oral Script
 
 ### Prepare These Screens
 
-Open PDF page 33, final report Sections 1.1-1.9, `../evidence/management-product-backlog.csv`, `../evidence/git-backed-iteration-log.csv`, `../evidence/effort-tracking.csv`, `../assets/E02-burndown-chart.png`, and `../evidence/management-assessment-evidence.md`. Also prepare this command in a terminal:
+Open PDF page 33, final report Sections 1.1-1.11, `../evidence/management-product-backlog.csv`, `../evidence/sprint-backlog.csv`, `../evidence/git-backed-iteration-log.csv`, `../evidence/effort-tracking.csv`, `../assets/E02-burndown-chart.png`, and `../evidence/management-assessment-evidence.md`. Also prepare this command in a terminal:
 
 ```bash
 git log --date=short --pretty=format:'%h  %ad  %an  %s' --reverse
 ```
+
+Prepare these CI images in this order for the final minute:
+
+1. `../assets/E24-trivy-remediation-before.png` - historical security-gate failure.
+2. `../assets/E21-container-security-final-success.png` - successful rescan with two retained artifacts.
+3. `../assets/E18-github-actions-final-overview.png` - final five-workflow acceptance view.
+
+The red E24 image must be introduced as an earlier finding that triggered remediation. Do not leave it on screen at the end; finish on the green E18 overview.
 
 ### Exact Five-Minute English Script
 
@@ -59,26 +68,27 @@ git log --date=short --pretty=format:'%h  %ad  %an  %s' --reverse
 |---|---|---|
 | 0:00-0:35 | PDF rubric, then report Sections 1.1 and 1.4 | "This Management Assessment follows the five areas on page thirty-three of the project rubric. The project addresses the gap between a static mobile list and a resilient news-feed experience. Its goal is to deliver a working Android, Go, and PostgreSQL path with refresh, pagination, multiple card types, explainable channels, and offline availability. The expected benefit is faster content discovery together with an implementation that can be tested, maintained, and demonstrated end to end." |
 | 0:35-1:10 | In-scope/out-of-scope table and Project Journey Map | "Scope was controlled around the recommendation-feed journey: define the problem and architecture, establish the Android and backend foundation, integrate the feed, add refresh, pagination, and cache, then verify and prepare delivery. Authentication, search, social interaction, production machine learning, advanced streaming, and formal go-live were kept outside the delivered scope. This boundary prevented the finalisation stage from turning future ideas into unsupported completion claims." |
-| 1:10-1:50 | `management-product-backlog.csv` | "The Product Backlog contains thirteen traceable stories or use cases. P zero identifies core delivery and verification, P one covers user-experience and explainability enhancements, and P two identifies deferred scope. Each item has a status, acceptance criterion, and repository path. Core feed, cards, refresh, pagination, Room fallback, channels, detail, basic video, Docker, tests, recommendation reasons, and final CI security evidence are complete. The final workflows retained backend, coverage, integration, load, Trivy, and ZAP artifacts. Authentication and social features remain explicitly deferred." |
-| 1:50-2:45 | `git-backed-iteration-log.csv`, then terminal `git log` | "The project was conducted in Scrum-oriented increments, with Git and GitHub used as the tracking and audit tool rather than Jira. Five completed iterations are supported by real dates and commit SHAs. The first established the repository and Android baseline. The second delivered the initial end-to-end multi-card feed. The third added refresh, load more, Room data, skeleton and error states, unit tests, and Android CI. The fourth refined navigation, architecture, dependencies, and tests. The fifth added repeatable demo tooling, independent feed scenes, and recommendation signals. The current finalisation work is still uncommitted, so it is not presented as a completed Git iteration. Review outcomes and retrospective actions were reconstructed from the repository on August eighth and are labelled as reconstruction, not as original meeting minutes." |
-| 2:45-3:20 | E02 burndown, with its disclosure visible | "The burndown shows the planned and reconstructed decline in remaining backlog items across the assessment Sprint model. It is useful for explaining delivery trend, but it is not a live Jira export and I do not present it as one. The stronger execution evidence is the linked commit history, where goals can be connected to delivered source changes. Remaining work is visible rather than hidden, especially final CI artifacts and submission recording." |
-| 3:20-4:00 | `effort-tracking.csv` | "This was a one-person project, and I was the sole developer across Android, backend, database, testing, DevSecOps, and documentation. The delivery period was March twenty-third to August fourteenth. At an average intensity of twenty working days per month over approximately five months, planned effort was about one hundred man-days, or eight hundred hours. My retrospective actual-effort estimate is also approximately one hundred man-days, or eight hundred hours. This is an honest retrospective estimate rather than a daily timesheet. The Git identities SUPERpowerGT, Zee, and Xu Ziyi all belong to this solo project and must not be counted as three members." |
-| 4:00-4:38 | Review/retrospective table | "The reconstructed reviews still show a clear improvement loop. Incomplete feed interaction led to separate refresh and pagination increments. Reliability concerns led to Room fallback, skeleton loading, and explicit error states. Architecture concerns led to repository, use-case, and ViewModel boundaries plus tests. Finally, a database connection-pool failure led to corrected query lifecycle management. The repeated stress test then completed five hundred requests at concurrency twenty-five with zero failures." |
-| 4:38-4:55 | Management risk table | "Key risks were concurrency defects, weak-network failure, database pool exhaustion, uncontrolled scope, and CI evidence not matching final code. Mitigations were linked to implementation. Final CI then retained tests, load results, Trivy reports, and ZAP evidence, closing the delivery risk." |
+| 1:10-1:45 | `management-product-backlog.csv` | "The Product Backlog records twelve stories committed to this release. They cover the feed, card types, refresh, pagination, Room fallback, channels, detail, basic video, Docker, automated tests, CI security, and recommendation reasons. Every committed story has an acceptance criterion, repository evidence, and Done status. Authentication, search, and social interaction are shown separately as PB thirteen, a future epic outside this release. It was never accepted into a Sprint, so it is not presented as an incomplete committed story." |
+| 1:45-2:30 | Sprint Completion Summary and `sprint-backlog.csv` | "The work was organised through six reconstructed Sprints across the March twenty-third to August fourteenth assessment period. Each Sprint had four backlog items and an explicit goal. The completion summary shows twenty-four of twenty-four Sprint items complete and all six goals achieved. Git and GitHub were the tracking and audit tools rather than Jira. The Sprint schedule is a reconstructed management view, while the separate Git-backed iteration log preserves actual repository dates and commit SHAs. I do not present these records as original Jira exports or meeting minutes." |
+| 2:30-3:05 | `git-backed-iteration-log.csv`, terminal `git log`, then E02 | "The Git-backed log traces the foundation, end-to-end feed, interaction and cache work, architecture refinement, repeatable multi-channel demonstration, and final DevSecOps closure. The linked commits make each outcome auditable. The burndown is also explicitly labelled as reconstructed from backlog and delivery evidence. It shows remaining Sprint work declining to zero, but it is not described as live daily tracking." |
+| 3:05-3:40 | `effort-tracking.csv` | "This was a one-person project. I was the sole developer for Android, backend, database, testing, DevSecOps, and documentation. At approximately twenty working days per month for five months, planned effort was one hundred man-days, or eight hundred hours. My retrospective actual estimate is also approximately one hundred man-days and eight hundred hours. This is not a daily timesheet. SUPERpowerGT, Zee, and Xu Ziyi are three Git identities for the same person, not three members." |
+| 3:40-4:20 | Report Section 1.11 and Team Management table | "Client and sponsor management focused on scope alignment, visible acceptance criteria, progress evidence, and transparent status. Formal sponsor approval is unavailable, so technical verification is not presented as sponsor sign-off. Team management for a sole developer focused on controlling role switching and review risk. Sprint goals and P zero, P one, and future-scope priorities limited concurrent work. Automated tests, Git history, CodeQL, Trivy, and ZAP provided independent quality gates where a second developer review was unavailable." |
+| 4:20-4:45 | Review table, then E24 and E21 | "The review loop produced measurable mitigation. Refresh concerns led to isolated state flows, network failure led to Room fallback, and database pool exhaustion led to corrected query lifecycle management and a repeated load test with zero failures. Trivy then blocked real dependency findings; dependencies and the container base were upgraded, and both security scans passed on rescan." |
+| 4:45-4:55 | E18 final GitHub Actions overview | "The final evidence commit shows all five project workflows green, tying the management closure to tested final code." |
 | 4:55-5:00 | Sponsor status | "Formal sponsor acceptance is unavailable, so no acceptance or go-live claim is made. Thank you." |
 
 ### Recording Controls
 
-- Keep the words `reconstructed` and `capacity baseline` visible whenever those artifacts are discussed.
+- Keep the words `reconstructed` and `retrospective estimate` visible whenever those artifacts are discussed.
 - State clearly that this was a one-person project and the three Git author names are repository identities, not three members.
-- Describe 800 hours as an approximate retrospective estimate and do not say that the report's 840-hour capacity baseline was actual effort.
+- Describe 800 hours as an approximate retrospective estimate, not a contemporaneous daily timesheet.
 - Keep the exported video at five minutes or less and record at 1920x1080 with the speaker's face clearly visible.
 
 ## Recording Notes
 
 - Use data and screenshots rather than explaining Scrum theory.
 - Clearly distinguish original records from evidence reconstructed for final traceability.
-- Do not claim 840 actual hours unless supported by real daily or weekly records.
+- State that PB-13 is a future epic outside the release, not an unfinished committed Sprint story.
 - Do not describe unfinished items as completed.
 
 ## Definition of Done

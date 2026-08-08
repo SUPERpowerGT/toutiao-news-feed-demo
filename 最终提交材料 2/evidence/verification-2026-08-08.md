@@ -1,6 +1,6 @@
 # Verification Evidence - 2026-08-08
 
-This evidence note records commands and results observed against the current local checkout. It is not a substitute for GitHub Actions artifacts; CI artifacts should be captured again after the workflows are pushed.
+This evidence note records commands and results observed against the local checkout and links them to the final GitHub Actions evidence captured after the workflows were pushed.
 
 ## Backend Unit Tests
 
@@ -15,10 +15,11 @@ Result: PASS
 
 | Package | Statement Coverage |
 |---|---:|
-| `toutiao-backend/api` | 91.4% |
-| `toutiao-backend/application` | 75.3% |
+| `toutiao-backend/api` | 54.9% |
+| `toutiao-backend/application` | 64.4% |
+| Overall Go statements | 23.2% |
 
-The race detector completed without reporting a data race.
+These figures were reproduced after the final compliance/logging changes. The race detector completed without reporting a data race. Infrastructure and executable wiring remain the principal uncovered areas, so no repository-wide high-coverage claim is made.
 
 ## Android Unit Tests
 
@@ -99,12 +100,19 @@ The production Compose configuration passed `docker compose config --quiet`. The
 - non-root `app` user
 - container health check
 
-## Remaining External Evidence
+Runtime inspection additionally confirmed:
 
-The following evidence can only be produced after pushing the workflows:
+- `toutiao-backend` and `toutiao-postgres` were healthy
+- backend runtime identity `uid=100(app) gid=101(app)`
+- private network `toutiao-news-feed-demo_toutiao_net`
+- method, route, status, and duration in container logs
+- valid 7.5 MB `docker save` archive with a recorded SHA-256 digest
 
-- Backend CI run and downloadable coverage artifact
-- Android unit-test/lint artifact
-- CodeQL SAST result
-- Trivy filesystem, secret, misconfiguration, and image scan result
-- OWASP ZAP DAST report
+## Final GitHub Evidence
+
+- Android CI and downloadable APK/quality artifacts: E19
+- Backend tests, coverage, binary, image build, and artifacts: E20
+- CodeQL Go and Java/Kotlin analysis: E23
+- Trivy filesystem, secret, misconfiguration, and image scans: E21, with E24 as the pre-remediation failure
+- OWASP ZAP DAST: E22, with E28 as the pre-remediation failure
+- Container runtime and saved-image evidence: E26 and E27

@@ -1,0 +1,74 @@
+{
+  "framework": "EU General Data Protection Regulation (GDPR)",
+  "assessment_type": "applicability and control mapping, not certification",
+  "scope": {
+    "release": "local recommendation-feed demonstration",
+    "account_data_collected": false,
+    "behavioural_profile_created": false,
+    "personalisation_from_user_activity": false,
+    "potential_personal_data": [
+      "client IP address in infrastructure access logs",
+      "future account or interaction data if those features are introduced"
+    ]
+  },
+  "controls": [
+    {
+      "id": "GDPR-ART5-MINIMISATION",
+      "reference": "GDPR Article 5(1)(c)",
+      "objective": "Collect and retain only data necessary for the demonstrated feed service.",
+      "implementation": [
+        "The current release has no login, user profile, behavioural tracking, or advertising identifier collection.",
+        "Application request logs omit client IP addresses and do not log request bodies, tokens, or credentials."
+      ],
+      "evidence": [
+        "backend/api/feed_handler.go",
+        "backend/middleware/logging.go",
+        "final report scope boundary"
+      ],
+      "status": "implemented_for_current_scope"
+    },
+    {
+      "id": "GDPR-ART25-PRIVACY-BY-DESIGN",
+      "reference": "GDPR Article 25",
+      "objective": "Keep future personalisation and account features outside the release until consent and privacy controls are designed.",
+      "implementation": [
+        "Authentication, social interaction, and behaviour-based personalisation are explicitly future scope.",
+        "Room stores feed content on the device and does not create a cross-device user profile."
+      ],
+      "evidence": [
+        "最终提交材料 2/evidence/management-product-backlog.csv",
+        "ToutiaoAndroid/app/src/main/java/com/xuziyi/toutiaoandroid/data/local"
+      ],
+      "status": "implemented_for_current_scope"
+    },
+    {
+      "id": "GDPR-ART32-SECURITY",
+      "reference": "GDPR Article 32",
+      "objective": "Apply proportionate technical controls to protect the demo service and its delivery pipeline.",
+      "implementation": [
+        "Request validation, parameterised SQL, restrictive response headers, and panic recovery protect the API boundary.",
+        "CodeQL, Trivy, OWASP ZAP, automated tests, a non-root image, and health checks act as release gates."
+      ],
+      "evidence": [
+        ".github/workflows",
+        "backend/Dockerfile",
+        "backend/middleware/security_headers.go",
+        "最终提交材料 2/evidence/ci-security-status-2026-08-08.md"
+      ],
+      "status": "implemented_for_current_scope"
+    },
+    {
+      "id": "GDPR-RETENTION-GAP",
+      "reference": "GDPR Article 5(1)(e)",
+      "objective": "Define and enforce retention before processing personal account or analytics data.",
+      "implementation": [
+        "No production personal-data retention claim is made for the current local demo.",
+        "A deployed service must define access-log retention, deletion, data-subject request, consent, and breach-response procedures."
+      ],
+      "evidence": [
+        "final report GDPR applicability assessment"
+      ],
+      "status": "required_before_public_deployment"
+    }
+  ]
+}

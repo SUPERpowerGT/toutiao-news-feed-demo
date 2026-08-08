@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900">
+  <rect width="1600" height="900" fill="#0d1117"/>
+  <rect x="0" y="0" width="1600" height="56" fill="#161b22"/>
+  <circle cx="28" cy="28" r="8" fill="#ff5f56"/><circle cx="54" cy="28" r="8" fill="#ffbd2e"/><circle cx="80" cy="28" r="8" fill="#27c93f"/>
+  <text x="112" y="36" font-family="Menlo, monospace" font-size="20" fill="#c9d1d9">Container Runtime Evidence - 2026-08-08</text>
+  <g font-family="Menlo, monospace" font-size="18" fill="#c9d1d9">
+    <text x="42" y="96" fill="#58a6ff">$ docker compose -f docker-compose.prod.yml ps</text>
+    <text x="42" y="132">NAME                 IMAGE                            SERVICE   STATUS                    PORTS</text>
+    <text x="42" y="166">toutiao-backend      toutiao-news-feed-demo-backend  backend   Up 58 minutes (healthy)   0.0.0.0:8080-&gt;8080/tcp</text>
+    <text x="42" y="200">toutiao-postgres     postgres:16                      db        Up 13 hours (healthy)      5432/tcp</text>
+
+    <text x="42" y="254" fill="#58a6ff">$ docker inspect --format ... toutiao-backend</text>
+    <text x="42" y="288">name=/toutiao-backend user=app image=toutiao-news-feed-demo-backend</text>
+    <text x="42" y="322">health=healthy network=toutiao-news-feed-demo_toutiao_net</text>
+
+    <text x="42" y="376" fill="#58a6ff">$ docker exec toutiao-backend id</text>
+    <text x="42" y="410" fill="#3fb950">uid=100(app) gid=101(app) groups=101(app)</text>
+
+    <text x="42" y="464" fill="#58a6ff">$ docker compose -f docker-compose.prod.yml logs --tail=8 backend</text>
+    <text x="42" y="498">toutiao-backend | 2026/08/08 05:33:04 GET /health [200] 282.666us</text>
+    <text x="42" y="532">toutiao-backend | 2026/08/08 05:33:34 GET /health [200] 328.958us</text>
+    <text x="42" y="566">toutiao-backend | 2026/08/08 05:34:04 GET /health [200] 393.584us</text>
+    <text x="42" y="600">toutiao-backend | 2026/08/08 05:34:34 GET /health [200] 1.066584ms</text>
+    <text x="42" y="634">toutiao-backend | 2026/08/08 05:35:04 GET /health [200] 458.291us</text>
+    <text x="42" y="668">toutiao-backend | 2026/08/08 05:35:34 GET /health [200] 3.495416ms</text>
+    <text x="42" y="702">toutiao-backend | 2026/08/08 05:36:04 GET /health [200] 196.209us</text>
+    <text x="42" y="736">toutiao-backend | 2026/08/08 05:36:35 GET /health [200] 321.167us</text>
+
+    <text x="42" y="802" fill="#8b949e">Evidence: healthy Compose services, private bridge network, non-root runtime identity,</text>
+    <text x="42" y="834" fill="#8b949e">and operational logs containing method, path, status code, and request duration.</text>
+  </g>
+</svg>

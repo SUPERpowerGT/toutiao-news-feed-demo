@@ -25,7 +25,8 @@ func (h *FeedHandler) RegisterRoutes(mux *http.ServeMux) {
 GET /api/v1/feed?cursor=xxx&refresh_time=xxx&limit=20
 */
 func (h *FeedHandler) handleFeed(w http.ResponseWriter, r *http.Request) {
-	log.Printf("API: Feed Request received from %s for URL %s", r.RemoteAddr, r.URL.String())
+	// Do not retain client IP addresses in application logs for this public feed endpoint.
+	log.Printf("API: Feed Request received for URL %s", r.URL.String())
 	if r.Method != http.MethodGet {
 		w.Header().Set("Allow", http.MethodGet)
 		writeJSON(w, http.StatusMethodNotAllowed, map[string]any{

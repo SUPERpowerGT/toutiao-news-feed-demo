@@ -2,7 +2,7 @@
 
 ## Source and Honesty Statement
 
-This pack supports `TeamXX- Management Assessment.mp4` without modifying the final report. The source rubric is page 33 of `Project Requirements SE33 v2.pdf`, which sets a maximum duration of five minutes.
+This pack supports `TeamXX- Management Assessment.mp4` and the aligned management sections of the final report. The source rubric is page 33 of `Project Requirements SE33 v2.pdf`, which sets a maximum duration of five minutes.
 
 The report's March-to-August Sprint schedule, `sprint-backlog.csv`, and `burndown.csv` are reconstructed planning and traceability artifacts. They are not presented as contemporaneous Jira exports. The Git-backed execution record in this pack uses repository dates and commit SHAs. Effort is an approximate retrospective self-declaration by the sole developer, not a contemporaneous timesheet. Formal sponsor feedback is unavailable and is not invented.
 
@@ -53,11 +53,24 @@ flowchart LR
 
 ## Product and Iteration Control
 
-The complete delivery backlog is stored in `management-product-backlog.csv`. P0 identifies required delivery and verification work, P1 identifies experience and explainability enhancements, and P2 identifies explicitly deferred scope. PB-11 remains in progress until final GitHub Actions runs and artifacts exist; PB-13 remains deferred.
+The complete delivery backlog is stored in `management-product-backlog.csv`. P0 identifies required delivery and verification work, and P1 identifies experience and explainability enhancements. PB-01 through PB-12 are the 12 stories committed to the current release and are complete. PB-13 is labelled as a future epic outside the release; it was not accepted into a Sprint and is not counted as an incomplete committed story.
 
-The verified execution sequence is stored in `git-backed-iteration-log.csv`. It contains five completed Git-backed iterations and one uncommitted finalisation stage. Each completed row gives a goal, selected work, commit SHAs, reconstructed review outcome, and a retrospective action. The word "reconstructed" must remain visible during recording.
+The verified execution sequence is stored in `git-backed-iteration-log.csv`. It contains five completed Git-backed iterations and a completed Git-backed finalisation stage. Each row gives a goal, selected work, commit SHAs, review outcome, and a retrospective action. Earlier review wording is explicitly labelled as reconstructed from Git rather than original meeting minutes.
 
-The existing burndown chart E02 is a final traceability reconstruction from backlog completion, not a historical Jira export. It can demonstrate trend, but it must not be described as live daily tracking.
+### Sprint Completion Summary
+
+| Sprint | Period | Backlog Items | Completed | Sprint Goal |
+|---|---|---:|---:|---|
+| Sprint 0 | 03/23-04/05 | 4 | 4 | Achieved |
+| Sprint 1 | 04/06-04/27 | 4 | 4 | Achieved |
+| Sprint 2 | 04/28-05/25 | 4 | 4 | Achieved |
+| Sprint 3 | 05/26-06/29 | 4 | 4 | Achieved |
+| Sprint 4 | 06/30-07/27 | 4 | 4 | Achieved |
+| Sprint 5 | 07/28-08/14 | 4 | 4 | Achieved |
+
+All 24 Sprint Backlog items are complete. The Sprint schedule is a reconstructed management view for the confirmed March 23 to August 14 assessment period; the separate Git-backed iteration log preserves the repository's actual commit dates.
+
+The existing burndown chart E02 is a final traceability reconstruction from backlog completion, not a historical Jira export. It ends at zero after all committed Sprint work was completed, but it must not be described as live daily tracking.
 
 ## Review and Retrospective Record
 
@@ -67,6 +80,7 @@ The existing burndown chart E02 is a final traceability reconstruction from back
 | Reliability review | Network failure could leave the feed unavailable | Add Room data, skeleton, and explicit error states | Commits `58457b0`, `f290eca`, and `26556e6` | Reconstructed from Git |
 | Architecture review | Feed UI and data responsibilities required clearer boundaries | Refine repository/use-case/ViewModel boundaries and add tests | Commits `06d8dc4`, `1db5c6c`, and `7cd77ef` | Reconstructed from Git |
 | Final performance review | Nested database reads exhausted the connection pool under load | Close outer rows before related-media queries and repeat the stress test | `verification-2026-08-08.md`: 500 requests, zero failures | Final verification record |
+| Security gate review | Trivy blocked real HIGH/CRITICAL dependency findings | Upgrade Go dependencies and the container base, then rescan | Commits `bb0467d`, `d16f5f8`, and final green run evidence | Final CI remediation record |
 
 ## Management Risks and Outcomes
 
@@ -75,15 +89,21 @@ The existing burndown chart E02 is a final traceability reconstruction from back
 | Refresh and pagination races | Android owner | Operation guards, request versions, and ID-based merge | Covered by ViewModel tests |
 | Weak-network blank feed | Android/data owner | Scene-filtered Room cache-first flow | Demonstrable in App Demo |
 | Database pool exhaustion | Backend owner | Close outer query rows before nested media loading | 500 requests at concurrency 25 with zero failures |
-| Scope expansion during finalisation | Project owner | P0/P1/P2 backlog and explicit deferred scope | Advanced ML, auth, and streaming remain deferred |
+| Scope expansion during finalisation | Project owner | P0/P1 release backlog and explicit future-scope boundary | Advanced ML, auth, and streaming remain outside the release |
 | CI evidence not tied to final code | Sole developer | Commit and push final code, then retain artifacts and SHA | Closed with final GitHub Actions runs and artifacts |
 | Formal sponsor acceptance unavailable | Project owner | State the limitation and use technical acceptance evidence | No sponsor acceptance claim is made |
+
+## Client/Sponsor and Team Management
+
+Client/sponsor management was handled through a visible scope baseline, acceptance criteria, progress evidence, and explicit disclosure that formal sponsor acceptance is unavailable. This prevents technical verification from being misrepresented as sponsor sign-off.
+
+For a one-person project, team management focused on role switching and independent quality controls. Sprint goals and P0/P1/future-scope priorities limited concurrent work across Android, backend, database, testing, DevSecOps, and documentation. Automated tests, CodeQL, Trivy, ZAP, repeatable scripts, and Git history reduced the risk created by having no second developer reviewer. The three Git identities are therefore consolidated under one member and one effort record.
 
 ## Effort and Team Evidence
 
 This was a one-person project completed by Xu Ziyi as the sole developer. The delivery period was 2026-03-23 to 2026-08-14. Using the developer-confirmed working intensity of approximately 20 workdays per month for about five months, planned effort is reported as approximately 100 man-days or 800 hours. Actual effort is retrospectively reported at approximately the same level: 100 man-days or 800 hours. This is an honest retrospective estimate, not a daily timesheet, and should be described that way in the recording.
 
-Git currently contains 59 commits under the author identities `SUPERpowerGT`, `Zee`, and `xu ziyi`. The developer confirmed that this is a solo project, so these identities must not be presented as three team members. Git activity provides an audit trail, while `effort-tracking.csv` provides the separate retrospective effort declaration. The 840-hour value in the final report is a calendar-based capacity baseline and is not used as actual effort in this video.
+Git contains 64 commits at final evidence commit `f397240` under the author identities `SUPERpowerGT`, `Zee`, and `xu ziyi`. The developer confirmed that this is a solo project, so these identities must not be presented as three team members. Git activity provides an audit trail, while `effort-tracking.csv` provides the separate retrospective effort declaration.
 
 ## Sponsor and Acceptance Status
 
@@ -93,11 +113,11 @@ Formal sponsor or mentor acceptance was not available at the time of evidence pr
 
 1. PDF page 33 and final report project justification.
 2. Final report scope and Project Journey Map.
-3. `management-product-backlog.csv`.
-4. `git-backed-iteration-log.csv` and a filtered `git log` view.
-5. E02 with the reconstruction disclosure.
-6. `effort-tracking.csv` and the Review/Retrospective table.
-7. Risk, CI status, and sponsor status.
+3. `management-product-backlog.csv`, showing 12 completed release stories and PB-13 outside scope.
+4. `sprint-backlog.csv` and the Sprint Completion Summary, showing 24 of 24 completed and all goals achieved.
+5. `git-backed-iteration-log.csv`, a filtered `git log` view, and E02 with the reconstruction disclosure.
+6. `effort-tracking.csv`, showing the sole member and planned versus actual effort.
+7. Client/sponsor management, sole-developer team management, remediation evidence, final CI status, and sponsor status.
 
 ## Remaining External Evidence
 

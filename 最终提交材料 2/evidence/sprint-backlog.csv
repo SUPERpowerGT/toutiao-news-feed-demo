@@ -19,7 +19,7 @@ Sprint 4,06/30-07/27,Write system architecture documentation,Documentation,P0,Do
 Sprint 4,06/30-07/27,Write database and API documentation,Documentation,P0,Done,docs/05-DatabaseDesign.md;docs/06-APIInterfaceDesign.md
 Sprint 4,06/30-07/27,Write use case and function design documentation,Documentation,P0,Done,docs/03-UseCaseAnalysis&UseCaseDiagram.md;docs/09-CoreFunctionDescription.md
 Sprint 4,06/30-07/27,Collect development logs and screenshots,Documentation,P1,Done,docs/11-DevelopmentLog.md;docs/*.assets/
-Sprint 5,07/28-08/20,Add Android GitHub Actions baseline CI,DevOps,P0,Done,.github/workflows/android-ci.yml
-Sprint 5,07/28-08/20,Prepare Docker full-stack startup path,DevOps,P0,Done,docker-compose.prod.yml;backend/Dockerfile
-Sprint 5,07/28-08/20,Prepare assessment evidence gap analysis,Documentation,P1,Done,docs/14-AssessmentEvidenceGapAnalysis.md
-Sprint 5,07/28-08/20,Prepare final report and presentation mapping,Documentation,P1,Done,docs/12-FinalSummary.md
+Sprint 5,07/28-08/14,Add Android GitHub Actions baseline CI,DevOps,P0,Done,.github/workflows/android-ci.yml
+Sprint 5,07/28-08/14,Prepare Docker full-stack startup path,DevOps,P0,Done,docker-compose.prod.yml;backend/Dockerfile
+Sprint 5,07/28-08/14,Complete final CI security and verification evidence,DevOps,P0,Done,.github/workflows/;evidence/ci-security-status-2026-08-08.md
+Sprint 5,07/28-08/14,Prepare final report and assessment recording plans,Documentation,P1,Done,最终提交材料 2/最终报告.md;最终提交材料 2/video-plans/

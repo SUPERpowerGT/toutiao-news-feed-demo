@@ -23,23 +23,21 @@ All seven videos must be placed in one ZIP file named:
 
 | No. | Required Filename | Target Duration | Planning File | Readiness |
 |---:|---|---:|---|---|
-| 1 | `TeamXX- Management Assessment.mp4` | 5 minutes | [01-Management-Assessment.md](./01-Management-Assessment.md) | Blocked until real effort and Sprint evidence are ready |
-| 2 | `TeamXX- Architectural Assessment.mp4` | 10 minutes | [02-Architectural-Assessment.md](./02-Architectural-Assessment.md) | Architecture material mostly ready |
-| 3 | `TeamXX- Technical Assessment - Software Design.mp4` | 5 minutes | [03-Software-Design-Assessment.md](./03-Software-Design-Assessment.md) | Diagrams ready; traceability matrix still required |
-| 4 | `TeamXX- Technical Assessment - DevSecOps.mp4` | 10 minutes | [04-DevSecOps-Assessment.md](./04-DevSecOps-Assessment.md) | Blocked until pushed CI/security runs produce artifacts |
-| 5 | `TeamXX- Value Added Assessment.mp4` | 5 minutes | [05-Value-Added-Assessment.md](./05-Value-Added-Assessment.md) | Performance evidence ready; sponsor acceptance still required |
+| 1 | `TeamXX- Management Assessment.mp4` | 5 minutes | [01-Management-Assessment.md](./01-Management-Assessment.md) | Evidence and exact script ready; recording pending |
+| 2 | `TeamXX- Architectural Assessment.mp4` | 10 minutes | [02-Architectural-Assessment.md](./02-Architectural-Assessment.md) | Architecture evidence and exact script ready; recording pending |
+| 3 | `TeamXX- Technical Assessment - Software Design.mp4` | 5 minutes | [03-Software-Design-Assessment.md](./03-Software-Design-Assessment.md) | Traceability evidence and exact script ready; recording pending |
+| 4 | `TeamXX- Technical Assessment - DevSecOps.mp4` | 10 minutes | [04-DevSecOps-Assessment.md](./04-DevSecOps-Assessment.md) | Evidence and exact script ready; final saved-image CI artifact verification pending |
+| 5 | `TeamXX- Value Added Assessment.mp4` | 5 minutes | [05-Value-Added-Assessment.md](./05-Value-Added-Assessment.md) | Evidence and exact script ready; unavailable sponsor acceptance disclosed |
 | 6 | `TeamXX- Presentation Assessment App Demo.mp4` | Maximum 5 minutes | [06-App-Demo.md](./06-App-Demo.md) | Requires final emulator rehearsal and backup recording |
-| 7 | `TeamXX- Presentation Assessment CICD Demo.mp4` | Maximum 5 minutes | [07-CICD-Demo.md](./07-CICD-Demo.md) | Blocked until workflows are pushed and successful |
+| 7 | `TeamXX- Presentation Assessment CICD Demo.mp4` | Maximum 5 minutes | [07-CICD-Demo.md](./07-CICD-Demo.md) | CI evidence ready; exact script and artifact-opening rehearsal still required |
 
 ## Recommended Production Order
 
-1. Prepare all missing evidence and push the final workflows.
-2. Record the App Demo while the full stack and emulator are stable.
-3. Record the CI/CD Demo from a controlled test commit.
-4. Record Software Design and Architecture using the final diagrams.
-5. Record Management after effort and Sprint evidence are verified.
-6. Record Value Added after sponsor feedback is available.
-7. Record DevSecOps last so it includes final scans, fixes, and rescans.
+1. Push and verify the final saved-image and compliance workflow changes.
+2. Record Architecture, Software Design, Management, Value Added, and DevSecOps from the prepared scripts.
+3. Rehearse and record the App Demo while the full stack and emulator are stable.
+4. Complete the CI/CD Demo script, rehearse artifact opening, and record it.
+5. Verify, rename, and package all seven videos.
 
 ## Final Package Check
 
@@ -51,4 +49,3 @@ All seven videos must be placed in one ZIP file named:
 - [ ] No credential or personal information appears.
 - [ ] Claims in videos match the final report and repository.
 - [ ] The ZIP opens successfully on another machine.
-

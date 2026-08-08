@@ -25,6 +25,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
 
+      - name: Validate GDPR control mapping
+        working-directory: ${{ github.workspace }}
+        run: ./scripts/validate_compliance.sh
+
       - name: Set up Go
         uses: actions/setup-go@v7
         with:
@@ -50,6 +54,7 @@ jobs:
           path: |
             backend/server
             backend/coverage.out
+            compliance/gdpr-controls.json
 
   container-build:
     runs-on: ubuntu-latest
@@ -60,3 +65,17 @@ jobs:
 
       - name: Build backend image
         run: docker build --tag toutiao-backend:ci backend
+
+      - name: Save backend image with digest
+        run: |
+          docker save toutiao-backend:ci | gzip --stdout > toutiao-backend-image.tar.gz
+          sha256sum toutiao-backend-image.tar.gz | tee toutiao-backend-image.sha256
+
+      - name: Upload saved backend image
+        uses: actions/upload-artifact@v7
+        with:
+          name: backend-container-image
+          path: |
+            toutiao-backend-image.tar.gz
+            toutiao-backend-image.sha256
+          retention-days: 7

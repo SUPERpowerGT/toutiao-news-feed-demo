@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
+  <rect width="1280" height="720" fill="#ffffff"/>
+  <g font-family="Arial, sans-serif" fill="#172033">
+    <text x="640" y="48" text-anchor="middle" font-size="30" font-weight="700">Sprint Burndown Chart</text>
+    <text x="640" y="76" text-anchor="middle" font-size="16">Reconstructed from project backlog and delivery artifacts for final assessment traceability</text>
+  </g>
+  <g stroke="#e4e8ef" stroke-width="1">
+    <line x1="110" y1="90" x2="1210" y2="90"/>
+    <line x1="110" y1="194" x2="1210" y2="194"/>
+    <line x1="110" y1="298" x2="1210" y2="298"/>
+    <line x1="110" y1="402" x2="1210" y2="402"/>
+    <line x1="110" y1="506" x2="1210" y2="506"/>
+    <line x1="110" y1="610" x2="1210" y2="610"/>
+  </g>
+  <g stroke="#263247" stroke-width="2">
+    <line x1="110" y1="90" x2="110" y2="610"/>
+    <line x1="110" y1="610" x2="1210" y2="610"/>
+  </g>
+  <g font-family="Arial, sans-serif" font-size="15" fill="#273248">
+    <text x="92" y="95" text-anchor="end">25</text>
+    <text x="92" y="199" text-anchor="end">20</text>
+    <text x="92" y="303" text-anchor="end">15</text>
+    <text x="92" y="407" text-anchor="end">10</text>
+    <text x="92" y="511" text-anchor="end">5</text>
+    <text x="92" y="615" text-anchor="end">0</text>
+    <text x="110" y="643" text-anchor="middle">S0</text>
+    <text x="330" y="643" text-anchor="middle">S1</text>
+    <text x="550" y="643" text-anchor="middle">S2</text>
+    <text x="770" y="643" text-anchor="middle">S3</text>
+    <text x="990" y="643" text-anchor="middle">S4</text>
+    <text x="1210" y="643" text-anchor="middle">S5</text>
+    <text x="660" y="687" text-anchor="middle" font-size="16">Sprint Timeline</text>
+    <text x="30" y="350" text-anchor="middle" font-size="16" transform="rotate(-90 30 350)">Remaining Work Items</text>
+  </g>
+  <g fill="none" stroke="#2864dc" stroke-width="4">
+    <polyline points="110,111 330,194 550,277 770,360 990,444 1210,610"/>
+  </g>
+  <g fill="#2864dc" stroke="#ffffff" stroke-width="2">
+    <circle cx="110" cy="111" r="6"/><circle cx="330" cy="194" r="6"/><circle cx="550" cy="277" r="6"/>
+    <circle cx="770" cy="360" r="6"/><circle cx="990" cy="444" r="6"/><circle cx="1210" cy="610" r="6"/>
+  </g>
+  <g fill="none" stroke="#d92727" stroke-width="4">
+    <polyline points="110,152 330,236 550,319 770,402 990,506 1210,610"/>
+  </g>
+  <g fill="#d92727" stroke="#ffffff" stroke-width="2">
+    <circle cx="110" cy="152" r="6"/><circle cx="330" cy="236" r="6"/><circle cx="550" cy="319" r="6"/>
+    <circle cx="770" cy="402" r="6"/><circle cx="990" cy="506" r="6"/><circle cx="1210" cy="610" r="6"/>
+  </g>
+  <g font-family="Arial, sans-serif" font-size="14" font-weight="700">
+    <g fill="#2864dc">
+      <text x="110" y="98" text-anchor="middle">24</text><text x="330" y="181" text-anchor="middle">20</text>
+      <text x="550" y="264" text-anchor="middle">16</text><text x="770" y="347" text-anchor="middle">12</text>
+      <text x="990" y="431" text-anchor="middle">8</text><text x="1194" y="590" text-anchor="middle">0</text>
+    </g>
+    <g fill="#d92727">
+      <text x="110" y="140" text-anchor="middle">22</text><text x="330" y="224" text-anchor="middle">18</text>
+      <text x="550" y="307" text-anchor="middle">14</text><text x="770" y="390" text-anchor="middle">10</text>
+      <text x="990" y="494" text-anchor="middle">5</text><text x="1224" y="606" text-anchor="middle">0</text>
+    </g>
+  </g>
+  <g transform="translate(920 105)">
+    <rect width="285" height="80" rx="12" fill="#f8fafc" stroke="#d5dbe5"/>
+    <line x1="24" y1="28" x2="76" y2="28" stroke="#2864dc" stroke-width="4"/>
+    <text x="90" y="34" font-family="Arial, sans-serif" font-size="16">Planned Remaining Items</text>
+    <line x1="24" y1="58" x2="76" y2="58" stroke="#d92727" stroke-width="4"/>
+    <text x="90" y="64" font-family="Arial, sans-serif" font-size="16">Actual Remaining Items</text>
+  </g>
+</svg>
