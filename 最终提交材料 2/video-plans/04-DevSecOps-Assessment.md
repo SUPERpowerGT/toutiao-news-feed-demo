@@ -41,7 +41,7 @@
 - [x] Open and capture the Android unit-test execution and APK build logs. The supplied authenticated GitHub screenshots show Android CI run `#47`, the exact command `./gradlew testDebugUnitTest --stacktrace`, a successful `Run Unit Tests` step, `BUILD SUCCESSFUL in 17s`, 38 actionable build tasks, and the successful APK upload step.
 - [x] Open and capture the backend Go test result and coverage summary. The supplied screenshot expands `Test with race detector and coverage`, shows the exact `go test -race` command, successful package results, and package coverage from 17.4% to 64.4%.
 - [x] Open and capture the ZAP HTML report contents. The supplied screenshots show ZAP 2.17.0, target `http://127.0.0.1:8080`, 0 High, 0 Medium, 2 Low, and 1 Informational alert, with complete alert details.
-- [ ] Rerun ZAP after the private-IP remediation and capture the replacement report. The supplied report is valid before-remediation evidence, not the final clean/accepted report, because it contains `Private IP Disclosure` caused by the seeded `http://10.0.2.2:8080/media/demo-video.mp4` response value.
+- [x] Rerun ZAP after the private-IP remediation and capture the replacement report in E43. Integration, Load and DAST run `31249623511` passed against commit `cabb8c0`; the downloaded report contains no `Private IP Disclosure` alert.
 - [ ] Decide and evidence the CD position. Current workflows build delivery artifacts and deploy an ephemeral Compose stack for verification, but do not automatically deploy to a persistent environment. Either show a sanitized staging/internal deployment execution or describe this accurately as continuous delivery readiness rather than production CD.
 
 ## Suggested Timeline
@@ -87,7 +87,7 @@ The supplied ZAP 2.17.0 HTML report is readable and suitable as **before-remedia
 - Low alerts: `Private IP Disclosure` and `Timestamp Disclosure - Unix`
 - Informational alert: `Non-Storable Content`
 
-`Private IP Disclosure` is a real project-controlled finding: seeded video media exposed the emulator-only address `10.0.2.2:8080` in the API response. The implementation now stores `/media/demo-video.mp4` and lets Android resolve that relative path against its configured backend base URL. Do not describe this report as zero-alert or final. Push the remediation, wait for the Integration, Load and DAST workflow to pass, download the replacement `zap-dast-report`, and verify that `Private IP Disclosure` is absent. The Unix timestamp and non-storable API response remain documented risk acceptances under `.zap/rules.tsv`.
+`Private IP Disclosure` was a real project-controlled finding: seeded video media exposed the emulator-only address `10.0.2.2:8080` in the API response. Commit `cabb8c0` changes the API value to `/media/demo-video.mp4` and lets Android resolve that relative path against its configured backend base URL. Integration, Load and DAST run `31249623511` passed, and direct inspection of its downloaded JSON, Markdown, and HTML reports confirms that `Private IP Disclosure` is absent. E43 shows the replacement report with 0 High, 0 Medium, 1 Low Unix timestamp alert, and 1 Informational non-storable-content alert. The remaining alerts are documented risk acceptances under `.zap/rules.tsv`; do not describe E43 as zero-alert.
 
 | Trivy before remediation | Trivy after remediation |
 | --- | --- |
@@ -95,7 +95,9 @@ The supplied ZAP 2.17.0 HTML report is readable and suitable as **before-remedia
 
 | ZAP before remediation | ZAP after remediation |
 | --- | --- |
-| ![ZAP failure](../assets/E28-zap-remediation-before.png) | ![ZAP success](../assets/E22-integration-load-dast-final-success.png) |
+| ![ZAP failure](../assets/E28-zap-remediation-before.png) | ![Final ZAP HTML report](../assets/E43-zap-dast-final-report.png) |
+
+![E43 - Final ZAP 2.17.0 report after private-IP remediation: 0 High, 0 Medium, 1 accepted Low, and 1 accepted Informational alert](../assets/E43-zap-dast-final-report.png)
 
 | SAST before remediation | SAST after remediation |
 | --- | --- |
@@ -111,9 +113,9 @@ The supplied ZAP 2.17.0 HTML report is readable and suitable as **before-remedia
 
 ### Prepare These Screens
 
-Open E12, E19-E34, the two supplied Android CI run `#47` detail screenshots, `evidence/verification-2026-08-08.md`, `.github/workflows/`, `backend/Dockerfile`, `docker-compose.prod.yml`, `compliance/gdpr-controls.json`, and the report's GDPR table. In GitHub, prepare SAST run `#15` for the successful Semgrep remediation job and the retained earlier final workflow runs for the other controls. Download or open at least one small report artifact before recording; do not download the full saved image during the take.
+Open E12, E19-E34, E43, the two supplied Android CI run `#47` detail screenshots, `evidence/verification-2026-08-08.md`, `.github/workflows/`, `backend/Dockerfile`, `docker-compose.prod.yml`, `compliance/gdpr-controls.json`, and the report's GDPR table. In GitHub, prepare SAST run `#15`, Integration, Load and DAST run `31249623511`, and the retained earlier final workflow runs for the other controls. Download or open at least one small report artifact before recording; do not download the full saved image during the take.
 
-Before recording, add two readable captures: the opened backend test/coverage result and the opened final ZAP report. For CD, do not call the Compose integration environment a production deployment. Use the wording "delivery-ready artifact plus automated deployment verification" unless sanitized persistent-environment evidence is available.
+The opened backend test/coverage screenshot and final ZAP report E43 are now ready. For CD, do not call the Compose integration environment a production deployment. Use the wording "delivery-ready artifact plus automated deployment verification" unless sanitized persistent-environment evidence is available.
 
 ### Exact Ten-Minute English Script
 
@@ -162,6 +164,6 @@ Before recording, add two readable captures: the opened backend test/coverage re
 - [x] Android unit-test execution and APK build/upload details are visible in the supplied run `#47` screenshots.
 - [x] Backend `go test` output and package coverage are visible in the supplied expanded workflow screenshot.
 - [x] ZAP HTML summary and alert details are visible in the supplied report screenshots.
-- [ ] Replacement ZAP report confirms that `Private IP Disclosure` is absent after the relative media-path remediation.
+- [x] E43 and the downloaded reports from run `31249623511` confirm that `Private IP Disclosure` is absent after the relative media-path remediation.
 - [ ] CI/CD wording and evidence accurately distinguish artifact delivery, ephemeral deployment verification, and any real persistent deployment.
 - [ ] Final video is ten minutes or shorter, 1920x1080, with the speaker's face clearly visible.
