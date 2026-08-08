@@ -26,7 +26,7 @@ All seven videos must be placed in one ZIP file named:
 | 1 | `TeamXX- Management Assessment.mp4` | 5 minutes | [01-Management-Assessment.md](./01-Management-Assessment.md) | Evidence and exact script ready; recording pending |
 | 2 | `TeamXX- Architectural Assessment.mp4` | 10 minutes | [02-Architectural-Assessment.md](./02-Architectural-Assessment.md) | Architecture evidence and exact script ready; recording pending |
 | 3 | `TeamXX- Technical Assessment - Software Design.mp4` | 5 minutes | [03-Software-Design-Assessment.md](./03-Software-Design-Assessment.md) | Traceability evidence and exact script ready; recording pending |
-| 4 | `TeamXX- Technical Assessment - DevSecOps.mp4` | 10 minutes | [04-DevSecOps-Assessment.md](./04-DevSecOps-Assessment.md) | Core controls ready; opened unit/coverage and ZAP reports plus CD positioning remain |
+| 4 | `TeamXX- Technical Assessment - DevSecOps.mp4` | 10 minutes | [04-DevSecOps-Assessment.md](./04-DevSecOps-Assessment.md) | Evidence and exact script ready, including opened test/coverage, ZAP remediation/rescan, and accurate CD positioning; recording pending |
 | 5 | `TeamXX- Value Added Assessment.mp4` | 5 minutes | [05-Value-Added-Assessment.md](./05-Value-Added-Assessment.md) | Blocked on sanitized Sponsor acceptance/feedback evidence |
 | 6 | `TeamXX- Presentation Assessment App Demo.mp4` | Maximum 5 minutes | [06-App-Demo.md](./06-App-Demo.md) | Functional rehearsal complete; exact-HD face-visible final take and backup remain |
 | 7 | `TeamXX- Presentation Assessment CICD Demo.mp4` | Maximum 5 minutes | [07-CICD-Demo.md](./07-CICD-Demo.md) | Evidence, opened artifact, and exact script ready; recording pending |
@@ -40,7 +40,7 @@ All seven videos must be placed in one ZIP file named:
 
 ## PDF Compliance Audit
 
-See [08-PDF-Video-Compliance-Audit.md](./08-PDF-Video-Compliance-Audit.md) for the slide 33-40 requirement-by-requirement review and the two disclosed evidence limitations.
+See [08-PDF-Video-Compliance-Audit.md](./08-PDF-Video-Compliance-Audit.md) for the slide 33-40 requirement-by-requirement review and the remaining Sponsor evidence limitation.
 
 ## Final Package Check
 
