@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Scan repository dependencies and secrets
         uses: aquasecurity/trivy-action@v0.36.0
@@ -36,11 +36,18 @@ jobs:
           ignore-unfixed: true
 
       - name: Upload filesystem scan to code scanning
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         if: always()
         with:
           sarif_file: trivy-fs.sarif
           category: trivy-filesystem
+
+      - name: Upload filesystem scan artifact
+        uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: trivy-filesystem-report
+          path: trivy-fs.sarif
 
       - name: Enforce filesystem security gate
         uses: aquasecurity/trivy-action@v0.36.0
@@ -57,7 +64,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Build backend image
         run: docker build --tag toutiao-backend:security backend
@@ -72,11 +79,18 @@ jobs:
           ignore-unfixed: true
 
       - name: Upload image scan to code scanning
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         if: always()
         with:
           sarif_file: trivy-image.sarif
           category: trivy-container-image
+
+      - name: Upload image scan artifact
+        uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: trivy-image-report
+          path: trivy-image.sarif
 
       - name: Enforce image security gate
         uses: aquasecurity/trivy-action@v0.36.0

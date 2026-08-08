@@ -90,6 +90,7 @@ func main() {
 	var h http.Handler = mux
 	h = middleware.Recover(h)
 	h = middleware.Logging(h)
+	h = middleware.SecurityHeaders(h)
 
 	log.Println("server listening on :8080")
 
