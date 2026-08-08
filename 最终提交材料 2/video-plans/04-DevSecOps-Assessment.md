@@ -73,6 +73,8 @@
 | --- | --- |
 | ![Semgrep historical client-IP finding](../assets/E33-semgrep-sast-remediation.png) | The right-hand panel in E33 shows the retained clean backend rescan; the latest CI artifact repeats the scan after subsequent backend additions. |
 
+![E34 - Online Semgrep historical scan, current rescan, evidence gate, and artifact upload all successful](../assets/E34-semgrep-sast-ci-success.png)
+
 | Container runtime and logs | Saved image and digest |
 | --- | --- |
 | ![Container evidence](../assets/E26-container-runtime-evidence.png) | ![Saved image evidence](../assets/E27-saved-image-evidence.png) |
@@ -81,7 +83,7 @@
 
 ### Prepare These Screens
 
-Open E12 and E19-E30, `evidence/verification-2026-08-08.md`, `.github/workflows/`, `backend/Dockerfile`, `docker-compose.prod.yml`, `compliance/gdpr-controls.json`, and the report's GDPR table. In the authenticated GitHub browser, prepare runs `31242565863` through `31242565879` and expand the artifact lists. Download or open at least one small report artifact before recording; do not download the full saved image during the take.
+Open E12, E19-E34, `evidence/verification-2026-08-08.md`, `.github/workflows/`, `backend/Dockerfile`, `docker-compose.prod.yml`, `compliance/gdpr-controls.json`, and the report's GDPR table. In GitHub, prepare SAST run `#15` for the successful Semgrep remediation job and the retained earlier final workflow runs for the other controls. Download or open at least one small report artifact before recording; do not download the full saved image during the take.
 
 ### Exact Ten-Minute English Script
 
