@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1240" viewBox="0 0 1600 1240">
+  <rect width="1600" height="1240" fill="#f7f5ef"/>
+  <rect x="40" y="40" width="1520" height="1160" rx="22" fill="#ffffff" stroke="#d8d5cc" stroke-width="2"/>
+  <rect x="40" y="40" width="1520" height="92" rx="22" fill="#14211d"/>
+  <circle cx="88" cy="86" r="10" fill="#ff655d"/><circle cx="122" cy="86" r="10" fill="#ffbd44"/><circle cx="156" cy="86" r="10" fill="#00ca4e"/>
+  <text x="205" y="96" font-family="Menlo, Consolas, monospace" font-size="30" fill="#f8faf9">integration-test.log</text>
+  <rect x="1278" y="66" width="230" height="44" rx="22" fill="#d9f5e5"/>
+  <text x="1393" y="96" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="22" font-weight="bold" fill="#12653b">ALL CHECKS PASS</text>
+  <g font-family="Menlo, Consolas, monospace" font-size="24" fill="#202724">
+    <text x="78" y="180">Integration Testing</text>
+    <text x="78" y="218">BASE_URL: http://localhost:8080</text>
+    <text x="78" y="274" fill="#12653b">[PASS] Backend health endpoint responded with ok</text>
+    <text x="78" y="312" fill="#12653b">[PASS] Seed reset completed</text>
+    <text x="78" y="368">Initial recommend feed request</text>
+    <text x="78" y="406" fill="#12653b">[PASS] Recommend scene returned</text>
+    <text x="78" y="444" fill="#12653b">[PASS] Recommend top_items and items fields exist</text>
+    <text x="78" y="482" fill="#12653b">[PASS] Recommend latest_publish_time exists</text>
+    <text x="78" y="520" fill="#12653b">[PASS] Recommendation reason and score exist</text>
+    <text x="78" y="576">Append and refresh flow</text>
+    <text x="78" y="614" fill="#12653b">[PASS] Append refresh data completed</text>
+    <text x="78" y="652" fill="#12653b">[PASS] Refresh recommend scene returned</text>
+    <text x="78" y="690" fill="#12653b">[PASS] Reason and score exist in refresh response</text>
+    <text x="78" y="746">Scene separation</text>
+    <text x="78" y="784" fill="#12653b">[PASS] Video scene returned without recommend top_items</text>
+    <text x="78" y="840">Request validation</text>
+    <text x="78" y="878" fill="#12653b">[PASS] Invalid cursor rejected (HTTP 400)</text>
+    <text x="78" y="916" fill="#12653b">[PASS] Unsupported scene rejected (HTTP 400)</text>
+    <text x="78" y="954" fill="#12653b">[PASS] Out-of-range limit rejected (HTTP 400)</text>
+    <text x="78" y="992" fill="#12653b">[PASS] Conflicting feed modes rejected (HTTP 400)</text>
+    <text x="78" y="1030" fill="#12653b">[PASS] Unsupported method rejected (HTTP 405)</text>
+    <rect x="72" y="1082" width="1456" height="72" rx="12" fill="#eaf8ef"/>
+    <text x="98" y="1128" font-weight="bold" fill="#12653b">[PASS] Integration testing script completed</text>
+  </g>
+  <text x="78" y="1182" font-family="Menlo, Consolas, monospace" font-size="18" fill="#68716d">Source: integration-load-test-results / GitHub Actions run #8, commit 0395302</text>
+</svg>

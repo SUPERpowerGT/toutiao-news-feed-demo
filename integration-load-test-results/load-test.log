@@ -1,0 +1,62 @@
+
+========================================
+Stress Testing
+========================================
+BASE_URL: http://localhost:8080
+TOTAL_REQUESTS: 500
+CONCURRENCY: 25
+TARGET_URL: http://localhost:8080/api/v1/feed?scene=recommend&limit=15
+
+-> Health check before stress test
+[PASS] Backend health endpoint responded with ok
+
+-> Running stress test with ab
+Completed 100 requests
+Completed 200 requests
+Completed 300 requests
+Completed 400 requests
+Completed 500 requests
+Finished 500 requests
+This is ApacheBench, Version 2.3 <$Revision: 1903618 $>
+Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+Licensed to The Apache Software Foundation, http://www.apache.org/
+
+Benchmarking localhost (be patient)
+
+
+Server Software:        
+Server Hostname:        localhost
+Server Port:            8080
+
+Document Path:          /api/v1/feed?scene=recommend&limit=15
+Document Length:        20984 bytes
+
+Concurrency Level:      25
+Time taken for tests:   0.895 seconds
+Complete requests:      500
+Failed requests:        0
+Total transferred:      10697500 bytes
+HTML transferred:       10492000 bytes
+Requests per second:    558.60 [#/sec] (mean)
+Time per request:       44.754 [ms] (mean)
+Time per request:       1.790 [ms] (mean, across all concurrent requests)
+Transfer rate:          11671.23 [Kbytes/sec] received
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:        0    0   0.3      0       3
+Processing:     6   44   9.2     43      77
+Waiting:        5   43   9.2     42      76
+Total:          6   44   9.3     43      78
+
+Percentage of the requests served within a certain time (ms)
+  50%     43
+  66%     46
+  75%     49
+  80%     50
+  90%     56
+  95%     63
+  98%     68
+  99%     69
+ 100%     78 (longest request)
+[PASS] Stress test completed with ab

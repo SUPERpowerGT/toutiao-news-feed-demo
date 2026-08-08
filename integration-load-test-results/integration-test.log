@@ -1,0 +1,41 @@
+
+========================================
+Integration Testing
+========================================
+BASE_URL: http://localhost:8080
+
+-> Health check
+[PASS] Backend health endpoint responded with ok
+
+-> Reset demo data
+[PASS] Seed reset completed
+
+-> Initial recommend feed request
+[PASS] Recommend scene returned
+[PASS] Recommend top_items field exists
+[PASS] Recommend items field exists
+[PASS] Recommend latest_publish_time exists
+[PASS] Initial recommend response contains recommendation reason
+[PASS] Initial recommend response contains recommendation score
+[PASS] Extracted latest_publish_time=1786168821
+
+-> Append newer feed items
+[PASS] Append refresh data completed
+
+-> Refresh recommend feed with previous latest_publish_time
+[PASS] Refresh recommend scene returned
+[PASS] Recommendation reason field exists in refresh response
+[PASS] Recommendation score field exists in refresh response
+
+-> Video scene request
+[PASS] Video scene returned
+[PASS] Video scene does not return top_items
+
+-> Request validation checks
+[PASS] Invalid cursor is rejected (HTTP 400)
+[PASS] Unsupported scene is rejected (HTTP 400)
+[PASS] Out-of-range limit is rejected (HTTP 400)
+[PASS] Conflicting feed modes are rejected (HTTP 400)
+[PASS] Unsupported method is rejected (HTTP 405)
+
+[PASS] Integration testing script completed

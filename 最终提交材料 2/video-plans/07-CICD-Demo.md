@@ -30,6 +30,7 @@
 - [x] Trivy run `31242565874` completed filesystem and image scans.
 - [x] APK, backend binary/coverage, test logs, saved image, and security reports are downloadable.
 - [x] Genuine failure and remediation evidence is prepared in E24/E21 and E28/E22.
+- [x] `integration-load-test-results` was downloaded from successful run `#8` on commit `0395302`, extracted, and retained in the repository.
 
 ## Evidence Screens
 
@@ -44,6 +45,10 @@
 | ZAP failure before remediation | Integration, load and ZAP success |
 |---|---|
 | ![ZAP gate failure](../assets/E28-zap-remediation-before.png) | ![Integration, load and ZAP success](../assets/E22-integration-load-dast-final-success.png) |
+
+| Opened integration artifact | Opened load-test artifact |
+|---|---|
+| ![Integration artifact](../assets/E31-integration-artifact-results.png) | ![Load-test artifact](../assets/E32-load-artifact-results.png) |
 
 ## Suggested Timeline
 
@@ -72,7 +77,7 @@ Open the following pages before recording. Keep the run title, commit SHA, job s
 6. Trivy failure E24 followed by successful run `31242565874`.
 7. ZAP failure E28 followed by successful run `31242565879`.
 
-Before the take, download and extract `integration-load-test-results` from run `31242565879`. Open its integration and load-test text files in a readable editor. This is the recommended artifact because it is small and proves executable results; do not download the 7.33 MB saved image during the recording.
+The `integration-load-test-results` artifact has already been downloaded from the later successful run `#8` on commit `0395302`. The original files are retained in `integration-load-test-results/`, and E31/E32 provide readable recording views. Keep both files open before the take. This artifact proves executable results; do not download the 7.33 MB saved image during the recording.
 
 ### Exact Five-Minute English Script
 
@@ -84,13 +89,13 @@ Before the take, download and extract `integration-load-test-results` from run `
 | 1:45-2:25 | Open E22 and expand its two jobs and artifacts. | "The integration workflow proves behaviour against deployed services rather than mocks. It verifies health, recommendation scenes, cursor and validation rules, and refresh behaviour. ApacheBench then sends five hundred requests at concurrency twenty-five; the final result has zero failures. The DAST job runs OWASP ZAP against that deployed API. The final report records sixty-five pass, zero fail, zero warn, and two documented ignores. The workflow retains integration-load-test-results and zap-dast-report." |
 | 2:25-3:05 | Show E23, then E21. | "CodeQL analyses both Go and Java or Kotlin source. This successful run proves repeatable SAST execution, but I do not claim a CodeQL remediation because no retained actionable alert is shown. Trivy provides the demonstrated dependency and image-security gate. Its filesystem and image jobs create SARIF and report artifacts, then fail on HIGH or CRITICAL findings. The successful run publishes trivy-filesystem-report and trivy-image-report. One separate low-severity Dependabot notice remains disclosed." |
 | 3:05-3:50 | Show E24 then E21; show E28 then E22. | "These historical failures demonstrate that the gates are enforced rather than decorative. The first real Trivy scan failed on twelve dependency findings, including two critical findings. Dependencies and the Alpine runtime were upgraded, and both scans passed on rerun. Later, integration and load passed while ZAP failed on dynamic alerts. The API added a restrictive same-origin resource-policy header, and two intentional API behaviours were documented in the ZAP rules file. The next run passed. The failed runs remain visible as audit evidence and were not deleted or bypassed." |
-| 3:50-4:30 | Click `integration-load-test-results`, then show the extracted text files. | "I will now open a generated artifact rather than relying only on green icons. This downloaded integration and load-test package contains the executable API checks and measured performance output associated with the run. Other deliverables include the Debug APK, Android quality reports, backend binary and coverage, the saved container image and digest, two Trivy reports, and the ZAP report. Their names and originating commit make the path from source to evidence traceable." |
+| 3:50-4:30 | Show the run `#8` artifact entry, then E31 and E32 or the original logs. | "I will now open a generated artifact rather than relying only on green icons. The downloaded package contains successful integration checks for health, recommendation, refresh, scene separation, and request validation. Its load result records five hundred completed requests at concurrency twenty-five with zero failures, five hundred and fifty-eight point six requests per second, P ninety-five of sixty-three milliseconds, and P ninety-nine of sixty-nine milliseconds. Other deliverables include the APK, quality reports, backend binary and coverage, saved image, Trivy reports, and ZAP report." |
 | 4:30-5:00 | Show E30, then Docker Compose file or E26, and finish on E29. | "The accepted backend image is the same build path used by Docker Compose for the application demonstration. Compose starts PostgreSQL and the non-root backend with health checks on a private network. Therefore the pipeline connects source control to tested binaries, a saved and scanned image, deployable services, and retained audit evidence. The release gates are green for the stated commit without claiming that every advisory of every severity is zero. This concludes the CI and CD demonstration." |
 
 ### Recording Controls
 
 - Do not run a new five-workflow pipeline during the take; show the completed runs.
-- Click or open `integration-load-test-results` once so the artifact requirement is visibly satisfied.
+- Show the `integration-load-test-results` entry and then E31/E32 or the original retained logs so the artifact requirement is visibly satisfied.
 - Introduce E24 and E28 as historical failures, then immediately show their successful reruns.
 - Keep `900f4e5`, run IDs, job status, and artifact names readable.
 - Do not call CodeQL successful execution a remediation when no actionable CodeQL alert is retained.
@@ -110,6 +115,6 @@ Before the take, download and extract `integration-load-test-results` from run `
 - [ ] Video is five minutes or shorter.
 - [x] A real GitHub Actions run is prepared.
 - [x] Build, test, scan, and artifact stages are prepared.
-- [ ] At least one artifact is opened.
+- [x] At least one artifact is downloaded, opened, and retained as E31/E32.
 - [x] Quality-gate and remediation evidence and wording are prepared truthfully.
 - [x] Commit-to-artifact traceability is documented.

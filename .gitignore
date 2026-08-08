@@ -60,6 +60,8 @@ dist/
 # Logs
 ##############################
 *.log
+!integration-load-test-results/
+!integration-load-test-results/*.log
 
 ##############################
 # Python (blender scripts etc.)
