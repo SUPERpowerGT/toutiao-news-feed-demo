@@ -28,14 +28,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set up Python
-        uses: actions/setup-python@v6
-        with:
-          python-version: "3.12"
-
-      - name: Install Semgrep
-        run: python -m pip install semgrep==1.130.0
-
       - name: Materialize pre-remediation source
         run: |
           mkdir -p sast-evidence/before
@@ -43,13 +35,15 @@ jobs:
 
       - name: Scan historical source with privacy rule
         run: |
-          semgrep scan --config .semgrep/privacy.yml --no-git-ignore --json \
+          docker run --rm -v "$PWD:/src" -w /src semgrep/semgrep:1.130.0 \
+            semgrep scan --config .semgrep/privacy.yml --no-git-ignore --json \
             --output sast-evidence/semgrep-before.json sast-evidence/before \
             || test -s sast-evidence/semgrep-before.json
 
       - name: Rescan current source with the same rule
         run: |
-          semgrep scan --config .semgrep/privacy.yml --json \
+          docker run --rm -v "$PWD:/src" -w /src semgrep/semgrep:1.130.0 \
+            semgrep scan --config .semgrep/privacy.yml --json \
             --output sast-evidence/semgrep-after.json backend
 
       - name: Enforce finding-to-fix evidence
