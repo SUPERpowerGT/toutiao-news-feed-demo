@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1080" viewBox="0 0 1800 1080">
+  <rect width="1800" height="1080" fill="#f4f1e8"/>
+  <text x="80" y="92" font-family="Menlo, Consolas, monospace" font-size="42" font-weight="bold" fill="#14211d">SAST Privacy Finding → Remediation → Rescan</text>
+  <text x="80" y="138" font-family="Menlo, Consolas, monospace" font-size="24" fill="#59635e">Semgrep OSS 1.130.0 · go-client-ip-logging · CWE-532 · GDPR data minimisation</text>
+  <rect x="70" y="188" width="790" height="720" rx="24" fill="#fff" stroke="#e3a39c" stroke-width="3"/>
+  <rect x="70" y="188" width="790" height="92" rx="24" fill="#7b2722"/>
+  <text x="112" y="248" font-family="Menlo, Consolas, monospace" font-size="34" font-weight="bold" fill="#fff">BEFORE · 1 FINDING</text>
+  <g font-family="Menlo, Consolas, monospace" font-size="26" fill="#242b28">
+    <text x="112" y="342">Commit: f397240</text>
+    <text x="112" y="390">backend/api/feed_handler.go:28</text>
+    <text x="112" y="462" fill="#9d2d26">Client IP written to application logs</text>
+    <rect x="104" y="504" width="722" height="144" rx="14" fill="#fff1ef"/>
+    <text x="132" y="556" fill="#6e211d">log.Printf("... from %s ...",</text>
+    <text x="132" y="606" fill="#6e211d">    r.RemoteAddr, r.URL.String())</text>
+    <text x="112" y="720">Severity: ERROR</text>
+    <text x="112" y="768">Confidence: HIGH</text>
+    <text x="112" y="816">Classification: CWE-532</text>
+  </g>
+  <path d="M880 548 H920" stroke="#14211d" stroke-width="8" stroke-linecap="round"/>
+  <path d="M910 526 L942 548 L910 570" fill="none" stroke="#14211d" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="940" y="188" width="790" height="720" rx="24" fill="#fff" stroke="#8bc6a3" stroke-width="3"/>
+  <rect x="940" y="188" width="790" height="92" rx="24" fill="#12653b"/>
+  <text x="982" y="248" font-family="Menlo, Consolas, monospace" font-size="34" font-weight="bold" fill="#fff">AFTER · 0 FINDINGS</text>
+  <g font-family="Menlo, Consolas, monospace" font-size="26" fill="#242b28">
+    <text x="982" y="342">Remediation commit: 900f4e5</text>
+    <text x="982" y="390">Current backend source: 18 targets</text>
+    <text x="982" y="462" fill="#12653b">Client IP removed from application logs</text>
+    <rect x="974" y="504" width="722" height="144" rx="14" fill="#eaf8ef"/>
+    <text x="1002" y="556" fill="#105331">log.Printf("... for URL %s",</text>
+    <text x="1002" y="606" fill="#105331">    r.URL.String())</text>
+    <text x="982" y="720">Same rule: go-client-ip-logging</text>
+    <text x="982" y="768">Scanner errors: 0</text>
+    <text x="982" y="816" fill="#12653b" font-weight="bold">RESCAN PASSED</text>
+  </g>
+  <rect x="70" y="944" width="1660" height="72" rx="14" fill="#14211d"/>
+  <text x="900" y="990" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="24" fill="#fff">Raw JSON retained in evidence/sast-remediation · Git history preserves both revisions</text>
+</svg>

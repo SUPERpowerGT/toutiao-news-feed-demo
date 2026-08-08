@@ -1,0 +1,19 @@
+Tool: Semgrep OSS 1.130.0
+Rule: go-client-ip-logging
+Classification: CWE-532 / GDPR Article 5(1)(c) and Article 25
+
+Before remediation
+Commit: f397240
+File: backend/api/feed_handler.go:28
+Finding: Client IP address was written to application logs through r.RemoteAddr.
+Findings: 1
+
+Remediation
+Commit: 900f4e5
+Change: Removed r.RemoteAddr from the feed request log while retaining route-level operational logging.
+
+After remediation
+Scope: current backend Go source
+Targets parsed: 18
+Findings: 0
+Scanner errors: 0

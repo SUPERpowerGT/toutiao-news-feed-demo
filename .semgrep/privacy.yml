@@ -1,0 +1,15 @@
+rules:
+  - id: go-client-ip-logging
+    message: Client IP address is written to application logs; remove or minimise personal-data logging.
+    severity: ERROR
+    languages:
+      - go
+    metadata:
+      category: privacy
+      cwe:
+        - "CWE-532: Insertion of Sensitive Information into Log File"
+      confidence: HIGH
+      gdpr:
+        - "Article 5(1)(c) data minimisation"
+        - "Article 25 data protection by design"
+    pattern: log.Printf(..., $REQUEST.RemoteAddr, ...)

@@ -18,6 +18,58 @@ permissions:
   security-events: write
 
 jobs:
+  privacy-remediation:
+    name: Semgrep privacy remediation and rescan
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout full history
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install Semgrep
+        run: python -m pip install semgrep==1.130.0
+
+      - name: Materialize pre-remediation source
+        run: |
+          mkdir -p sast-evidence/before
+          git show f397240:backend/api/feed_handler.go > sast-evidence/before/feed_handler.go
+
+      - name: Scan historical source with privacy rule
+        run: |
+          semgrep scan --config .semgrep/privacy.yml --json \
+            --output sast-evidence/semgrep-before.json sast-evidence/before
+
+      - name: Rescan current source with the same rule
+        run: |
+          semgrep scan --config .semgrep/privacy.yml --json \
+            --output sast-evidence/semgrep-after.json backend
+
+      - name: Enforce finding-to-fix evidence
+        run: |
+          before_count="$(jq '.results | length' sast-evidence/semgrep-before.json)"
+          after_count="$(jq '.results | length' sast-evidence/semgrep-after.json)"
+          test "$before_count" -eq 1
+          test "$after_count" -eq 0
+          printf 'Historical findings: %s\nCurrent findings: %s\n' \
+            "$before_count" "$after_count" | tee sast-evidence/remediation-summary.txt
+
+      - name: Upload SAST remediation evidence
+        uses: actions/upload-artifact@v7
+        with:
+          name: semgrep-sast-remediation
+          path: |
+            sast-evidence/semgrep-before.json
+            sast-evidence/semgrep-after.json
+            sast-evidence/remediation-summary.txt
+
   analyze:
     name: Analyze ${{ matrix.language }}
     runs-on: ubuntu-latest
