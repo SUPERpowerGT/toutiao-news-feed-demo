@@ -76,7 +76,7 @@ The existing burndown chart E02 is a final traceability reconstruction from back
 | Weak-network blank feed | Android/data owner | Scene-filtered Room cache-first flow | Demonstrable in App Demo |
 | Database pool exhaustion | Backend owner | Close outer query rows before nested media loading | 500 requests at concurrency 25 with zero failures |
 | Scope expansion during finalisation | Project owner | P0/P1/P2 backlog and explicit deferred scope | Advanced ML, auth, and streaming remain deferred |
-| CI evidence not tied to final code | DevSecOps owner | Commit and push final code, then retain artifacts and SHA | Open until final CI run |
+| CI evidence not tied to final code | Sole developer | Commit and push final code, then retain artifacts and SHA | Closed with final GitHub Actions runs and artifacts |
 | Formal sponsor acceptance unavailable | Project owner | State the limitation and use technical acceptance evidence | No sponsor acceptance claim is made |
 
 ## Effort and Team Evidence
@@ -101,6 +101,5 @@ Formal sponsor or mentor acceptance was not available at the time of evidence pr
 
 ## Remaining External Evidence
 
-- A final GitHub CI/security run and artifacts for the final committed code.
 - Original Jira/board screenshots, only if a tracking tool other than GitHub was used.
 - Formal sponsor or mentor feedback, only if it exists.
