@@ -33,14 +33,36 @@
 
 - [x] Run `docker compose -f docker-compose.prod.yml up --build -d`; backend and PostgreSQL are healthy in the latest preflight.
 - [x] Confirm `/health` returns `ok`.
-- [ ] Reset data through `/seed`.
-- [ ] Launch the app and wait for initial image caching before the final take.
+- [x] Reset data through `/seed`; latest verification returned `seed ok`.
+- [x] Launch the app and wait for initial image caching before the final take.
 - [x] Prepare `scripts/append_refresh_data.sh` in a visible terminal.
 - [x] Confirm the channel seed endpoint succeeds; latest preflight returned `channel seed ok: added 0`.
 - [x] Confirm `adb devices` shows `emulator-5554` with status `device`, not `offline`.
-- [ ] Confirm refresh and load-more work twice consecutively.
-- [ ] Prepare backend stop/start commands for the controlled recovery scene.
+- [x] Confirm refresh and load-more work twice consecutively: two `refresh_time` requests and two successive `cursor` requests returned HTTP 200 in the rehearsal logs.
+- [x] Prepare and verify backend stop/start commands for the controlled recovery scene.
 - [ ] Prepare a backup recording of the complete flow.
+
+## Verified Runtime Evidence
+
+The following screenshots were captured from the running emulator on 8 August 2026 while the Docker Compose backend and PostgreSQL were controlled from the project terminal. They are rehearsal evidence; the final submission must still show the interactions continuously in the video.
+
+| Live recommendation feed | Live video channel |
+| --- | --- |
+| ![Running recommendation feed](../assets/E35-app-demo-live-home.png) | ![Running video channel](../assets/E36-app-demo-video-channel.png) |
+
+| Real backend-hosted video playback | Incremental pull-to-refresh result |
+| --- | --- |
+| ![Video playback with visible frame and timer](../assets/E37-app-demo-video-playback.png) | ![Feed after five newer records were appended and refreshed](../assets/E38-app-demo-refresh-result.png) |
+
+| Cursor-pagination result | Room cache after backend shutdown |
+| --- | --- |
+| ![Feed content after deep scrolling and load more](../assets/E39-app-demo-pagination.png) | ![Cached recommendation feed while backend is stopped](../assets/E40-app-demo-offline-room-cache.png) |
+
+| Explicit offline detail error and Retry | Same detail recovered after backend restart |
+| --- | --- |
+| ![Detail error with retry action](../assets/E41-app-demo-detail-error-retry.png) | ![Recovered detail after retry](../assets/E42-app-demo-retry-recovered.png) |
+
+The video source is now served by the backend at `/media/demo-video.mp4`. The handler embeds the MP4 in the Go binary, returns `video/mp4`, supports `GET`, `HEAD`, and byte-range requests, and avoids dependence on public media hosts during assessment. Backend unit tests verify full and ranged responses.
 
 ## Suggested Timeline
 
@@ -94,7 +116,7 @@ Before the final take, disable desktop and emulator notifications, close private
 | 0:15-0:35 | Launch the Android app and keep the skeleton screen visible briefly. | "When the application starts, it requests the initial feed from the backend. A skeleton layout provides immediate visual feedback while the network request is in progress." |
 | 0:35-1:05 | Pause on Recommend. Point out official cards, image/text/video cards, statistics, and recommendation reasons. | "The Recommend channel combines official top stories with normal ranked content. The client maps each content type to a dedicated Compose card, while recommendation reasons and engagement statistics come from the backend response." |
 | 1:05-1:30 | Swipe through Video, Shenzhen, Technology, Sports, and Finance. | "Each channel sends an independent scene key. The backend applies content-type, city, or category filters, and every visible channel contains at least twenty records." |
-| 1:30-1:50 | Open a video card, show the loaded article body and automatic playback, then go back. | "Card navigation carries the news identifier to a real detail API. Video content starts after preparation and pauses or releases with the screen lifecycle." |
+| 1:30-1:50 | Open a video card, show the loaded article body and automatic playback, then go back. | "Card navigation carries the news identifier to a real detail API. The video is served by this backend with MP4 content type and byte-range support, so the demonstration does not depend on an external media host. Playback starts after preparation and pauses or releases with the screen lifecycle." |
 | 1:50-2:05 | Run `./scripts/append_refresh_data.sh 5`, then return to the emulator. | "I am appending five newer server records rather than changing the UI locally." |
 | 2:05-2:35 | Pull to refresh, show the update banner, then refresh once more without appending. | "Refresh requests only newer timestamps and merges unique IDs. A second refresh returns no duplicates when the server has no newer content." |
 | 2:35-3:05 | Scroll until the loading footer appears and more cards are appended. | "Near the list end, cursor pagination loads the next page while preserving visible content." |
@@ -129,11 +151,12 @@ Export as `TeamXX- Presentation Assessment App Demo.mp4`, verify 1920x1080 resol
 - Keep a small terminal visible only when it helps prove backend data changes.
 - Demonstrate real detail and basic playback, but do not claim advanced streaming or preloading.
 - If a scenario is unstable, fix it before recording rather than explaining around it.
+- E35-E42 prove the rehearsal states, but the assessment video should show the actual gestures and terminal commands rather than presenting these still images as a substitute.
 
 ## Definition of Done
 
 - [ ] Video is five minutes or shorter.
-- [ ] App, backend, and database are genuinely connected.
-- [ ] Initial load, channels, refresh, pagination, and error recovery are shown.
+- [x] App, backend, and database connection was verified in rehearsal.
+- [x] Initial load, channels, playback, refresh, pagination, offline fallback, and error recovery were verified in rehearsal.
 - [ ] No passwords or private desktop content appear.
 - [ ] A backup take exists.

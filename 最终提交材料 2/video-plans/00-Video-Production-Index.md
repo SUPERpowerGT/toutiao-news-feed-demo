@@ -26,9 +26,9 @@ All seven videos must be placed in one ZIP file named:
 | 1 | `TeamXX- Management Assessment.mp4` | 5 minutes | [01-Management-Assessment.md](./01-Management-Assessment.md) | Evidence and exact script ready; recording pending |
 | 2 | `TeamXX- Architectural Assessment.mp4` | 10 minutes | [02-Architectural-Assessment.md](./02-Architectural-Assessment.md) | Architecture evidence and exact script ready; recording pending |
 | 3 | `TeamXX- Technical Assessment - Software Design.mp4` | 5 minutes | [03-Software-Design-Assessment.md](./03-Software-Design-Assessment.md) | Traceability evidence and exact script ready; recording pending |
-| 4 | `TeamXX- Technical Assessment - DevSecOps.mp4` | 10 minutes | [04-DevSecOps-Assessment.md](./04-DevSecOps-Assessment.md) | Script/evidence ready; unavailable CodeQL remediation example disclosed |
-| 5 | `TeamXX- Value Added Assessment.mp4` | 5 minutes | [05-Value-Added-Assessment.md](./05-Value-Added-Assessment.md) | Page 38 mapped; sponsor acceptance/go-live criterion remains unavailable and disclosed |
-| 6 | `TeamXX- Presentation Assessment App Demo.mp4` | Maximum 5 minutes | [06-App-Demo.md](./06-App-Demo.md) | Requires final emulator rehearsal and backup recording |
+| 4 | `TeamXX- Technical Assessment - DevSecOps.mp4` | 10 minutes | [04-DevSecOps-Assessment.md](./04-DevSecOps-Assessment.md) | Script/evidence ready; CodeQL plus reproducible Semgrep SAST remediation included |
+| 5 | `TeamXX- Value Added Assessment.mp4` | 5 minutes | [05-Value-Added-Assessment.md](./05-Value-Added-Assessment.md) | Page 38 mapped; internal go-live declared with company-confidentiality limitation |
+| 6 | `TeamXX- Presentation Assessment App Demo.mp4` | Maximum 5 minutes | [06-App-Demo.md](./06-App-Demo.md) | Full emulator rehearsal evidenced in E35-E42; final take and backup recording remain |
 | 7 | `TeamXX- Presentation Assessment CICD Demo.mp4` | Maximum 5 minutes | [07-CICD-Demo.md](./07-CICD-Demo.md) | Evidence, opened artifact, and exact script ready; recording pending |
 
 ## Recommended Production Order

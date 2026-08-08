@@ -11,6 +11,7 @@ import (
 	"toutiao-backend/api"
 	"toutiao-backend/application"
 	"toutiao-backend/infrastructure"
+	"toutiao-backend/media"
 	"toutiao-backend/middleware"
 	"toutiao-backend/seed"
 
@@ -83,6 +84,7 @@ func main() {
 		fmt.Fprintf(w, "channel seed ok: added %d", added)
 	})
 
+	media.RegisterRoutes(mux)
 	feedHandler.RegisterRoutes(mux)
 	newsDetailHandler.RegisterRoutes(mux)
 
