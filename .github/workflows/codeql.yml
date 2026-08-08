@@ -44,7 +44,8 @@ jobs:
       - name: Scan historical source with privacy rule
         run: |
           semgrep scan --config .semgrep/privacy.yml --json \
-            --output sast-evidence/semgrep-before.json sast-evidence/before
+            --output sast-evidence/semgrep-before.json sast-evidence/before \
+            || test -s sast-evidence/semgrep-before.json
 
       - name: Rescan current source with the same rule
         run: |
@@ -53,8 +54,12 @@ jobs:
 
       - name: Enforce finding-to-fix evidence
         run: |
+          before_errors="$(jq '.errors | length' sast-evidence/semgrep-before.json)"
+          after_errors="$(jq '.errors | length' sast-evidence/semgrep-after.json)"
           before_count="$(jq '.results | length' sast-evidence/semgrep-before.json)"
           after_count="$(jq '.results | length' sast-evidence/semgrep-after.json)"
+          test "$before_errors" -eq 0
+          test "$after_errors" -eq 0
           test "$before_count" -eq 1
           test "$after_count" -eq 0
           printf 'Historical findings: %s\nCurrent findings: %s\n' \
