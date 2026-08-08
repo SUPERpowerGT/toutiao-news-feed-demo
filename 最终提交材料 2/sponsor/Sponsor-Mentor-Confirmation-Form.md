@@ -1,94 +1,77 @@
-# Sponsor / Mentor Project Acceptance and Feedback Confirmation
+# Sponsor / Mentor Project Rating and Sign-off
 
-> Student-prepared supporting record. This is not an official NUS-ISS form and does not replace any feedback or assessment that NUS-ISS may request directly from the registered project Sponsor.
+> Student-prepared draft for Sponsor review. This is not an official NUS-ISS form. The Sponsor should correct any inaccurate statement before rating and signing. It does not replace feedback that NUS-ISS may request directly from the registered Sponsor.
 
-## Project Information
+## 1. Pre-filled Project Information
 
 | Field | Details |
 |---|---|
 | Project title | Modern Recommendation Feed Demo |
-| Student name | Xu Ziyi |
+| Student | Xu Ziyi |
 | Student ID | ______________________________ |
 | Internship company | ______________________________ |
 | Project period | 23 March 2026 to 14 August 2026 |
-| Date reviewed | ______________________________ |
-
-## Sponsor / Mentor Information
-
-| Field | Details |
-|---|---|
-| Name | ______________________________ |
-| Job title | ______________________________ |
-| Role in the project | Sponsor / Internship Supervisor / Project Owner / Technical Mentor |
+| Sponsor / Mentor name | ______________________________ |
+| Sponsor / Mentor job title | ______________________________ |
 | Company email | ______________________________ |
-| Contact number | ______________________________ |
 
-## Project Confirmation
+## 2. Student-prepared Delivery Summary
 
-Please select the applicable option.
+The student reports completion of the following agreed project work for Sponsor review:
 
-### 1. Review and completion
+- An Android news-feed application implemented with Kotlin, Jetpack Compose, MVVM, Retrofit, and Room.
+- Multi-channel feeds, explainable recommendation reasons, pull-to-refresh, pagination, offline cache fallback, article detail, and basic video playback.
+- A Go and PostgreSQL REST backend with deterministic data, recommendation ranking, validation, health checks, and media delivery.
+- Docker Compose deployment, automated Android and Go tests, integration testing, load testing, CodeQL and Semgrep SAST, Trivy scanning, and OWASP ZAP DAST.
+- Technical documentation covering requirements, architecture, software design, testing, DevSecOps, security, project management, and added value.
+- Internal company deployment as reported by the student. Production URLs, infrastructure identifiers, internal screenshots, traffic, customer information, and user data are excluded from this form.
 
-- [ ] I reviewed the project work and deliverables described above.
-- [ ] The student completed the agreed internship project work.
-- [ ] The delivered solution substantially meets the agreed project scope and acceptance expectations.
+## 3. Sponsor / Mentor Rating
 
-### 2. Acceptance status
+Please tick one rating in each row. Rating scale: **1 = Unsatisfactory, 2 = Needs Improvement, 3 = Satisfactory, 4 = Good, 5 = Excellent**.
+
+| Assessment area | 1 | 2 | 3 | 4 | 5 |
+|---|:---:|:---:|:---:|:---:|:---:|
+| Completion of the agreed project scope | ☐ | ☐ | ☐ | ☐ | ☐ |
+| Technical quality and engineering approach | ☐ | ☐ | ☐ | ☐ | ☐ |
+| Testing, security, and delivery discipline | ☐ | ☐ | ☐ | ☐ | ☐ |
+| Professionalism and communication | ☐ | ☐ | ☐ | ☐ | ☐ |
+| Business or user value of the delivered work | ☐ | ☐ | ☐ | ☐ | ☐ |
+| Overall project performance | ☐ | ☐ | ☐ | ☐ | ☐ |
+
+## 4. Acceptance and Deployment Confirmation
+
+### Project acceptance
 
 - [ ] Accepted
 - [ ] Accepted with minor follow-up items
 - [ ] Not yet accepted
 
-Optional follow-up items:
-
-______________________________________________________________________________
-
-______________________________________________________________________________
-
-### 3. Deployment status
+### Deployment status
 
 - [ ] Deployed in an internal company environment
 - [ ] Ready for internal deployment or trial
 - [ ] Demonstrated but not deployed
 - [ ] Not confirmed
 
-### 4. Confidentiality boundary
+### Confidentiality boundary
 
-- [ ] I confirm that company confidentiality, cybersecurity, or data-compliance requirements restrict disclosure of production URLs, infrastructure details, internal screenshots, traffic, customer information, or user data. This restriction does not affect the acceptance statement above.
+- [ ] Company confidentiality, cybersecurity, or data-compliance requirements restrict disclosure of production URLs, infrastructure details, internal screenshots, traffic, customer information, or user data.
 
-## Sponsor / Mentor Feedback
+## 5. Optional Comment
 
-| Area | Brief feedback |
-|---|---|
-| Technical quality and engineering approach | |
-| Completion of agreed scope | |
-| Professionalism and communication | |
-| Business or user value | |
-| Recommended improvements or future work | |
+______________________________________________________________________________
 
-## Confirmation
+______________________________________________________________________________
 
-I confirm that the information above is accurate based on my review of the student's internship project. This confirmation may be used as sanitized supporting evidence in the student's NUS-ISS project presentation. It does not require disclosure of confidential company systems, data, credentials, or production infrastructure.
+## 6. Sponsor / Mentor Sign-off
+
+I have reviewed the pre-filled project summary and corrected it where necessary. I confirm that the selected ratings, acceptance status, and deployment status reflect my assessment of the student's internship project.
 
 | Field | Details |
 |---|---|
 | Sponsor / Mentor name | ______________________________ |
-| Signature, or confirmation sent from company email | ______________________________ |
+| Signature | ______________________________ |
 | Date | ______________________________ |
 
-## Email Reply Alternative
-
-If completing the form is inconvenient, the Sponsor or Mentor may reply from a company email account using the following wording:
-
-**Subject:** Project Acceptance Confirmation - Modern Recommendation Feed Demo
-
-> I confirm that Xu Ziyi completed the agreed internship project work for the Modern Recommendation Feed Demo. I reviewed the delivered system and accept it as meeting the agreed project scope and acceptance expectations. The system has been deployed in an internal company environment.
->
-> Due to company confidentiality, cybersecurity, and data-compliance requirements, production URLs, infrastructure details, internal screenshots, traffic, customer information, and user data cannot be disclosed. This confidentiality restriction does not affect my confirmation of the student's project completion and acceptance.
->
-> Sponsor / Mentor name:  
-> Job title:  
-> Company:  
-> Date:
-
-Before using the reply in a presentation, redact unnecessary personal or company-sensitive information while keeping the sender's company email domain, role, acceptance wording, and date readable.
+The signed form may be shown as sanitized supporting evidence in the student's NUS-ISS presentation. NUS-ISS may independently contact the registered Sponsor for formal project and individual feedback.
